@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Builder session 3 of 8. Five minute-level columns from 1 fps frames - product in hand, close-up ratio, host on camera, scene cuts, price overlay - built with MediaPipe landmarks, an open-vocabulary detector prompted with the SKU name and a supervision zone; and the licence question that decides which detector an MCN can legally ship.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="See it: what the camera shows - learn live commerce analytics with phoebe">
+<meta property="og:description" content="Builder session 3 of 8. Four ways to see the serum, five columns from frames, and why the licence page is read before the model card.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/courses/b3-see-it.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="See it: what the camera shows - learn live commerce analytics with phoebe">
+<meta name="twitter:description" content="Product in hand is worth 1.38 points of CTR within a stream. Tonight you build the detector that measures it, and pick one you are allowed to run in a closed-source dashboard.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Builder session 3 · See it: what the camera shows - learn live commerce analytics with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-live-commerce-analytics-with-phoebe</a> / Builder session 3 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LIVE Commerce Analytics with Phoebe · Builder session 3 of 8</div>
+    <h1>See it: <span class="accent">what the camera shows</span></h1>
+    <p class="sub">Session 2 left you 7,200 JPEGs, one per second of stream, and a scene-cut count per minute. Tonight the frames become columns. A hand landmarker says where the host's fingers are, a pose landmarker says whether she is in frame and how close, an open-vocabulary detector prompted with the words "serum bottle" says where the product is, and an OCR model reads the price card. Each of those is a per-frame answer; the minute table wants one number per minute, so the session is as much about aggregation as detection. And before any of it runs, the licence page: the most accurate detector on the shelf cannot be shipped inside a closed-source MCN dashboard without a cheque, and that decision is made tonight, not at launch.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Core</span>
+      <span class="chip audience">Data scientists</span>
+      <span class="chip audience">Anyone choosing a detector they can legally ship</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · Detectors and the licence question</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: five columns from frames</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where we are in the builder track</h2>
+    </div>
+    <p class="lede">Session 1 fixed the grain and the table. Session 2 got the recording onto one clock and produced the 1 fps frames, the audio, and the first content column, <code>scene_cuts</code>. Tonight fills the visual columns from those frames. Session 4 does the same for the audio. From session 5 on, nothing reads a frame or a word again; it all reads the minute table. So the columns you build tonight are the only thing the rest of the track will ever know about what the camera showed, which is why the aggregation rules matter as much as the model.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> Five minute-level columns computed from frames: <code>product_in_hand</code>, <code>close_up_ratio</code>, <code>host_on_camera</code>, <code>scene_cuts</code>, <code>price_overlay</code>. A working pipeline that produces them from your own recording with MediaPipe 1.0.1, Grounding DINO 1.0 and supervision 0.30.5, all Apache-2.0 or MIT. A validation habit that reports precision and recall per column from 200 hand-labelled frames. And a licence decision you can defend to a lawyer: which detector routes can run inside a closed-source internal tool without buying anything, and which cannot.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>What these columns are worth before you build them<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A detector budget is easier to justify with the number it protects. In the Lumen Glow data, comparing minutes within the same stream so the room size and the host cancel out, the visual columns move the click-through rate on the pinned card: a minute with the <strong>product in hand</strong> runs <strong>+1.38 points</strong> of CTR, a minute of <strong>close-up</strong> runs <strong>+1.01</strong>, and a minute with the <strong>price on screen</strong> runs <strong>+0.97</strong>. Those are among the largest within-stream CTR effects in the table; only the CTA and demo segments beat them.</p>
+        <p>The same three columns do almost nothing to the click-to-order rate: product in hand +0.04 points, close-up +0.46, price overlay -0.13, none of them distinguishable from zero. The camera earns the click. What the host says earns the order. Session 4 measures that half.</p>
+        <p>The bench in session 8 turns the click effect into money. Cueing the host to have the product in hand on every CTA is worth <strong>+9.7 percent</strong> of GMV on a Friday night, as a mean over 40 seeded replays. You cannot cue what you cannot measure, and you cannot measure it without tonight's column.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary tonight uses<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Closed-vocabulary detection</strong> - a detector trained on a fixed list of classes and blind to anything else. YOLO26's COCO weights know "person" and "bottle" and have never heard of Dew Serum.</li>
+          <li><strong>Open-vocabulary detection</strong> - a detector that takes a text prompt at run time and finds whatever the prompt names. "serum bottle", "pump dispenser", the SKU name on the label. No training, one string.</li>
+          <li><strong>Landmark</strong> - a named keypoint on a body part. MediaPipe's HandLandmarker returns 21 per hand, PoseLandmarker returns 33 per body, each with normalised x, y and a depth estimate.</li>
+          <li><strong>Zone</strong> - a polygon on the frame that reports which detections fall inside it. supervision's <code>PolygonZone</code> is the standard implementation.</li>
+          <li><strong>Tracker id</strong> - a stable integer attached to one object across consecutive frames, so "the same bottle" can be followed. ByteTrack is the usual algorithm.</li>
+          <li><strong>OCR</strong> - optical character recognition, reading text off pixels. Florence-2's <code>OCR_WITH_REGION</code> task returns each string with its box.</li>
+          <li><strong>Licence: AGPL-3.0</strong> - copyleft that reaches over the network. Software that uses an AGPL component must offer its own source to users, including users who only reach it through a server. <strong>Apache-2.0</strong> and <strong>MIT</strong> are permissive: use, modify, ship closed, keep the notice.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the four detector routes, their licences, and how each column is computed</span>
+      <h2>Four ways to see the serum</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">There is no single "vision model" for this job. There are four routes with different strengths and, more importantly, different licences, and a working pipeline uses three of them. Read the grid by licence first and by accuracy second, because the accuracy of a detector you cannot ship is zero.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A two-by-two grid of detector routes. Top left, closed vocabulary: YOLO26 via ultralytics 8.4.161, AGPL-3.0 or Enterprise licence, gives person and bottle boxes and tracking. Top right, landmarks: MediaPipe 1.0.1 HandLandmarker with 21 points and PoseLandmarker with 33, Apache-2.0, gives hand position and body extent. Bottom left, open vocabulary: YOLOE inside ultralytics under the same AGPL terms, Grounding DINO 1.0 Apache-2.0, OWLv2 Apache-2.0, Florence-2 MIT with OCR, gives a box for any named object. Bottom right, utilities: supervision 0.30.5 MIT PolygonZone and LineZone, trackers 2.6.0 ByteTrackTracker, gives zone membership and stable ids. A note says the AGPL tile is the one an MCN cannot run inside a closed dashboard without an Enterprise licence.">
+        <style>
+          .b3aHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b3aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b3aTi { font: 800 12px Inter, sans-serif; fill: #0B1A20; }
+          .b3aB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b3aW { font: 400 11px Inter, sans-serif; fill: #fff; }
+          .b3aM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b3aL { font: 700 11px Inter, sans-serif; fill: #fff; }
+          .b3aLi { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+          .b3aQ { font: 600 11px "SFMono-Regular", Menlo, monospace; fill: #062B33; }
+          .b3aN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+        </style>
+
+        <text class="b3aHd" x="14" y="24">Four detector routes, read by licence first</text>
+        <text class="b3aM" x="14" y="42">versions read 2026-09-24; each tile says what it gives a minute column, and what it costs to ship</text>
+
+        <!-- top left: closed vocab (the AGPL tile, flag colour) -->
+        <rect x="14" y="60" width="418" height="150" rx="12" fill="#C8173F"></rect>
+        <text class="b3aT" x="30" y="84">Closed vocabulary · YOLO26</text>
+        <text class="b3aW" x="30" y="104" style="fill:#fff">ultralytics 8.4.161, fixed class list (person, bottle, ...)</text>
+        <text class="b3aW" x="30" y="122" style="fill:#fff">gives: person box, generic bottle box, built-in tracking</text>
+        <text class="b3aW" x="30" y="140" style="fill:#fff">cannot name Dew Serum without training a custom model</text>
+        <rect x="30" y="156" width="386" height="36" rx="8" fill="#FFF0F4"></rect>
+        <text class="b3aLi" x="42" y="172" style="fill:#4A0416">AGPL-3.0, or paid Enterprise: commercial products,</text>
+        <text class="b3aLi" x="42" y="186" style="fill:#4A0416">closed-source internal tools, SaaS on a YOLO backend</text>
+
+        <!-- top right: landmarks -->
+        <rect x="448" y="60" width="418" height="150" rx="12" fill="#075E70"></rect>
+        <text class="b3aT" x="464" y="84">Landmarks · MediaPipe 1.0.1</text>
+        <text class="b3aW" x="464" y="104" style="fill:#fff">HandLandmarker: 21 points per hand, normalised x, y, z</text>
+        <text class="b3aW" x="464" y="122" style="fill:#fff">PoseLandmarker: 33 points, visibility and presence each</text>
+        <text class="b3aW" x="464" y="140" style="fill:#fff">gives: host_on_camera, close_up_ratio, where the hand is</text>
+        <rect x="464" y="156" width="386" height="36" rx="8" fill="#EEFCFE"></rect>
+        <text class="b3aLi" x="476" y="172">licence: Apache-2.0</text>
+        <text class="b3aB" x="476" y="186">runs on CPU at 1 fps without complaint; .task model files</text>
+
+        <!-- bottom left: open vocab -->
+        <rect x="14" y="228" width="418" height="150" rx="12" fill="#0B7F94"></rect>
+        <text class="b3aT" x="30" y="252">Open vocabulary · prompt with the SKU</text>
+        <text class="b3aW" x="30" y="272">Grounding DINO 1.0 (Apache-2.0): accuracy ceiling</text>
+        <text class="b3aW" x="30" y="290">OWLv2 (Apache-2.0): simplest baseline</text>
+        <text class="b3aW" x="30" y="308">Florence-2 (MIT): boxes plus OCR_WITH_REGION in one model</text>
+        <rect x="30" y="324" width="386" height="36" rx="8" fill="#EEFCFE"></rect>
+        <text class="b3aLi" x="42" y="340">gives: a box for "serum bottle", the price card text</text>
+        <text class="b3aB" x="42" y="354">YOLOE is open-vocab too but ships in ultralytics: AGPL</text>
+
+        <!-- bottom right: utilities -->
+        <rect x="448" y="228" width="418" height="150" rx="12" fill="#22C3DD"></rect>
+        <text class="b3aTi" x="464" y="252">Utilities · zones and ids</text>
+        <text class="b3aB" x="464" y="272">supervision 0.30.5 (MIT): PolygonZone, LineZone</text>
+        <text class="b3aB" x="464" y="290">trackers 2.6.0 (Apache-2.0): ByteTrackTracker</text>
+        <text class="b3aB" x="464" y="308">sv.ByteTrack deprecated in 0.28, removed in 0.31</text>
+        <rect x="464" y="324" width="386" height="36" rx="8" fill="#EEFCFE"></rect>
+        <text class="b3aLi" x="476" y="340">gives: hand in the product zone, stable bottle id</text>
+        <text class="b3aB" x="476" y="354">glue, not a model; works on any detector's boxes</text>
+
+        <!-- pipeline line -->
+        <rect x="14" y="396" width="852" height="1" fill="#DCEBEF"></rect>
+        <text class="b3aHd" x="14" y="420">Tonight's pipeline uses three of the four: landmarks + open vocabulary + utilities. Nothing AGPL.</text>
+
+        <rect x="14" y="440" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b3aN" x="38" y="452">An MCN's internal dashboard is a closed-source internal tool. The red tile needs an Enterprise licence there.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - four detector routes with what each gives a column and what it costs to ship.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The licence question first<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Ultralytics' own licence page draws the line. AGPL-3.0 fits research, personal and fully open-source use. The <strong>Enterprise licence is required for commercial products, closed-source internal tools, and SaaS or APIs with a YOLO backend</strong>, and its pricing is quote-based. YOLOE, the open-vocabulary model, ships inside the same package, so the same terms apply to it.</p>
+        <p>Now place the thing you are building. An MCN's stream-quality dashboard, run on the MCN's own servers for the MCN's own coaches, is a closed-source internal tool. That is on the Enterprise side of the line by the licensor's own wording. So the choice is one of three, and it is made before a single frame is processed:</p>
+        <ul>
+          <li><strong>Buy Enterprise.</strong> Get the quote, budget it, ship YOLO26 and YOLOE with a clear conscience.</li>
+          <li><strong>Open-source the pipeline.</strong> AGPL is satisfied if the code that uses YOLO is offered to its users. For an internal tool that means publishing it, which some MCNs will not do and most brands will not allow.</li>
+          <li><strong>Use Apache-2.0 and MIT models.</strong> MediaPipe for landmarks, Grounding DINO or OWLv2 for the SKU, Florence-2 for OCR, supervision and trackers for the glue. Tonight's build-along takes this route, and the accuracy it gives up is smaller than the licence it keeps.</li>
+        </ul>
+        <div class="callout tip">
+          <p><strong>Read the licence page before the benchmark table.</strong> Every detector comparison online ranks on mAP. None of them ranks on whether your legal team will sign. A model with a lower mAP that you can ship beats a model with a higher mAP that you cannot, by exactly the size of the effect you are trying to measure.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>How each column is computed<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Each column is one rule applied per frame, then one aggregation per minute. The rules are deliberately simple; the sophistication is in the detectors underneath, not in the arithmetic on top.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>Column</th><th>Per-frame rule</th><th>From</th><th>Per-minute</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>host_on_camera</code></td><td>A person is present: any pose landmarks returned, or a person box</td><td>PoseLandmarker</td><td>Share of frames</td></tr>
+            <tr><td><code>close_up_ratio</code></td><td>Person box area over frame area. When the hip landmarks are missing, the shot is shoulders-and-up: use the box from the visible landmarks</td><td>PoseLandmarker</td><td>Mean</td></tr>
+            <tr><td><code>product_in_hand</code></td><td>A hand landmark lies inside, or within a margin of, a box the open-vocab detector returned for "serum bottle" or the SKU name</td><td>HandLandmarker + Grounding DINO + PolygonZone</td><td>Share of frames</td></tr>
+            <tr><td><code>price_overlay</code></td><td>Florence-2 <code>OCR_WITH_REGION</code> returns a string containing a currency symbol and digits</td><td>Florence-2</td><td>Share of frames</td></tr>
+            <tr><td><code>scene_cuts</code></td><td>A scene boundary, from the full-rate video</td><td>PySceneDetect, session 2</td><td>Count</td></tr>
+          </tbody>
+        </table>
+        <p>The one that needs care is close-up. A host who leans in until only her face and the bottle fill the frame has no hips in shot, so a naive "person box" from pose landmarks shrinks to the visible points and the ratio drops when it should rise. Treat missing hips as a signal, not as missing data: shoulders-and-up with no hips is a close-up by construction, and the ratio is computed from the shoulder-to-crown box scaled to the frame.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What went wrong the first time<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lumen Glow's first detector was a stock closed-vocabulary model looking for "bottle". It found the water bottle on the host's desk in nearly every frame, so product_in_hand read as true for most of every stream and the column had no variance to correlate with anything. Prompting an open-vocabulary detector with "serum bottle with a pump" and requiring a hand landmark inside the box fixed both problems in one afternoon. The licence review of the first model took longer than the rebuild.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The two API signatures you will type most<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Both quoted from the fetched documentation. The Grounding DINO call is from the transformers v5.17.0 model docs; note the kwarg name, because the model card on the Hub still shows the older <code>box_threshold</code> while the current processor takes <code>threshold</code>. Signature defaults are 0.25 for both thresholds; the docs' example raises them to 0.4 and 0.3.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Grounding DINO, transformers v5.17.0 docs</span>
+processor = AutoProcessor.from_pretrained("IDEA-Research/grounding-dino-tiny")
+model = AutoModelForZeroShotObjectDetection.from_pretrained("IDEA-Research/grounding-dino-tiny", device_map="auto")
+text_labels = [["a cat", "a remote control"]]
+inputs = processor(images=image, text=text_labels, return_tensors="pt").to(model.device)
+results = processor.post_process_grounded_object_detection(
+    outputs, inputs.input_ids, threshold=0.4, text_threshold=0.3, target_sizes=[image.size[::-1]])
+# signature defaults: threshold=0.25, text_threshold=0.25; returns scores, boxes [x0,y0,x1,y1], labels, text_labels
+# NOTE: the model card still shows the older kwarg name box_threshold; the v5.17 processor uses `threshold`.
+        </div>
+        <p>MediaPipe's task options all share one shape: a <code>base_options</code> pointing at a model file, a running mode, and a handful of confidence thresholds. The hand landmarker's, as documented:</p>
+        <div class="prompt-box good">
+          <span class="label">★ MediaPipe 1.0.1 HandLandmarkerOptions</span>
+HandLandmarkerOptions(num_hands=1, min_hand_detection_confidence=0.5,
+    min_hand_presence_confidence=0.5, min_tracking_confidence=0.5)
+# output per hand: handedness, hand_landmarks (21 points, normalised x,y + z), hand_world_landmarks (metres)
+        </div>
+        <p>For a host who sells with both hands, set <code>num_hands=2</code>. The landmarks are normalised to the frame, so a box from the detector in pixels has to be divided by the frame width and height before the two are compared, or the landmarks multiplied up. Pick one convention and assert it in the code.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers aggregation from frames to minutes, validation without ground truth, and the AI-host streams</span>
+      <h2>From frames to a minute column</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">A detector answers per frame. The table wants per minute. Sixty frames go in, one number comes out, and the rule that turns sixty answers into one decides whether the column means anything. Booleans become shares, ratios become means, events become counts, and a minute the detector barely saw becomes null rather than zero.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sixty frame ticks at one frame per second across the top, some filled to mark frames where the product was in the host's hand. Arrows lead down to three aggregation boxes: share of frames for booleans, mean for ratios, count for scene cuts, and a fourth box saying a minute with under 30 usable frames is null. On the right a sketch of a frame shows a detected serum box with a polygon zone drawn around it and a hand landmark inside the zone. A note says ByteTrack moved from supervision to the trackers package in 0.31.">
+        <style>
+          .b3bHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b3bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b3bB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b3bW { font: 400 11px Inter, sans-serif; fill: #fff; }
+          .b3bM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b3bQ { font: 600 11px "SFMono-Regular", Menlo, monospace; fill: #062B33; }
+          .b3bR { font: 700 11px Inter, sans-serif; fill: #C8173F; }
+          .b3bN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+        </style>
+        <defs>
+          <marker id="b3bAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#BFD8DE"></path>
+          </marker>
+        </defs>
+
+        <text class="b3bHd" x="14" y="24">One minute of frames at 1 fps, and the four rules that turn them into one row</text>
+        <text class="b3bM" x="14" y="42">filled ticks: product in hand on that frame · hollow: not · the detector answers 60 times, the table gets one answer</text>
+
+        <!-- 60 frame ticks, 9px each + 1 gap = 600px from x=14 -->
+        <g>
+          <rect x="14" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="24" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="34" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="44" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="54" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="64" y="60" width="9" height="22" fill="#0B7F94"></rect>
+          <rect x="74" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="84" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="94" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="104" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="114" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="124" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+          <rect x="134" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="144" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="154" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="164" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="174" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="184" y="60" width="9" height="22" fill="#0B7F94"></rect>
+          <rect x="194" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="204" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="214" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="224" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="234" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="244" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+          <rect x="254" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="264" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="274" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="284" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="294" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="304" y="60" width="9" height="22" fill="#0B7F94"></rect>
+          <rect x="314" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="324" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="334" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="344" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="354" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="364" y="60" width="9" height="22" fill="#0B7F94"></rect>
+          <rect x="374" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="384" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="394" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="404" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="414" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="424" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+          <rect x="434" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="444" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="454" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="464" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="474" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="484" y="60" width="9" height="22" fill="#0B7F94"></rect>
+          <rect x="494" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="504" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="514" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="524" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="534" y="60" width="9" height="22" fill="#0B7F94"></rect><rect x="544" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+          <rect x="554" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="564" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="574" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="584" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="594" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect><rect x="604" y="60" width="9" height="22" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        </g>
+        <text class="b3bM" x="14" y="98">second 1</text>
+        <text class="b3bM" x="613" y="98" text-anchor="end">second 60</text>
+        <text class="b3bQ" x="313" y="98" text-anchor="middle">frames/000001.jpg ... 000060.jpg</text>
+
+        <!-- arrows down to the four rule boxes -->
+        <line x1="112" y1="106" x2="112" y2="128" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b3bAr)"></line>
+        <line x1="313" y1="106" x2="313" y2="128" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b3bAr)"></line>
+        <line x1="514" y1="106" x2="514" y2="128" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b3bAr)"></line>
+
+        <rect x="14" y="134" width="196" height="76" rx="10" fill="#075E70"></rect>
+        <text class="b3bT" x="30" y="156">Booleans: share</text>
+        <text class="b3bW" x="30" y="174" style="fill:#fff">frames true / usable frames</text>
+        <text class="b3bW" x="30" y="190" style="fill:#fff">in hand, on camera,</text>
+        <text class="b3bW" x="30" y="204" style="fill:#fff">price on screen</text>
+
+        <rect x="215" y="134" width="196" height="76" rx="10" fill="#0B7F94"></rect>
+        <text class="b3bT" x="231" y="156">Ratios: mean</text>
+        <text class="b3bW" x="231" y="174">mean over usable frames</text>
+        <text class="b3bW" x="231" y="190">close_up_ratio</text>
+        <text class="b3bW" x="231" y="204">(box area / frame area)</text>
+
+        <rect x="416" y="134" width="196" height="76" rx="10" fill="#22C3DD"></rect>
+        <text class="b3bN" x="432" y="156">Events: count</text>
+        <text class="b3bB" x="432" y="174">boundaries in the minute</text>
+        <text class="b3bB" x="432" y="190">scene_cuts, from the</text>
+        <text class="b3bB" x="432" y="204">full-rate video (session 2)</text>
+
+        <rect x="14" y="222" width="598" height="40" rx="10" fill="#FFF0F4" stroke="#C8173F"></rect>
+        <text class="b3bR" x="30" y="240">Under 30 usable frames in the minute: the column is null, not zero.</text>
+        <text class="b3bB" x="30" y="255" style="fill:#4A0416">A zero would claim never in hand about a minute the detector barely saw.</text>
+
+        <!-- right: the zone sketch -->
+        <text class="b3bHd" x="640" y="70">The hand-near-product rule</text>
+        <rect x="640" y="80" width="226" height="176" rx="8" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b3bM" x="650" y="96">one frame</text>
+        <!-- product box from the open-vocab detector -->
+        <rect x="726" y="122" width="52" height="86" rx="4" fill="#fff" stroke="#0B7F94" stroke-width="2"></rect>
+        <text class="b3bQ" x="752" y="168" text-anchor="middle">serum</text>
+        <!-- zone polygon: box expanded by a margin -->
+        <polygon points="708,106 796,106 796,224 708,224" fill="none" stroke="#C8173F" stroke-width="1.5" stroke-dasharray="4 3"></polygon>
+        <text class="b3bR" x="800" y="112">zone</text>
+        <!-- hand landmark inside zone -->
+        <circle cx="716" cy="196" r="5" fill="#C8173F"></circle>
+        <text class="b3bB" x="650" y="200" style="fill:#4A0416">hand</text>
+        <text class="b3bB" x="650" y="214" style="fill:#4A0416">landmark</text>
+        <text class="b3bM" x="650" y="234">box + margin = PolygonZone</text>
+        <text class="b3bM" x="650" y="248">landmark inside = in hand</text>
+
+        <text class="b3bB" x="640" y="276">Same bottle across frames:</text>
+        <text class="b3bQ" x="640" y="292">trackers.ByteTrackTracker</text>
+        <text class="b3bB" x="640" y="308">sv.ByteTrack: gone since 0.31</text>
+
+        <!-- output row -->
+        <rect x="14" y="282" width="598" height="1" fill="#DCEBEF"></rect>
+        <text class="b3bHd" x="14" y="306">One row out</text>
+        <rect x="14" y="318" width="598" height="52" rx="10" fill="#075E70"></rect>
+        <text class="b3bT" x="30" y="340">stream_id, t</text>
+        <text class="b3bW" x="30" y="358" style="fill:#fff">in_hand · close_up · on_camera · cuts · price_overlay · usable_frames</text>
+        <text class="b3bW" x="596" y="340" text-anchor="end" style="fill:#fff">joins on nothing else</text>
+
+        <rect x="14" y="400" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b3bN" x="38" y="412">Keep usable_frames as a column. It is the denominator of every share, and the audit trail when a minute looks odd.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - sixty per-frame answers become one row, with the zone rule for "in hand" and the null rule for thin minutes.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The aggregation rules<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Booleans become shares.</strong> A detector says true or false per frame. Sixty of those in a minute are a proportion, and the proportion is what carries information: a minute where the product was in hand for 55 frames is different from one where it was for 12. Round it to 0 or 1 only when a downstream method needs a flag, and keep the share beside it.</li>
+          <li><strong>Ratios become means.</strong> Close-up ratio is already a number per frame; average it over the usable frames. A median is defensible too, but the mean is what the course table carries, so use the mean to reconcile.</li>
+          <li><strong>Events become counts.</strong> Scene cuts are boundaries; a minute has an integer number of them. Session 2 built this one.</li>
+          <li><strong>Thin minutes become null.</strong> If fewer than 30 of the minute's 60 frames were usable, whether because the detector crashed, the frames were black, or you sampled down for speed, write null. A share of 3 out of 4 frames is not a share, it is a coin flip with a decimal point. Session 5 skips nulls; it cannot skip a zero it does not know is fake.</li>
+        </ul>
+        <p>The course table stores <code>product_in_hand</code> and <code>price_overlay</code> as 0 or 1 per minute, which is the share rounded at one half. Your own pipeline should keep both: the share for modelling, the flag for reconciling against the table and for the cue rules in session 8.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Validating a detector without ground truth<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Nobody hands you labelled frames of your host. You make them, and it is cheaper than it sounds. Sample <strong>200 frames</strong> at random across streams, hosts and hours; sit with a coffee and mark each one by hand for each boolean column and a rough close-up bucket. Then run the detector on the same 200 and report <strong>precision and recall per column</strong>, not one accuracy number: a detector that never says "in hand" has 90 percent accuracy on a stream where the product is rarely held, and is useless.</p>
+        <p>Keep the 200 labels in the repository. They are the regression test for every future change of model, threshold or prompt, and they are the answer when someone asks how much to trust a column. A detector whose recall on price cards is low will understate the price-overlay effect, and knowing that before session 6 is worth more than a better model after it.</p>
+        <div class="callout tip">
+          <p><strong>Label the disagreements twice.</strong> Frames where two of you disagree on "in hand" are the frames the rule is unclear on, not the frames the detector is wrong on. Write the rule down (touching counts, hovering does not, the margin is one hand-width) and re-label. The detector's zone margin is that rule in pixels.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What the AI-host streams look like on camera<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two of the six Lumen Glow hosts are AI avatars, and the camera columns spot them before anyone reads the host name. Their scene cuts sit at <strong>1 to 3 per minute</strong> against <strong>2 to 7</strong> for the human hosts, because an avatar has no operator switching to the product camera. Their speech rate holds at a steady <strong>158 words a minute</strong> with almost no variance, where a human host's rate moves with the segment and collapses in dead air. The columns are honest about it: the avatars are consistent, and consistency is not what sells.</p>
+        <p>On TikTok Shop this is a compliance question before it is an analytics question. The Requirements for High-Quality Videos and LIVEs, effective 2026-09-17 in the US, say "Do not use non-real-time verbal interaction such as AI-generated voices, audio recordings, or radio" and "Do not use animated figures or content that covers more than 50% of the screen." A fully AI-voiced avatar host is not permitted on a promotional LIVE there; the AI streams in the data show what the trade would be on a platform that allows it. Leader session 4 covers the rule; tonight's <code>close_up_ratio</code> is, incidentally, the measurement of "more than 50% of the screen".</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What a cloud VLM labeller costs against a local detector<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>There is a fourth way to get columns from frames: send the video to a vision-language model and ask it. Gemini 3.8 Flash reads video at about <strong>100 tokens per second</strong> at low resolution and is priced at <strong>$0.75 per 1M input tokens</strong> under promotional pricing that runs through 2026-12-31, which works out to about <strong>$0.006 per minute of video</strong>. Session 4 uses it as a segment labeller, where a model that understands "she is now doing the price pitch" earns its keep.</p>
+        <p>For tonight's columns it is the wrong tool for three reasons. A VLM returns a sentence, not a box, so "in hand" becomes a judgement you cannot audit against a zone margin. Its answer per frame is not stable across runs, so the 200-frame validation drifts. And the price is per minute for as long as you keep running it, where a local Apache-2.0 landmarker costs the electricity. Use the VLM for what needs language, the detector for what needs geometry, and keep the receipts for both.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Five columns from frames</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">Twenty minutes, six steps, nothing AGPL. You run landmarkers and an open-vocabulary detector on the 1 fps frames from session 2, apply the zone rule, aggregate to the minute, and reconcile against the columns the course table already carries. On the course data the columns are precomputed, so the reconcile step passes on the first run; on your own recording the same code overwrites them with what your camera actually showed.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Install the permissive stack.</strong> Pin the versions; the trackers move between packages and the kwarg names change between releases, and a pin is the only thing that makes next month's run reproduce tonight's.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Versions read 2026-09-24</span>
+pip install "mediapipe==1.0.1" "supervision==0.30.5" "trackers==2.6.0" \
+            "transformers==5.17.0" "torch" "pillow" "pandas" "numpy"
+# Grounding DINO 1.0 weights: IDEA-Research/grounding-dino-tiny (Apache-2.0)
+# Florence-2 for OCR: microsoft/Florence-2-large (MIT), needs trust_remote_code=True
+# MediaPipe .task files: hand_landmarker.task, pose_landmarker.task from the MediaPipe model pages
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Landmarks on every frame.</strong> Both landmarkers in <code>VIDEO</code> running mode, fed the 1 fps frames in order with a timestamp in milliseconds, so the tracker inside each task can use the previous frame. Frame n is second n, so the timestamp is n times 1000.</p>
+        <div class="prompt-box good">
+          <span class="label">★ MediaPipe 1.0.1, hand and pose, VIDEO mode</span>
+import mediapipe as mp
+from mediapipe.tasks.python import vision
+from pathlib import Path
+import pandas as pd
+
+RM = vision.RunningMode.VIDEO
+hand_opts = vision.HandLandmarkerOptions(
+    base_options=mp.tasks.BaseOptions(model_asset_path="models/hand_landmarker.task"),
+    running_mode=RM, num_hands=2, min_hand_detection_confidence=0.5,
+    min_hand_presence_confidence=0.5, min_tracking_confidence=0.5)
+pose_opts = vision.PoseLandmarkerOptions(
+    base_options=mp.tasks.BaseOptions(model_asset_path="models/pose_landmarker.task"),
+    running_mode=RM, num_poses=1, output_segmentation_masks=False)
+
+rows = []
+frames = sorted(Path("frames").glob("*.jpg"))          # 000001.jpg is second 1
+with vision.HandLandmarker.create_from_options(hand_opts) as hands, \
+     vision.PoseLandmarker.create_from_options(pose_opts) as pose:
+    for f in frames:
+        n = int(f.stem)
+        img = mp.Image.create_from_file(str(f))
+        h = hands.detect_for_video(img, n * 1000)
+        p = pose.detect_for_video(img, n * 1000)
+        lm = p.pose_landmarks[0] if p.pose_landmarks else None
+        on_cam = lm is not None
+        # close-up: box of visible landmarks over the frame; no hips visible = shoulders-and-up shot
+        if on_cam:
+            vis = [q for q in lm if q.visibility &gt; 0.5]
+            xs, ys = [q.x for q in vis], [q.y for q in vis]
+            hips_visible = lm[23].visibility &gt; 0.5 or lm[24].visibility &gt; 0.5
+            box = (max(xs) - min(xs)) * (max(ys) - min(ys))      # normalised, so already / frame area
+            close = box if hips_visible else max(box, 0.5)       # shoulders-and-up is a close-up by construction
+        else:
+            close = None
+        hand_pts = [(q.x, q.y) for hl in h.hand_landmarks for q in hl]
+        rows.append({"sec": n, "host_on_camera": on_cam, "close_up_ratio": close, "hand_pts": hand_pts})
+fr = pd.DataFrame(rows)
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Find the serum by name.</strong> Grounding DINO 1.0 with the SKU as the prompt. The processor's post-processing takes <code>threshold</code> in transformers 5.17; the model card still says <code>box_threshold</code>, and passing that name errors. Take the highest-scoring box per frame; the host holds one bottle at a time.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Grounding DINO 1.0, one prompt, one box per frame</span>
+import torch
+from PIL import Image
+from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
+
+processor = AutoProcessor.from_pretrained("IDEA-Research/grounding-dino-tiny")
+model = AutoModelForZeroShotObjectDetection.from_pretrained("IDEA-Research/grounding-dino-tiny", device_map="auto")
+text_labels = [["serum bottle"]]                       # or the SKU name printed on the label
+
+boxes = {}
+for f in frames:
+    image = Image.open(f).convert("RGB")
+    inputs = processor(images=image, text=text_labels, return_tensors="pt").to(model.device)
+    with torch.no_grad():
+        outputs = model(**inputs)
+    res = processor.post_process_grounded_object_detection(
+        outputs, inputs.input_ids, threshold=0.4, text_threshold=0.3, target_sizes=[image.size[::-1]])[0]
+    if len(res["boxes"]):
+        i = int(res["scores"].argmax())
+        boxes[int(f.stem)] = (res["boxes"][i].tolist(), image.size)   # [x0,y0,x1,y1] in pixels, (W,H)
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>The hand-near-product rule as a zone.</strong> Expand the detected box by a margin and make it a <code>PolygonZone</code>. Turn each hand landmark into a tiny detection and ask the zone whether it is inside. Landmarks are normalised and the box is in pixels, so scale the landmarks up; assert the convention once.</p>
+        <div class="prompt-box good">
+          <span class="label">★ supervision 0.30.5 PolygonZone around the product box</span>
+import numpy as np
+import supervision as sv
+
+MARGIN = 0.15                                          # of box width; "one hand-width" in your labelling rule
+
+def in_hand(sec):
+    if sec not in boxes:
+        return False
+    (x0, y0, x1, y1), (W, H) = boxes[sec]
+    m = MARGIN * (x1 - x0)
+    zone = sv.PolygonZone(polygon=np.array([[x0-m, y0-m], [x1+m, y0-m], [x1+m, y1+m], [x0-m, y1+m]]).astype(int),
+                          triggering_anchors=(sv.Position.CENTER,))
+    pts = fr.loc[fr.sec == sec, "hand_pts"].iloc[0]
+    if not pts:
+        return False
+    assert all(0 &lt;= x &lt;= 1 and 0 &lt;= y &lt;= 1 for x, y in pts), "landmarks must be normalised"
+    xyxy = np.array([[x*W - 1, y*H - 1, x*W + 1, y*H + 1] for x, y in pts])   # 2 px squares at each landmark
+    return bool(zone.trigger(sv.Detections(xyxy=xyxy)).any())
+
+fr["product_in_hand"] = fr.sec.map(in_hand)
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Aggregate to the minute.</strong> Shares for booleans, mean for the ratio, count for cuts, and null where fewer than 30 frames were usable. Price overlay comes from Florence-2's <code>OCR_WITH_REGION</code> run the same way as step 3; the per-frame rule is "a currency symbol followed by digits appeared anywhere", and it is merged in here as a boolean column called <code>price_seen</code>.</p>
+        <div class="prompt-box good">
+          <span class="label">★ pandas: sixty answers to one row</span>
+import re
+fr["t"] = (fr.sec - 1) // 60 + 1                                  # minute 1 is seconds 1..60
+fr["usable"] = fr.host_on_camera.notna()                           # the detector ran and returned
+# price_seen: from Florence-2 OCR_WITH_REGION per frame, e.g. bool(re.search(r"[$£€]\s?\d", text))
+
+g = fr[fr.usable].groupby("t")
+minute = pd.DataFrame({
+    "usable_frames":  g.size(),
+    "product_in_hand_share": g.product_in_hand.mean(),
+    "host_on_camera": g.host_on_camera.mean(),
+    "close_up_ratio": g.close_up_ratio.mean(),
+    "price_overlay_share": g.price_seen.mean(),
+}).reindex(range(1, 121))
+minute.loc[minute.usable_frames.fillna(0) &lt; 30, minute.columns.drop("usable_frames")] = None
+minute["scene_cuts"] = scene_cuts                                   # session 2's per-minute count
+minute["product_in_hand"] = (minute.product_in_hand_share &gt;= 0.5).astype("Int64")
+minute["price_overlay"]   = (minute.price_overlay_share &gt;= 0.5).astype("Int64")
+minute.round(2).head()
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Reconcile against the course table, then overwrite with your own.</strong> The 7,200-row table already carries <code>product_in_hand</code>, <code>close_up_ratio</code>, <code>price_overlay</code> and <code>scene_cuts</code> for every row. On the course data your pipeline should reproduce them; on your own recording it replaces them, and <code>host_on_camera</code> joins the table as a new column either way.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Same key, same columns, your numbers</span>
+m = pd.read_csv("data/streams.csv")
+cols = ["product_in_hand", "close_up_ratio", "price_overlay", "scene_cuts"]
+assert m[cols].notna().all().all() and len(m) == 7200            # precomputed for the course data
+
+mine = minute.reset_index().rename(columns={"index": "t"}).assign(stream_id=STREAM_ID)
+m = m.merge(mine[["stream_id", "t", "host_on_camera", "usable_frames"] + cols],
+            on=["stream_id", "t"], how="left", suffixes=("", "_mine"))
+for c in cols:                                                    # your detector wins where it ran
+    m[c] = m[f"{c}_mine"].where(m[f"{c}_mine"].notna(), m[c])
+m = m.drop(columns=[f"{c}_mine" for c in cols])
+m.to_csv("data/derived/minute_with_vision.csv", index=False)
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <p><strong>Run the 200-frame check before you trust a single column.</strong> Precision and recall per column, on frames you labelled by hand, committed next to the code. When a share looks wrong in session 5, the first question will be whether the detector or the host did it, and the labels are the only way to answer.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 4</h2>
+      <span class="tag exercise">45 min</span>
+    </div>
+    <ol>
+      <li>Hand-label 200 random frames from your own recording for product in hand, host on camera and price on screen. Run tonight's pipeline on them and report precision and recall per column. Commit the labels.</li>
+      <li>Change the Grounding DINO prompt from "serum bottle" to the exact SKU name on the label, then to "bottle". Rerun on the 200 frames and write down what each change does to precision and to recall. One of them will find the water bottle.</li>
+      <li>Write a one-paragraph licence memo for your own organisation: which of the four routes it can run in an internal dashboard without buying anything, quoting the Ultralytics licence page's wording on closed-source internal tools.</li>
+      <li>From the course table, compute the mean <code>close_up_ratio</code> and mean <code>scene_cuts</code> for human hosts and AI hosts separately. Then look up which host type sells better per thousand views in session 1's funnel table, and notice that the more consistent camera is the one that sells less.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">An MCN wants to ship a stream-quality dashboard for its own coaches. It runs on the MCN's servers and the code is not published. Which detector stack can it ship without buying a licence?</p>
+      <button class="qopt" type="button">A · YOLO26 via ultralytics, because AGPL only bites when you sell the software</button>
+      <button class="qopt" type="button">B · YOLOE, because open-vocabulary models are exempt from the package licence</button>
+      <button class="qopt" type="button">C · MediaPipe, Grounding DINO or OWLv2, Florence-2 and supervision: all Apache-2.0 or MIT</button>
+      <p class="qwhy">The Ultralytics licence page names closed-source internal tools as a case that requires the Enterprise licence, and YOLOE ships inside the same package. The permissive stack can run closed, on a server, without a cheque; the price is a little accuracy and a little more glue code.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">The detector says true or false per frame. Why does the minute table carry product_in_hand as a share of frames rather than a single true or false?</p>
+      <button class="qopt" type="button">A · Sixty answers carry more information than one: 55 of 60 frames in hand is a different minute from 12 of 60, and the share keeps that; a flag can be derived from it later, not the other way round</button>
+      <button class="qopt" type="button">B · Because the detector is unreliable and the share averages out its errors</button>
+      <button class="qopt" type="button">C · Because pandas cannot aggregate booleans without converting them</button>
+      <p class="qwhy">Aggregation should lose as little as possible. The share is the natural statistic of sixty booleans; the course table's 0/1 flag is the share rounded at one half, and your own pipeline should keep both, along with usable_frames as the denominator.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">Within a stream, what do the camera columns move, and what do they leave alone?</p>
+      <button class="qopt" type="button">A · They move the click-to-order rate; the camera is what convinces a viewer to buy</button>
+      <button class="qopt" type="button">B · They move the click-through rate on the pinned card (product in hand +1.38 points, close-up +1.01, price overlay +0.97) and do not measurably move CTOR; the camera earns the click, the words earn the order</button>
+      <button class="qopt" type="button">C · They move neither; the visual columns only matter for the AI-host comparison</button>
+      <p class="qwhy">The within-stream CTOR effects for the same three columns are +0.04, +0.46 and -0.13 points, none distinguishable from zero. Session 4's speech columns are where CTOR moves. That split is why session 8's cue "product in hand on every CTA" works: it pairs the camera's click with the words' order.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Four detector routes with versions and licences: ultralytics 8.4.161 YOLO26 and YOLOE, MediaPipe 1.0.1, Grounding DINO 1.0, OWLv2, Florence-2, supervision 0.30.5, trackers 2.6.0</span>
+        <span class="note">Read by licence first. The build-along uses the Apache-2.0 and MIT routes end to end.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Five minute columns and their aggregation: product_in_hand, close_up_ratio, host_on_camera, scene_cuts, price_overlay</span>
+        <span class="note">Share for booleans, mean for ratios, count for cuts, null under 30 usable frames, usable_frames kept as the denominator.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">The AGPL decision for a closed-source internal tool</span>
+        <span class="note">Ultralytics' own wording on which uses require Enterprise; the three ways out; the one taken tonight.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">OCR and price cards</span>
+        <span class="note">Florence-2 OCR_WITH_REGION named and the per-frame rule stated; the full prompt loop is left to the reader, it mirrors step 3.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">VLM labelling and its cost</span>
+        <span class="note">Gemini 3.8 Flash priced tonight at about $0.006 per minute of video; session 4 uses it as a segment labeller where a sentence is the right output.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Training a custom detector</span>
+        <span class="note">Not covered by design. An open-vocabulary prompt with the SKU name reaches the accuracy the columns need without a training set, and keeps the licence question simple.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 3 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Licence first</b><span>Ultralytics: AGPL-3.0 or Enterprise. Closed-source internal tools need Enterprise. YOLOE is in the same package.</span></div>
+      <div class="cheat-item"><b>The permissive stack</b><span>MediaPipe 1.0.1 (Apache), Grounding DINO 1.0 / OWLv2 (Apache), Florence-2 (MIT), supervision 0.30.5 (MIT), trackers 2.6.0 (Apache).</span></div>
+      <div class="cheat-item"><b>Landmarks</b><span>HandLandmarker 21 points, PoseLandmarker 33. VIDEO mode, detect_for_video(img, timestamp_ms), frame n at n x 1000.</span></div>
+      <div class="cheat-item"><b>Name the SKU</b><span>text_labels [["serum bottle"]], threshold=0.4, text_threshold=0.3. The kwarg is threshold in v5.17, not box_threshold.</span></div>
+      <div class="cheat-item"><b>In hand</b><span>Detector box + margin = PolygonZone; any hand landmark inside triggers it. Landmarks normalised, boxes in pixels: scale once, assert once.</span></div>
+      <div class="cheat-item"><b>Aggregate</b><span>Booleans to shares, ratios to means, cuts to counts. Under 30 usable frames: null, not zero. Keep usable_frames.</span></div>
+      <div class="cheat-item"><b>Validate</b><span>200 hand-labelled frames, precision and recall per column, labels committed. Re-run on every model or prompt change.</span></div>
+      <div class="cheat-item"><b>What it is worth</b><span>Within a stream: CTR +1.38 in hand, +1.01 close-up, +0.97 price on screen. CTOR unmoved. Camera earns the click.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Builder session 3 of 8 · learn-live-commerce-analytics-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="b2-ingest-and-align.html">← Builder session 2 · Ingest and align</a>
+      <a href="b4-hear-it.html">Builder session 4 · Hear it →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

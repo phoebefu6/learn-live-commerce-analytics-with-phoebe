@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Builder session 2 of 8. Three FFmpeg commands turn a two-hour MP4 into minute chunks, 1 fps frames and 16 kHz audio; PySceneDetect adds a cut list; then the clock problem - the stream reaches viewers seconds late, so the sale lands in the wrong minute unless you measure the delay and shift it.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Ingest and align - learn live commerce analytics with phoebe">
+<meta property="og:description" content="Builder session 2 of 8. FFmpeg segments, frames at 1 fps, 16 kHz audio, and one measured shift that puts the host's words and the ledger's orders on the same clock.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/courses/b2-ingest-and-align.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ingest and align - learn live commerce analytics with phoebe">
+<meta name="twitter:description" content="A purchase logged at 20:43:07 answers words spoken earlier. Measure the delay from the data itself, apply it as one shift, and every later effect stops leaking into the next minute.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Builder session 2 · Ingest and align - learn live commerce analytics with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-live-commerce-analytics-with-phoebe</a> / Builder session 2 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LIVE Commerce Analytics with Phoebe · Builder session 2 of 8</div>
+    <h1>Ingest <span class="accent">and align</span></h1>
+    <p class="sub">Session 1 decided the grain. Tonight the recording actually gets there. Three FFmpeg commands cut a two-hour MP4 into minute chunks, pull one frame a second for the detectors, and strip the audio to the 16 kHz mono WAV the transcribers want; PySceneDetect adds a list of camera cuts. Then the part nobody budgets for: the stream reached its viewers seconds after the host spoke, so the seller's ledger runs on a later clock than the video. You measure that delay from the data itself and apply it as one shift, because every content-to-sales number in the rest of the track is wrong by exactly that much if you do not.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Core</span>
+      <span class="chip audience">Data scientists and analytics engineers</span>
+      <span class="chip audience">Anyone who has joined two timestamps and regretted it</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · Segments, frames, audio, one clock</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: align a recording</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where we are in the builder track</h2>
+    </div>
+    <p class="lede">Session 1 built the 7,200-row minute table and reconciled its funnel to the cent. Tonight is the ingest layer under it: how a real recording becomes the frames session 3 reads and the audio session 4 transcribes, and how the ledger's clock is brought into line with the recording's clock before any of those columns are joined. It is the least glamorous session in the track and the one whose mistakes are hardest to see later, because a misaligned ledger does not throw an error. It just makes the wrong minute look good.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> A repeatable ingest script that turns a 2-hour MP4 into 120 minute chunks, 7,200 frames at 1 fps and one 16 kHz mono WAV, with a scene-cut count per minute as the first content column. And a measured stream delay, found by scanning lags between what the host said and what the ledger recorded, applied as one shift so that "minute 43" means the same thing in every column of the table.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why the recording and the ledger disagree by seconds<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A LIVE is not live. The host speaks, the phone encodes, the platform ingests, transcodes and distributes, and the viewer's player buffers. The words reach the room some seconds after they left the host's mouth. The viewer then taps the card and buys, and the platform logs the purchase on its own clock: the time it received the order.</p>
+        <p>So a purchase logged at 20:43:07 is an answer to words spoken earlier, and the seller's per-minute ledger is a record of what the room did, shifted late by the delivery delay. Your recording of the host is on the earlier clock. Join the two raw and you are pairing what the host said at minute 43 with what viewers did about minute 42. If the delay straddles a minute boundary, and with a delay of several seconds it often does, a chunk of every minute's sales is credited to the following minute.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lumen Glow's first join found that filler minutes converted best. The pattern was real in the table and false in the room: a CTA at the end of minute 43 produced orders that the ledger logged in minute 44, and minute 44 was the host catching her breath. Once the delay was measured and the ledger shifted, the CTA minutes took the credit back.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary tonight uses<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Keyframe</strong> - a frame the codec stored whole, not as a difference from its neighbours. A stream-copied file can only be cut cleanly at one.</li>
+          <li><strong>Segment</strong> - one output chunk of the recording, here one minute of video, so that every downstream job has a natural unit of work that matches the table's grain.</li>
+          <li><strong>fps sampling</strong> - keeping one frame per chosen interval. 1 fps gives 60 frames a minute, enough for a share-of-frames column and cheap enough to run a detector on.</li>
+          <li><strong>PCM 16 kHz mono</strong> - uncompressed audio, 16,000 samples a second, one channel. The input format Whisper-family transcribers were trained on.</li>
+          <li><strong>Offset</strong> - seconds from the start of the recording, the recording's own clock. Every source is converted to it.</li>
+          <li><strong>Lag</strong> - a shift of one series against another by a number of steps. Scanning lags is how the delay is found.</li>
+          <li><strong>Event time vs recording time</strong> - when something happened for the viewer versus when the recording says it happened. The ledger is on event time; the video is on recording time; the delay d is the gap.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the FFmpeg segment muxer, the fps filter, the audio strip and PySceneDetect</span>
+      <h2>Three FFmpeg commands and one detector</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">The whole ingest layer is three FFmpeg invocations and one Python call, and each one produces output at a different grain. Knowing the grain of each output is what lets you aggregate it to the minute later without a second thought.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 312" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ingest pipeline strip: a two-hour MP4 feeds four jobs - the FFmpeg segment muxer producing 60 second chunks, the fps filter producing one JPEG frame per second, the audio strip producing 16 kilohertz mono PCM, and PySceneDetect's AdaptiveDetector producing a cut list. Each output has its own grain - minute, second, sample, cut - and each lands in the minute table as a unit of work or a column.">
+        <style>
+          .b2aHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b2aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b2aB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b2aM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b2aQ { font: 600 11px "SFMono-Regular", Menlo, monospace; fill: #062B33; }
+          .b2aG { font: 700 11px Inter, sans-serif; fill: #0B7F94; }
+          .b2aN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+        </style>
+        <defs>
+          <marker id="b2aAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#BFD8DE"></path>
+          </marker>
+        </defs>
+
+        <text class="b2aHd" x="14" y="24">One recording, four outputs, four grains</text>
+
+        <rect x="14" y="52" width="100" height="100" rx="10" fill="#075E70"></rect>
+        <text class="b2aT" x="30" y="78">stream.mp4</text>
+        <text class="b2aB" x="30" y="98" style="fill:#fff">2 hours</text>
+        <text class="b2aB" x="30" y="114" style="fill:#fff">30 fps video</text>
+        <text class="b2aB" x="30" y="130" style="fill:#fff">stereo audio</text>
+
+        <rect x="130" y="52" width="170" height="100" rx="10" fill="#0B7F94"></rect>
+        <text class="b2aT" x="144" y="74">Segment muxer</text>
+        <text class="b2aB" x="144" y="94" style="fill:#fff">-f segment</text>
+        <text class="b2aB" x="144" y="110" style="fill:#fff">-segment_time 60</text>
+        <text class="b2aB" x="144" y="126" style="fill:#fff">-reset_timestamps 1</text>
+        <text class="b2aB" x="144" y="142" style="fill:#fff">cuts only at keyframes</text>
+
+        <rect x="316" y="52" width="170" height="100" rx="10" fill="#0B7F94"></rect>
+        <text class="b2aT" x="330" y="74">Frames at 1 fps</text>
+        <text class="b2aB" x="330" y="94" style="fill:#fff">-vf fps=1</text>
+        <text class="b2aB" x="330" y="110" style="fill:#fff">frames/%06d.jpg</text>
+        <text class="b2aB" x="330" y="126" style="fill:#fff">7,200 JPEGs for 2 h</text>
+        <text class="b2aB" x="330" y="142" style="fill:#fff">what the detectors read</text>
+
+        <rect x="502" y="52" width="170" height="100" rx="10" fill="#0B7F94"></rect>
+        <text class="b2aT" x="516" y="74">Audio to WAV</text>
+        <text class="b2aB" x="516" y="94" style="fill:#fff">-vn -ac 1 -ar 16000</text>
+        <text class="b2aB" x="516" y="110" style="fill:#fff">-c:a pcm_s16le</text>
+        <text class="b2aB" x="516" y="126" style="fill:#fff">16 kHz mono PCM</text>
+        <text class="b2aB" x="516" y="142" style="fill:#fff">what Whisper expects</text>
+
+        <rect x="688" y="52" width="178" height="100" rx="10" fill="#22C3DD"></rect>
+        <text class="b2aHd" x="702" y="74" style="font-size:12px">PySceneDetect 0.7.1</text>
+        <text class="b2aB" x="702" y="94">AdaptiveDetector()</text>
+        <text class="b2aB" x="702" y="110">rolling average over</text>
+        <text class="b2aB" x="702" y="126">content scores: fewer</text>
+        <text class="b2aB" x="702" y="142">false cuts under motion</text>
+
+        <text class="b2aG" x="144" y="174">grain: minute</text>
+        <text class="b2aG" x="330" y="174">grain: second</text>
+        <text class="b2aG" x="516" y="174">grain: sample, 16,000/s</text>
+        <text class="b2aG" x="702" y="174">grain: cut</text>
+
+        <line x1="215" y1="180" x2="215" y2="200" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b2aAr)"></line>
+        <line x1="401" y1="180" x2="401" y2="200" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b2aAr)"></line>
+        <line x1="587" y1="180" x2="587" y2="200" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b2aAr)"></line>
+        <line x1="777" y1="180" x2="777" y2="200" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b2aAr)"></line>
+
+        <rect x="130" y="206" width="170" height="52" rx="8" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b2aQ" x="142" y="226">chunks/min-043.mp4</text>
+        <text class="b2aM" x="142" y="244">unit of work = row t</text>
+        <rect x="316" y="206" width="170" height="52" rx="8" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b2aQ" x="328" y="226">60 frames per minute</text>
+        <text class="b2aM" x="328" y="244">share-of-frames columns, b3</text>
+        <rect x="502" y="206" width="170" height="52" rx="8" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b2aQ" x="514" y="226">words with start, end</text>
+        <text class="b2aM" x="514" y="244">segment and wpm columns, b4</text>
+        <rect x="688" y="206" width="178" height="52" rx="8" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b2aQ" x="700" y="226">count(cuts) per minute</text>
+        <text class="b2aM" x="700" y="244">scene_cuts column, tonight</text>
+
+        <rect x="14" y="280" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b2aN" x="38" y="292">Stream copy cuts at keyframes only. Without forced keyframes the "60 s" chunks drift and chunk 43 is not minute 43.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - three FFmpeg outputs and one detector output, each with its grain and where it lands in the minute table.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Minute chunks with the segment muxer, and the keyframe catch<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>FFmpeg 9.0.2 ships a segment muxer that splits one input into many output files. The documented example is a ten-second split with a list file:</p>
+        <div class="prompt-box good">
+          <span class="label">★ The doc example, verbatim (ffmpeg-formats, segment muxer)</span>
+ffmpeg -i in.mkv -c copy -map 0 -f segment -segment_list out.list -segment_time 10 'out-%03d.mkv'
+        </div>
+        <p>Change <code>-segment_time 10</code> to <code>60</code> and the file pattern to <code>chunks/min-%03d.mp4</code> and you have minute chunks. Add <code>-reset_timestamps 1</code> so every chunk starts at zero, which is what you want when a per-chunk job reports "second 17" and means second 17 of that minute.</p>
+        <p>The catch is <code>-c copy</code>. Stream copy does not decode the video, so it can only split where the encoder left a keyframe, and a live-stream recording has keyframes wherever the encoder decided, typically every few seconds and not on the minute. The muxer waits for the next keyframe after the 60 second mark, so each chunk runs a little long and the drift accumulates: chunk 43 no longer starts at minute 43. Two documented fixes. Re-encode once with <code>-force_key_frames "expr:gte(t,n_forced*60)"</code>, which places a keyframe on every minute boundary, then stream-copy the segments from that file. Or accept <code>-break_non_keyframes 1</code>, which cuts exactly on time and leaves the first frames of each chunk undecodable until the next keyframe. For analysis frames the first is the one to use, because the detectors in session 3 need every frame of the minute.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Frames at 1 fps and audio at 16 kHz mono<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two more commands, both one line. The fps filter resamples the frame rate, and pointed at an image-sequence output it writes one JPEG per second: <code>ffmpeg -i stream.mp4 -vf fps=1 frames/%06d.jpg</code>. Frame number n is second n of the recording, which makes the frame-to-minute mapping a floor division and nothing more.</p>
+        <p>The audio strip drops the video, downmixes to one channel, resamples to 16,000 Hz and writes 16-bit PCM: <code>ffmpeg -i stream.mp4 -vn -ac 1 -ar 16000 -c:a pcm_s16le audio.wav</code>. Why exactly that: the Whisper-family models session 4 uses were trained on 16 kHz mono and resample anything else to it internally, so handing them that format skips a conversion, removes a source of tiny timestamp drift, and makes the file a fifth of the size of the stereo 48 kHz original. It is also what the hosted transcription APIs bill on, so the smaller file is the cheaper call.</p>
+        <div class="callout tip">
+          <p><strong>Seek before you read.</strong> Put <code>-ss</code> before <code>-i</code> to jump to an offset with a fast input seek, and <code>-t</code> to limit duration. Testing the pipeline on minutes 40 to 45 of a recording takes seconds instead of the twenty minutes a full pass takes.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>PySceneDetect and the first content column<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Scene cuts are the cheapest thing a camera tells you. A cut is a hard change between one frame and the next: the host switched from the front camera to the product camera, the operator cut to the price card, the phone was picked up. PySceneDetect 0.7.1, BSD-3 licensed, finds them in one call:</p>
+        <div class="prompt-box good">
+          <span class="label">★ The PyPI quick start</span>
+from scenedetect import detect, AdaptiveDetector
+scene_list = detect('stream.mp4', AdaptiveDetector())
+        </div>
+        <p>Why AdaptiveDetector and not the plain ContentDetector: ContentDetector compares each frame with the last in HSV space and calls a cut whenever the difference crosses a fixed threshold. A handheld live-commerce camera crosses that threshold constantly, every time the host waves the serum or the phone tilts. AdaptiveDetector runs the same scores and then compares each one with a rolling average of its neighbours, so a sustained wobble is not a cut and a real switch is. Fewer false cuts under camera motion is exactly the property this footage needs.</p>
+        <p>The output is a list of scenes with start and end timecodes. A cut is where one scene ends; floor its seconds by 60 and count per minute, and <code>scene_cuts</code> becomes a column. In the Lumen Glow table it already is one, and the AI-avatar streams sit at 1 to 3 cuts a minute against 2 to 7 for the human hosts, which session 3 comes back to.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Cost: what 1 fps buys and what it costs<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A two-hour stream is 7,200 frames at 1 fps, and the whole 60-stream corpus is 432,000. Every detector in session 3 runs once per frame, so this number is the multiplier on every per-frame cost you take on later. Some rules of thumb for the sampling budget:</p>
+        <ul>
+          <li><strong>1 fps is enough for share-of-frames columns.</strong> Product in hand, host on camera and price on screen change on a scale of seconds, not frames. Sixty samples a minute give a share with a resolution of about 1.7 points, well below anything the analysis in session 6 can distinguish.</li>
+          <li><strong>Scene cuts need more.</strong> A cut is a single frame-to-frame event, so PySceneDetect reads the full-rate video, not the 1 fps sample. Run it on the MP4, not on the JPEGs.</li>
+          <li><strong>Sample down, never up.</strong> If a detector is slow, run it on every other frame and mark the minute's usable-frame count. Session 3 nulls any minute with fewer than 30 usable frames rather than reporting a share built on a handful.</li>
+          <li><strong>Keep the chunks.</strong> When a detector improves, you re-run on the minute chunks that changed, not on the two-hour file. That is what the segment muxer bought you.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the stream delay, how to measure it from the data, and what skipping it does</span>
+      <h2>One clock</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">Two of your sources are on the recording's clock: the frames and the words, because they were cut from the same file. The comment feed and the seller ledger are on the platform's clock, and the platform saw everything a delay d later than the host did. The fix is one shift by d. The work is finding d.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 396" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two timelines. The top one is the host's words on the recording clock with a CTA spoken across the end of minute 43. The bottom one is the ledger's orders on the platform clock, shifted right by the delay d, so the order spike that answers the CTA is logged in minute 44 - marked as the sale landing in the wrong minute. A shift arrow moves the ledger back by d. Below, the estimation method: correlate per-minute CTA count with per-minute orders at lags 0 to 4 and take the peak.">
+        <style>
+          .b2bHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b2bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b2bB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b2bM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b2bR { font: 700 11px Inter, sans-serif; fill: #C8173F; }
+          .b2bN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+          .b2bK { font: 600 11px "SFMono-Regular", Menlo, monospace; fill: #062B33; }
+        </style>
+        <defs>
+          <marker id="b2bAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#BFD8DE"></path>
+          </marker>
+          <marker id="b2bArR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#C8173F"></path>
+          </marker>
+        </defs>
+
+        <text class="b2bHd" x="14" y="24">Two clocks, one delay, one shift</text>
+
+        <text class="b2bN" x="14" y="58">Host's words</text>
+        <text class="b2bM" x="14" y="72">recording clock</text>
+        <line x1="150" y1="70" x2="866" y2="70" stroke="#DCEBEF" stroke-width="2"></line>
+        <line x1="150" y1="62" x2="150" y2="78" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <line x1="330" y1="62" x2="330" y2="78" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <line x1="510" y1="62" x2="510" y2="78" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <line x1="690" y1="62" x2="690" y2="78" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <text class="b2bM" x="236" y="94" text-anchor="middle">minute 42</text>
+        <text class="b2bM" x="420" y="94" text-anchor="middle">minute 43</text>
+        <text class="b2bM" x="600" y="94" text-anchor="middle">minute 44</text>
+        <rect x="150" y="46" width="180" height="16" rx="4" fill="#A5EAF4"></rect>
+        <text class="b2bB" x="240" y="58" text-anchor="middle">demo</text>
+        <rect x="330" y="46" width="120" height="16" rx="4" fill="#A5EAF4"></rect>
+        <text class="b2bB" x="390" y="58" text-anchor="middle">price</text>
+        <rect x="450" y="46" width="60" height="16" rx="4" fill="#0B7F94"></rect>
+        <text class="b2bT" x="480" y="58" text-anchor="middle" style="font-size:11px">CTA</text>
+        <rect x="510" y="46" width="180" height="16" rx="4" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b2bM" x="600" y="58" text-anchor="middle">filler</text>
+
+        <text class="b2bN" x="14" y="134">Ledger orders</text>
+        <text class="b2bM" x="14" y="148">platform clock</text>
+        <line x1="150" y1="146" x2="866" y2="146" stroke="#DCEBEF" stroke-width="2"></line>
+        <line x1="150" y1="138" x2="150" y2="154" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <line x1="330" y1="138" x2="330" y2="154" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <line x1="510" y1="138" x2="510" y2="154" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <line x1="690" y1="138" x2="690" y2="154" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <text class="b2bM" x="236" y="170" text-anchor="middle">minute 42</text>
+        <text class="b2bM" x="420" y="170" text-anchor="middle">minute 43</text>
+        <text class="b2bM" x="600" y="170" text-anchor="middle">minute 44</text>
+        <rect x="180" y="128" width="12" height="16" fill="#22C3DD"></rect>
+        <rect x="260" y="124" width="12" height="20" fill="#22C3DD"></rect>
+        <rect x="380" y="126" width="12" height="18" fill="#22C3DD"></rect>
+        <rect x="440" y="130" width="12" height="14" fill="#22C3DD"></rect>
+        <rect x="514" y="108" width="12" height="36" fill="#C8173F"></rect>
+        <rect x="534" y="104" width="12" height="40" fill="#C8173F"></rect>
+        <rect x="554" y="116" width="12" height="28" fill="#C8173F"></rect>
+        <rect x="620" y="132" width="12" height="12" fill="#22C3DD"></rect>
+        <text class="b2bR" x="580" y="114">sale lands in the wrong minute</text>
+
+        <line x1="540" y1="86" x2="540" y2="100" stroke="#C8173F" stroke-width="1.5" stroke-dasharray="3 3"></line>
+        <line x1="480" y1="86" x2="480" y2="100" stroke="#0B7F94" stroke-width="1.5" stroke-dasharray="3 3"></line>
+        <line x1="540" y1="93" x2="486" y2="93" stroke="#C8173F" stroke-width="1.5" marker-end="url(#b2bArR)"></line>
+        <text class="b2bR" x="530" y="106" text-anchor="end" style="font-size:10px">shift back by d</text>
+
+        <rect x="14" y="196" width="852" height="1" fill="#DCEBEF"></rect>
+
+        <text class="b2bHd" x="14" y="222">Finding d from the data: scan the lags, take the peak</text>
+        <text class="b2bM" x="14" y="238">corr(cta_minutes.shift(lag), orders) for lag in 0..4; the lag with the highest correlation is the delay in minutes</text>
+
+        <rect x="60" y="300" width="60" height="30" fill="#A5EAF4"></rect>
+        <rect x="140" y="262" width="60" height="68" fill="#0B7F94"></rect>
+        <rect x="220" y="306" width="60" height="24" fill="#A5EAF4"></rect>
+        <rect x="300" y="316" width="60" height="14" fill="#A5EAF4"></rect>
+        <rect x="380" y="320" width="60" height="10" fill="#A5EAF4"></rect>
+        <line x1="50" y1="330" x2="450" y2="330" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <text class="b2bM" x="90" y="346" text-anchor="middle">lag 0</text>
+        <text class="b2bN" x="170" y="346" text-anchor="middle">lag 1</text>
+        <text class="b2bM" x="250" y="346" text-anchor="middle">lag 2</text>
+        <text class="b2bM" x="330" y="346" text-anchor="middle">lag 3</text>
+        <text class="b2bM" x="410" y="346" text-anchor="middle">lag 4</text>
+        <text class="b2bN" x="170" y="254" text-anchor="middle">peak = d</text>
+        <text class="b2bM" x="14" y="290" style="font-size:10px">corr</text>
+
+        <rect x="500" y="256" width="366" height="90" rx="10" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b2bN" x="516" y="278">Then verify against one known event</text>
+        <text class="b2bB" x="516" y="298">A flash-sale start has a timestamp in LIVE Manager and a</text>
+        <text class="b2bB" x="516" y="314">moment in the recording when the host announces it. Their</text>
+        <text class="b2bB" x="516" y="330">gap should be d. If it is not, the scan found a coincidence.</text>
+
+        <rect x="14" y="368" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b2bN" x="38" y="380">On tonight's course data the scan returns lag 0: the table is already aligned. Run it on your own recording to find yours.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the ledger runs d seconds behind the host; the lag scan finds d, one shift removes it.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Measuring d from the data itself<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>You rarely get told the delay. The platform does not publish it, it varies by region and by the viewer's connection, and nobody on the production side is measuring it. But it is sitting in your data, because the host's words cause the room's actions and causes precede effects. Whatever the host does that reliably produces a response (a call to action is the strongest one in this data, at +6.50 points of CTOR within a stream) will produce that response in the ledger after the delay, not before.</p>
+        <p>So build two per-minute series on the recording clock: a count of CTA minutes from the transcript, and the ledger's orders. Shift the CTA series forward by 0, 1, 2, 3 and 4 minutes and correlate each with orders. The lag with the highest correlation is the delay, rounded to the grain. Most stream delays are a handful of seconds, so the answer is usually 0 or 1, and the value of the scan is not the number but the certainty: you know which one, and you can show your working.</p>
+        <p>Then verify against one event you know the time of on both clocks. A LIVE Flash Sale has a start timestamp in LIVE Manager and a moment in the recording when the host says "the flash sale is live". The gap between them is the delay in seconds, independently of the correlation scan. If the two methods agree, apply the shift. If they do not, the scan found a coincidence and the known event wins.</p>
+        <div class="callout tip">
+          <p><strong>The delay is stable within a stream and not across them.</strong> Encoders, regions and platform load change between nights. Measure d per stream, store it in the streams table next to the start time, and never assume last week's value.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What happens if you skip it<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Nothing errors. The join succeeds, the row counts match, the totals reconcile to the cent because a shift moves values between minutes without changing their sum. And every content-to-sales number in sessions 5 and 6 is wrong in the same direction.</p>
+        <ul>
+          <li><strong>Effects attenuate toward zero.</strong> If part of each CTA minute's orders is credited to the following minute, the CTA minute looks weaker than it was and the estimate of its effect shrinks. The within-stream +6.50 points of CTOR for a CTA is what you see when the clocks agree. Misalign them and it comes out smaller, and the confidence interval widens because the signal is smeared over two minutes.</li>
+          <li><strong>Credit moves to the following segment.</strong> The minute after a CTA is often filler or a breath, and it now carries the CTA's orders. So a CTA looks worthless and the filler after it looks golden. In the aligned Lumen Glow data filler runs at 1.39 orders per thousand viewer-minutes against 11.47 for CTA; an unshifted join flattens that gap and can invert it for short CTAs.</li>
+          <li><strong>Short things suffer most.</strong> A twenty-minute demo loses a few seconds off its end and nobody notices. A forty-second call to action can lose most of its orders to the next row. The segments the leader track cares about most are precisely the short, sharp ones.</li>
+          <li><strong>The forecast learns the wrong lead.</strong> Session 7's nowcast reads the last few minutes of content to predict the next five of orders. Trained on a misaligned table it learns that filler predicts orders, and cues the host accordingly.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lumen Glow's first content-to-sales join reported "filler minutes convert best" and a coaching deck was drafted around letting the room breathe. One analyst asked why a CTA would sell worse than silence, scanned the lags, found a one-minute shift, and the deck was rewritten before it reached the hosts. The table had reconciled perfectly the whole time.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Event time, recording time, and the general version of this problem<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>What you did tonight is a special case of something every streaming system has to handle: the time an event happened and the time it was observed are different, and the difference is not constant across sources. Stream processors solve it with event-time windows and watermarks, a running estimate of how late an event can still arrive before the window closes. The <a href="https://phoebefu6.github.io/learn-streaming-data-with-phoebe/">streaming data course</a> builds that machinery properly, with late arrivals, out-of-order events and the accuracy-versus-latency trade the watermark encodes.</p>
+        <p>Here the problem is simpler for one reason: the delay is stable within a stream. Every ledger row in a two-hour recording is late by roughly the same d, so one measured shift solves what a watermark would otherwise track continuously. The moment that stops being true, for instance if you ingest a running stream in session 7 where the delay can drift as the room grows, you are back in the general case and the watermark is the right tool. Knowing which case you are in is most of the skill.</p>
+        <p>One more thing to write down: <strong>which clock each column is on, in the table's documentation</strong>. Frames and words are on the recording clock by construction. The ledger and the comment feed are on the platform clock and were shifted by d. A column added later by someone who did not attend tonight will be on whatever clock its source used, and the note is what stops it being joined raw.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Align a recording</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">Five steps. The first two run on a real recording if you brought one from the homework, and on any two-hour MP4 if you did not. The last three run on the Lumen Glow minute table, where the lag scan returns 0 because the table is already aligned; that is the point, you see the method give the right answer on a known case before you trust it on your own recording.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Three FFmpeg commands.</strong> Force keyframes on the minute once, then segment by stream copy, pull 1 fps frames, and strip the audio. The whole ingest is this block; put it in a script and version it.</p>
+        <div class="prompt-box good">
+          <span class="label">★ ingest.sh - the whole ingest layer</span>
+# 1. keyframes on every minute boundary, so stream-copy segments cut exactly on time
+ffmpeg -i stream.mp4 -force_key_frames "expr:gte(t,n_forced*60)" -c:a copy stream_kf.mp4
+
+# 2. minute chunks, each starting at t=0, with a csv list of what went where
+ffmpeg -i stream_kf.mp4 -c copy -map 0 -f segment -segment_time 60 -reset_timestamps 1 \
+       -segment_list chunks.csv -segment_list_type csv 'chunks/min-%03d.mp4'
+
+# 3. one frame a second for the detectors; frame n is second n
+ffmpeg -i stream.mp4 -vf fps=1 frames/%06d.jpg
+
+# 4. 16 kHz mono 16-bit PCM for the transcriber
+ffmpeg -i stream.mp4 -vn -ac 1 -ar 16000 -c:a pcm_s16le audio.wav
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Scene cuts per minute.</strong> PySceneDetect on the full-rate MP4, not the 1 fps frames. A cut is where a scene ends; floor by 60 and count.</p>
+        <div class="prompt-box good">
+          <span class="label">★ The first content column</span>
+import pandas as pd
+from scenedetect import detect, AdaptiveDetector
+
+scenes = detect("stream.mp4", AdaptiveDetector())              # list of (start, end) timecodes
+cut_s = [end.get_seconds() for _, end in scenes[:-1]]          # a cut is where one scene ends
+cuts = pd.Series([int(s // 60) + 1 for s in cut_s], name="t") # minute t is [t-1, t), from 1
+scene_cuts = (cuts.value_counts().reindex(range(1, 121), fill_value=0)
+                  .sort_index().rename("scene_cuts"))
+scene_cuts.describe()
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>The lag scan.</strong> CTA minutes from the segment column against the ledger's orders, at lags 0 to 4. On the Lumen Glow table pick one stream, Maya's stream 17, and expect the peak at 0.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Find d</span>
+m = pd.read_csv("data/streams.csv")
+one = m[m.stream_id == 17].set_index("t").sort_index()         # Maya, Wed 21:00, giveaway open
+cta = (one.segment == "cta").astype(int)                       # 1 in a CTA minute, else 0
+
+scan = {lag: cta.shift(lag).corr(one.orders) for lag in range(0, 5)}
+d = max(scan, key=scan.get)
+print({k: round(v, 3) for k, v in scan.items()}, "peak at lag", d)
+assert d == 0, "the Lumen Glow table is already on one clock"      # your own recording may say 1
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Apply the shift and re-run the session 1 checks.</strong> The ledger's row at t+d belongs to the words at t. A shift moves values, it never creates or destroys them, so the sum over the minutes you kept must equal the sum over the minutes they came from.</p>
+        <div class="prompt-box good">
+          <span class="label">★ One shift, then the assertions</span>
+ledger = ["arrivals", "room", "impressions", "clicks", "orders", "gmv", "comments", "likes", "replies"]
+counts = ["impressions", "clicks", "orders", "gmv"]
+
+aligned = one.copy()
+aligned[ledger] = one[ledger].shift(-d)                        # ledger at t+d answers words at t
+kept = aligned.dropna(subset=counts)
+
+for col in counts:                                             # totals unchanged by a shift
+    assert kept[col].sum() == one[col].iloc[d:].sum(), col
+assert kept.orders.sum() == one.orders.sum() if d == 0 else True
+print(len(kept), "minutes kept; only the minute assignment moved")
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Save the aligned table.</strong> Derived, next to the raw files, with d recorded in the file so the next reader knows which clock the ledger columns are on.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Derived, never raw</span>
+kept = kept.assign(delay_min=d)
+kept.reset_index().to_csv("data/derived/minute_aligned.csv", index=False)
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <p><strong>Store d, not the shifted file, as the source of truth.</strong> The raw ledger export stays untouched with its platform timestamps. The delay lives in the streams table as one number per stream, and the aligned minute table is rebuilt from raw plus d whenever either changes. If someone later measures the delay better, the correction is one cell, not a re-export.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 3</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>Run ingest.sh on a two-hour recording you are allowed to use. Check that chunk 043 starts at exactly 42:00 with and without the forced-keyframe pass, and write down the drift you saw without it.</li>
+      <li>Run PySceneDetect on the same recording with ContentDetector and with AdaptiveDetector. Count cuts per minute under each and find the minute where they disagree most. Watch that minute and decide which detector was right.</li>
+      <li>If you have a ledger export for the recording, run the lag scan and find d. Then find one flash-sale or coupon start in LIVE Manager and confirm d against it. Bring both numbers.</li>
+      <li>Pick any Lumen Glow stream and shift its ledger columns by one minute on purpose. Recompute orders per thousand viewer-minutes by segment and compare with the aligned numbers. Write one sentence about which segment gained and which lost.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">You segment a live-stream recording with <code>-c copy -f segment -segment_time 60</code> and chunk 043 starts at 42:04, not 42:00. Why?</p>
+      <button class="qopt" type="button">A · The recording's clock drifts by about a tenth of a second per minute and the muxer follows it</button>
+      <button class="qopt" type="button">B · The segment muxer counts from the first audio sample, which is a few seconds after the first video frame</button>
+      <button class="qopt" type="button">C · Stream copy can only cut at a keyframe, so each chunk runs on to the next keyframe after the 60 second mark and the overrun accumulates</button>
+      <p class="qwhy">Without decoding, FFmpeg cannot start a file mid-group-of-pictures. Force a keyframe on every minute with -force_key_frames "expr:gte(t,n_forced*60)" first, or accept break_non_keyframes and lose the first frames of each chunk.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">The ledger is joined to the transcript without measuring the stream delay. What does that do to the estimated effect of a call to action?</p>
+      <button class="qopt" type="button">A · Shrinks it toward zero and moves part of the credit to whatever segment follows the CTA, so filler can look like it converts</button>
+      <button class="qopt" type="button">B · Nothing, because a shift does not change the stream totals and the reconciliation still passes</button>
+      <button class="qopt" type="button">C · Inflates it, because orders from the previous minute are now counted in the CTA minute</button>
+      <p class="qwhy">The ledger runs late, so a CTA minute's orders land in the next row. The totals still reconcile, which is exactly why nothing warns you. The within-stream +6.50 points of CTOR for a CTA is what the aligned table shows; an unshifted join reports less and gives the remainder to the minute after.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">Why strip the audio to 16 kHz mono PCM rather than hand the transcriber the original 48 kHz stereo track?</p>
+      <button class="qopt" type="button">A · Transcribers cannot read stereo files at all</button>
+      <button class="qopt" type="button">B · Whisper-family models were trained on 16 kHz mono and resample to it anyway, so doing it once in FFmpeg skips a conversion, avoids timestamp drift and makes the file far smaller</button>
+      <button class="qopt" type="button">C · Higher sample rates make the model hallucinate words in silence</button>
+      <p class="qwhy">The model's input is 16 kHz mono either way. Converting up front with -vn -ac 1 -ar 16000 -c:a pcm_s16le is deterministic, cheaper to upload to a hosted API that bills on audio minutes, and keeps word timestamps on the recording clock.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">FFmpeg 9.0.2: segment muxer, fps filter, audio resample and downmix</span>
+        <span class="note">The documented segment example adapted to 60 s with reset_timestamps, the keyframe caveat and both fixes, 1 fps frames, 16 kHz mono PCM.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">PySceneDetect 0.7.1 AdaptiveDetector</span>
+        <span class="note">Quick-start call, why the rolling average suits handheld footage, and cuts per minute as the first content column.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">The clock shift and its estimation</span>
+        <span class="note">Recording clock vs platform clock, the lag scan over CTA minutes and orders, verification against a known event, and what an unshifted join does to every later effect.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Watermarks and event-time windows</span>
+        <span class="note">Named as the general form of tonight's problem. Built properly in the streaming data course; here one measured shift suffices because the delay is stable within a stream.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Detectors on the frames</span>
+        <span class="note">Tonight produces the 1 fps frames and the usable-frame rule. Session 3 runs the landmark and open-vocabulary detectors on them and aggregates to the minute.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Live ingestion of a running stream</span>
+        <span class="note">Not covered by design. The course works from recordings; ingesting a stream while it runs brings back the drifting-delay case that watermarks exist for.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 2 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Minute chunks</b><span>-c copy -f segment -segment_time 60 -reset_timestamps 1. Force keyframes on the minute first or the chunks drift.</span></div>
+      <div class="cheat-item"><b>Keyframe fix</b><span>-force_key_frames "expr:gte(t,n_forced*60)" once, then stream-copy segments. break_non_keyframes is the lossy alternative.</span></div>
+      <div class="cheat-item"><b>Frames</b><span>-vf fps=1 frames/%06d.jpg. Frame n is second n; minute is n // 60 + 1. 7,200 frames for two hours.</span></div>
+      <div class="cheat-item"><b>Audio</b><span>-vn -ac 1 -ar 16000 -c:a pcm_s16le. What Whisper-family models expect; smaller, deterministic, drift-free.</span></div>
+      <div class="cheat-item"><b>Scene cuts</b><span>detect(mp4, AdaptiveDetector()) on the full-rate video. Rolling average beats a fixed threshold under camera motion.</span></div>
+      <div class="cheat-item"><b>Two clocks</b><span>Frames and words are on the recording clock. Ledger and comments are on the platform clock, late by d.</span></div>
+      <div class="cheat-item"><b>Find d</b><span>corr(cta.shift(lag), orders) for lag 0..4; take the peak. Verify against a flash-sale start in LIVE Manager.</span></div>
+      <div class="cheat-item"><b>Skip it and</b><span>effects shrink toward zero and credit moves to the next segment. Totals still reconcile, so nothing warns you.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Builder session 2 of 8 · learn-live-commerce-analytics-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="b1-stream-as-data.html">← Builder session 1 · The stream as data</a>
+      <a href="b3-see-it.html">Builder session 3 · See it →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

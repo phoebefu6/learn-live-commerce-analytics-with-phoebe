@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Builder session 6 of 8. Two regressions that disagree about the giveaway and are both right, a LightGBM with SHAP that sides with the second, and a playbook whose every line carries a within-stream number.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="From traits to a playbook - learn live commerce analytics with phoebe">
+<meta property="og:description" content="Builder session 6 of 8. The pooled regression prices a giveaway opener at plus 5,576 dollars. The within-stream one prices the same minutes at minus 2.3 points of conversion. Both are right, about different questions.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/courses/b6-traits-to-playbook.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="From traits to a playbook - learn live commerce analytics with phoebe">
+<meta name="twitter:description" content="Pooled versus within-stream regression on 7,200 minutes, LightGBM 4.7.0 with SHAP 0.52.0 held out by stream, and a playbook with a number on every line.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Builder session 6 · From traits to a playbook - learn live commerce analytics with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-live-commerce-analytics-with-phoebe</a> / Builder session 6 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LIVE Commerce Analytics with Phoebe · Builder session 6 of 8</div>
+    <h1>From traits <span class="accent">to a playbook</span></h1>
+    <p class="sub">Someone senior will ask you what the top streams share, and the honest answer is that the question has two answers. There is a traffic answer, which is about what the platform sent to the room, and there is a selling answer, which is about what the host did with the room once it was there. A regression run across streams can only ever give you the first. Tonight you run that regression, then run the one that gives the second, watch them disagree about the giveaway by a mile, and understand why both are right. Then you train a model that sides with the second, and write a playbook where every line carries the number that earned it.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Advanced</span>
+      <span class="chip audience">Data scientists</span>
+      <span class="chip audience">Anyone who has been asked what the top streams share</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · Pooled, within, and a model</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: the two regressions</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where session 6 sits</h2>
+    </div>
+    <p class="lede">Session 5 scored every minute of the 60 Lumen Glow streams and produced the segment table: CTA minutes sell at 11.47 orders per thousand viewer-minutes, dead air at 0.79. That table is descriptive. It says which minutes sold, not what made them sell, and a CTA minute in a room of 1,500 and a CTA minute in a room of 300 are in it side by side. Tonight separates the room from the pitch, with two regressions and a tree model, and turns what survives into the playbook the leader track hands to hosts.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> Two regressions that disagree about the giveaway and are both right: pooled across streams the giveaway opener is worth plus 5,576 dollars of GMV, within a stream a giveaway minute costs 2.31 points of click-to-order rate. A LightGBM 4.7.0 model with SHAP 0.52.0, held out by stream, whose ranking sides with the second regression. And a playbook, written to <code>data/derived/playbook.csv</code>, whose every line carries its within-stream effect and its p-value.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Two answers to one question<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>"What do the top streams share?" sounds like one question. Run it against the summary table and you get the traffic answer: the top ten by GMV are all human hosts, nine of the ten opened with a giveaway, and giveaway streams average 10,364 views against 7,546. That is real. The platform's boost rewards a giveaway opener, x1.93 against x1.25, and the room fills.</p>
+        <p>Run it against the minute table, comparing every stream with itself, and you get the selling answer: inside a stream, the minutes where the giveaway is live convert 2.31 points worse than the same stream's other minutes. Also real. The room is bigger and browsing for a free serum, and it clicks less on the card that costs 29 dollars.</p>
+        <p>The pooled regression sees streams, so it sees traffic. The within-stream regression sees minutes of one stream, so the traffic is held fixed and only the pitch is left to vary. Neither can answer the other's question, and the mistake is not picking the wrong one, it is not knowing there are two.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lumen Glow's brand lead came to the data team with the top-ten list and a plan to make every stream open with a giveaway. The pooled number backed her: plus 5,576 dollars a stream. The within-stream number said the free serum was pulling a bigger, colder room. Both went on the same slide, on separate lines: a giveaway is a traffic decision, priced in views, and it is paid for in conversion. She kept the giveaway on the two weekend slots where the boost mattered most and dropped it elsewhere.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary tonight leans on<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Pooled regression</strong> - one OLS over all rows as if they were exchangeable. Across streams it compares stream A to stream B; across minutes it compares minute 43 of stream A to minute 12 of stream B.</li>
+          <li><strong>Fixed effects</strong> - a separate intercept per stream, so each stream is compared only with itself. Everything constant inside a stream (host, hour, weekday, the traffic draw, the giveaway opener) is absorbed and cannot confound.</li>
+          <li><strong>Demeaning</strong> - the arithmetic that implements fixed effects: subtract each stream's mean from every column, then run OLS without an intercept. The stream dummies never have to be built.</li>
+          <li><strong>Clustered standard errors</strong> - minutes of one stream are not independent draws; they share a room, a host, a mood. Clustering by stream tells the standard error to expect that, so the p-values are honest about 60 streams rather than pretending to 7,200 free observations.</li>
+          <li><strong>Confound</strong> - a variable that moves both the treatment and the outcome. Here, the platform's boost moves both "giveaway" and "GMV", which is why the pooled coefficient is a traffic number wearing a giveaway costume.</li>
+          <li><strong>SHAP</strong> - a per-row, per-feature share of a model's prediction, summing to the prediction. Mean absolute SHAP over rows is a feature ranking.</li>
+          <li><strong>Held-out stream</strong> - a stream the model never trained on. Holding out rows instead lets the model see minute 42 and be asked about minute 43 of the same stream, which is not a test.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the confound, the pooled OLS and the within-stream fixed-effects regression</span>
+      <h2>Pooled versus within</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">Same data, same giveaway column, two lenses. The first lens looks across the 60 streams and finds a large positive coefficient with a p-value below one in ten million. The second looks inside each stream and finds a modest negative one. The diagram puts them side by side so you never again read one without asking for the other.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two panels. Left, pooled across 60 streams: GMV per stream for the 28 streams without a giveaway opener, mean 15,265 dollars, beside the 32 with one, mean 16,904 dollars, with the boost x1.25 versus x1.93 on the traffic axis; the pooled OLS coefficient is plus 5,576 dollars, p below 1e-7. Right, within one stream: minutes demeaned by the stream mean, with giveaway-live minutes converting 2.31 points of CTOR below the stream's other minutes.">
+        <style>
+          .b6aHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b6aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b6aB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b6aM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b6aR { font: 700 11px Inter, sans-serif; fill: #C8173F; }
+          .b6aN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+          .b6aD { fill: #0B7F94; opacity: .85; }
+          .b6aG { fill: #C8173F; opacity: .85; }
+        </style>
+        <defs>
+          <marker id="b6aAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#BFD8DE"></path>
+          </marker>
+        </defs>
+
+        <text class="b6aHd" x="14" y="24">One giveaway column, two lenses</text>
+        <text class="b6aM" x="14" y="42">left: streams compared with each other · right: minutes of one stream compared with the same stream</text>
+
+        <!-- left panel: pooled -->
+        <rect x="14" y="56" width="416" height="300" rx="10" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b6aHd" x="30" y="80">Pooled: 60 streams, GMV per stream</text>
+
+        <line x1="70" y1="100" x2="70" y2="300" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <line x1="70" y1="300" x2="400" y2="300" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <text class="b6aM" x="30" y="108">$30k</text>
+        <text class="b6aM" x="30" y="204">$16k</text>
+        <text class="b6aM" x="30" y="298">$4k</text>
+
+        <!-- no giveaway column, 28 dots -->
+        <circle class="b6aD" cx="150" cy="140" r="3.5"></circle> <circle class="b6aD" cx="162" cy="158" r="3.5"></circle> <circle class="b6aD" cx="140" cy="172" r="3.5"></circle> <circle class="b6aD" cx="171" cy="180" r="3.5"></circle>
+        <circle class="b6aD" cx="155" cy="190" r="3.5"></circle> <circle class="b6aD" cx="144" cy="199" r="3.5"></circle> <circle class="b6aD" cx="166" cy="205" r="3.5"></circle> <circle class="b6aD" cx="135" cy="212" r="3.5"></circle>
+        <circle class="b6aD" cx="158" cy="216" r="3.5"></circle> <circle class="b6aD" cx="148" cy="223" r="3.5"></circle> <circle class="b6aD" cx="174" cy="226" r="3.5"></circle> <circle class="b6aD" cx="139" cy="232" r="3.5"></circle>
+        <circle class="b6aD" cx="161" cy="236" r="3.5"></circle> <circle class="b6aD" cx="152" cy="243" r="3.5"></circle> <circle class="b6aD" cx="168" cy="248" r="3.5"></circle> <circle class="b6aD" cx="143" cy="252" r="3.5"></circle>
+        <circle class="b6aD" cx="157" cy="258" r="3.5"></circle> <circle class="b6aD" cx="136" cy="262" r="3.5"></circle> <circle class="b6aD" cx="172" cy="266" r="3.5"></circle> <circle class="b6aD" cx="150" cy="271" r="3.5"></circle>
+        <circle class="b6aD" cx="163" cy="276" r="3.5"></circle> <circle class="b6aD" cx="141" cy="280" r="3.5"></circle> <circle class="b6aD" cx="156" cy="285" r="3.5"></circle> <circle class="b6aD" cx="169" cy="289" r="3.5"></circle>
+        <circle class="b6aD" cx="147" cy="292" r="3.5"></circle> <circle class="b6aD" cx="160" cy="295" r="3.5"></circle> <circle class="b6aD" cx="138" cy="245" r="3.5"></circle> <circle class="b6aD" cx="176" cy="210" r="3.5"></circle>
+        <line x1="120" y1="211" x2="190" y2="211" stroke="#0B1A20" stroke-width="2"></line>
+        <text class="b6aN" x="155" y="318" text-anchor="middle">no giveaway (28)</text>
+        <text class="b6aM" x="155" y="334" text-anchor="middle">mean $15,265 · boost x1.25</text>
+
+        <!-- giveaway column, 32 dots -->
+        <circle class="b6aG" cx="300" cy="106" r="3.5"></circle> <circle class="b6aG" cx="318" cy="118" r="3.5"></circle> <circle class="b6aG" cx="290" cy="128" r="3.5"></circle> <circle class="b6aG" cx="326" cy="136" r="3.5"></circle>
+        <circle class="b6aG" cx="306" cy="146" r="3.5"></circle> <circle class="b6aG" cx="294" cy="156" r="3.5"></circle> <circle class="b6aG" cx="320" cy="162" r="3.5"></circle> <circle class="b6aG" cx="285" cy="170" r="3.5"></circle>
+        <circle class="b6aG" cx="311" cy="176" r="3.5"></circle> <circle class="b6aG" cx="299" cy="183" r="3.5"></circle> <circle class="b6aG" cx="329" cy="188" r="3.5"></circle> <circle class="b6aG" cx="288" cy="194" r="3.5"></circle>
+        <circle class="b6aG" cx="315" cy="199" r="3.5"></circle> <circle class="b6aG" cx="303" cy="206" r="3.5"></circle> <circle class="b6aG" cx="322" cy="212" r="3.5"></circle> <circle class="b6aG" cx="292" cy="218" r="3.5"></circle>
+        <circle class="b6aG" cx="308" cy="224" r="3.5"></circle> <circle class="b6aG" cx="284" cy="230" r="3.5"></circle> <circle class="b6aG" cx="325" cy="235" r="3.5"></circle> <circle class="b6aG" cx="301" cy="241" r="3.5"></circle>
+        <circle class="b6aG" cx="316" cy="247" r="3.5"></circle> <circle class="b6aG" cx="290" cy="253" r="3.5"></circle> <circle class="b6aG" cx="307" cy="259" r="3.5"></circle> <circle class="b6aG" cx="323" cy="264" r="3.5"></circle>
+        <circle class="b6aG" cx="296" cy="270" r="3.5"></circle> <circle class="b6aG" cx="312" cy="276" r="3.5"></circle> <circle class="b6aG" cx="287" cy="282" r="3.5"></circle> <circle class="b6aG" cx="319" cy="288" r="3.5"></circle>
+        <circle class="b6aG" cx="304" cy="293" r="3.5"></circle> <circle class="b6aG" cx="297" cy="112" r="3.5"></circle> <circle class="b6aG" cx="313" cy="152" r="3.5"></circle> <circle class="b6aG" cx="331" cy="203" r="3.5"></circle>
+        <line x1="270" y1="197" x2="340" y2="197" stroke="#0B1A20" stroke-width="2"></line>
+        <text class="b6aN" x="305" y="318" text-anchor="middle">giveaway opener (32)</text>
+        <text class="b6aM" x="305" y="334" text-anchor="middle">mean $16,904 · boost x1.93</text>
+
+        <text class="b6aR" x="222" y="350" text-anchor="middle">pooled OLS: +$5,576 · p below 1e-7</text>
+
+        <!-- right panel: within -->
+        <rect x="450" y="56" width="416" height="300" rx="10" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b6aHd" x="466" y="80">Within: one stream, minutes demeaned</text>
+
+        <line x1="506" y1="100" x2="506" y2="300" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <line x1="506" y1="200" x2="840" y2="200" stroke="#BFD8DE" stroke-width="1.5" stroke-dasharray="4 3"></line>
+        <text class="b6aM" x="466" y="108">+8 pts</text>
+        <text class="b6aM" x="466" y="204">0</text>
+        <text class="b6aM" x="466" y="298">-8 pts</text>
+        <text class="b6aM" x="840" y="316" text-anchor="end">minute 1 to 120, same stream</text>
+
+        <!-- giveaway live window -->
+        <rect x="512" y="100" width="76" height="200" fill="#FFF0F4"></rect>
+        <text class="b6aR" x="550" y="118" text-anchor="middle">giveaway</text>
+        <text class="b6aR" x="550" y="132" text-anchor="middle">live</text>
+
+        <!-- CTOR deviation bars per minute (schematic) -->
+        <rect x="516" y="200" width="8" height="34" fill="#C8173F" opacity=".8"></rect> <rect x="528" y="200" width="8" height="22" fill="#C8173F" opacity=".8"></rect> <rect x="540" y="200" width="8" height="40" fill="#C8173F" opacity=".8"></rect> <rect x="552" y="200" width="8" height="18" fill="#C8173F" opacity=".8"></rect>
+        <rect x="564" y="200" width="8" height="30" fill="#C8173F" opacity=".8"></rect> <rect x="576" y="200" width="8" height="26" fill="#C8173F" opacity=".8"></rect> <rect x="596" y="186" width="8" height="14" fill="#0B7F94" opacity=".8"></rect> <rect x="608" y="200" width="8" height="12" fill="#0B7F94" opacity=".8"></rect>
+        <rect x="620" y="140" width="8" height="60" fill="#0B7F94" opacity=".8"></rect> <rect x="632" y="158" width="8" height="42" fill="#0B7F94" opacity=".8"></rect> <rect x="644" y="200" width="8" height="8" fill="#0B7F94" opacity=".8"></rect> <rect x="656" y="176" width="8" height="24" fill="#0B7F94" opacity=".8"></rect>
+        <rect x="668" y="200" width="8" height="20" fill="#0B7F94" opacity=".8"></rect> <rect x="680" y="150" width="8" height="50" fill="#0B7F94" opacity=".8"></rect> <rect x="692" y="192" width="8" height="8" fill="#0B7F94" opacity=".8"></rect> <rect x="704" y="200" width="8" height="30" fill="#0B7F94" opacity=".8"></rect>
+        <rect x="716" y="166" width="8" height="34" fill="#0B7F94" opacity=".8"></rect> <rect x="728" y="200" width="8" height="6" fill="#0B7F94" opacity=".8"></rect> <rect x="740" y="144" width="8" height="56" fill="#0B7F94" opacity=".8"></rect> <rect x="752" y="182" width="8" height="18" fill="#0B7F94" opacity=".8"></rect>
+        <rect x="764" y="200" width="8" height="16" fill="#0B7F94" opacity=".8"></rect> <rect x="776" y="160" width="8" height="40" fill="#0B7F94" opacity=".8"></rect> <rect x="788" y="200" width="8" height="24" fill="#0B7F94" opacity=".8"></rect> <rect x="800" y="172" width="8" height="28" fill="#0B7F94" opacity=".8"></rect>
+        <rect x="812" y="200" width="8" height="10" fill="#0B7F94" opacity=".8"></rect> <rect x="824" y="154" width="8" height="46" fill="#0B7F94" opacity=".8"></rect>
+
+        <line x1="512" y1="229" x2="588" y2="229" stroke="#C8173F" stroke-width="2"></line>
+        <text class="b6aR" x="600" y="262">giveaway minutes: -2.31 pts CTOR (p .01)</text>
+        <text class="b6aB" x="600" y="278">CTA minutes: +6.50 · dead air: -4.72</text>
+        <text class="b6aM" x="600" y="294">bars are each minute minus the stream mean</text>
+
+        <text class="b6aR" x="658" y="350" text-anchor="middle">within-stream OLS, SE clustered by stream</text>
+
+        <rect x="14" y="382" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b6aN" x="38" y="394">Same column, opposite signs, both right. Left prices the traffic a giveaway buys; right prices what it does to the pitch.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the pooled lens sees streams and therefore traffic; the within lens sees minutes of one stream and therefore the pitch.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The naive read and the pooled OLS<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Start where everyone starts, with the summary table sorted by GMV. Nine of the top ten opened with a giveaway, against 32 of 60 overall. Giveaway streams average 16,904 dollars of GMV against 15,265, and 10,364 views against 7,546. The eye says "giveaway wins", and a regression that treats streams as the unit says the same thing with a p-value attached.</p>
+        <p>The pooled model is <code>gmv ~ giveawayOpen + C(hostType) + C(hour)</code> on the 60-row summary. Controlling host type and hour is the responsible-looking move; it removes the AI-host penalty and the evening effect. The giveaway coefficient survives it: plus 5,576 dollars, p below 1e-7. That is not a fluke and it is not wrong. It is the platform's boost, x1.93 against x1.25, showing up as GMV, because GMV is traffic times selling and the giveaway bought traffic.</p>
+        <p>Look at the same summary table's other columns and the seam is already visible. Giveaway streams have a lower CTOR, 11.16 against 13.10, a lower GPM, 1,547 against 1,983, and a shorter watch, 8.67 against 9.38 minutes. More people, converting less. The pooled GMV regression cannot see that because GMV adds the two together.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Within-stream demeaning by hand<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Fixed effects sounds like a technique; it is a subtraction. For every column in the model, subtract that stream's mean from every one of its minutes. Then run OLS on the demeaned columns with no intercept. Whatever was constant within a stream is now zero everywhere, so the host, the hour, the weekday, the traffic draw and the giveaway opener all vanish from the comparison. What is left is minute 43 against minute 12 of the same stream. Standard errors are clustered by stream, because 120 minutes of one room are not 120 independent draws.</p>
+        <p>The outcome is CTOR in points, orders over clicks, and the regressors are the segment indicators, the three visual columns, and whether the giveaway is live in that minute.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>Regressor</th><th>CTOR, points</th><th>p</th><th>Read</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>CTA minute</td><td>+6.50</td><td>below .001</td><td>The ask moves the order</td></tr>
+            <tr><td>Price minute</td><td>+3.78</td><td>below .001</td><td>Saying the number sells</td></tr>
+            <tr><td>Short urgency (run 1-2)</td><td>+4.93</td><td>below .001</td><td>Two minutes of scarcity work</td></tr>
+            <tr><td>Stretched urgency (run 3+)</td><td>-1.84</td><td>.0001</td><td>Minute three of "last chance" costs</td></tr>
+            <tr><td>Q&amp;A minute</td><td>+0.96</td><td>.012</td><td>Small, positive, real</td></tr>
+            <tr><td>Hook minute</td><td>-3.18</td><td>below .001</td><td>Openers do not sell; they are not meant to</td></tr>
+            <tr><td>Filler minute</td><td>-2.64</td><td>below .001</td><td>Nothing to buy into</td></tr>
+            <tr><td>Dead air</td><td>-4.72</td><td>.0013</td><td>The worst minute you can have</td></tr>
+            <tr><td>Giveaway live</td><td>-2.31</td><td>.010</td><td>A bigger, colder room</td></tr>
+            <tr><td>Product in hand</td><td>+0.04</td><td>.81</td><td>No effect on the order</td></tr>
+            <tr><td>Close-up ratio</td><td>+0.46</td><td>.65</td><td>No effect on the order</td></tr>
+            <tr><td>Price overlay</td><td>-0.13</td><td>.58</td><td>No effect on the order</td></tr>
+          </tbody>
+        </table>
+        <p>Three rows say nothing, and that is the finding of the night, not a disappointment. Product in hand, close-up ratio and a price on screen do not move CTOR. Run the identical regression with CTR as the outcome and the same three rows come alive.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>Regressor</th><th>CTR, points</th><th>p</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Product in hand</td><td>+1.38</td><td>below .001</td></tr>
+            <tr><td>Close-up ratio</td><td>+1.01</td><td>below .001</td></tr>
+            <tr><td>Price overlay</td><td>+0.97</td><td>below .001</td></tr>
+            <tr><td>CTA minute</td><td>+3.28</td><td>below .001</td></tr>
+            <tr><td>Demo minute</td><td>+2.54</td><td>below .001</td></tr>
+            <tr><td>Price minute</td><td>+1.55</td><td>below .001</td></tr>
+            <tr><td>Q&amp;A minute</td><td>-0.97</td><td>below .001</td></tr>
+            <tr><td>Giveaway live</td><td>-0.05</td><td>.71</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Reading the two tables together<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Put the CTR table over the CTOR table and a clean split appears. <strong>What you show moves the click.</strong> Product in hand, a close-up, a price card on screen: each adds about a point of CTR and none of them touches CTOR. The viewer taps the card because they saw the thing. <strong>What you say moves the order.</strong> CTA, price, a short burst of urgency: each adds points of CTOR, and the CTA adds points of both. The viewer buys because they were asked, told the number, and given a reason to do it now.</p>
+        <p>The Q&amp;A row is the one worth pausing on. It lowers CTR by a point (the host is looking at comments, not the product) and raises CTOR by a point (the person whose question got answered converts). A per-viewer read from session 5 says Q&amp;A minutes sell 3.71 orders per thousand viewer-minutes, below the mean of 5.73, so on its own it is a weak selling minute. Session 8's bench is where "answer the room every ten minutes" gets priced properly, and it comes out at plus 4.4 percent GMV with the longest watch of any single cue.</p>
+        <p>You do not have to demean by hand. linearmodels 7.0 does the same arithmetic in one line: <code>PanelOLS(y, X, entity_effects=True)</code> on a MultiIndex of (stream_id, t), then <code>fit(cov_type="clustered", cluster_entity=True)</code>. Its coefficients match the hand version to the third decimal. Tonight's build-along does it by hand once, so you know exactly what the one line is doing and can explain it to the person who asks.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Maya's stream 17, Wednesday 21:00 with a giveaway opener, took 29,799 dollars on 16,404 views at a CTOR of 11.58. Priya's stream 16, Monday 18:00 with no giveaway, took 11,217 dollars on 4,858 views at 14.01. Ranked by GMV, Maya's stream is the one to copy. Ranked by GPM, 1,817 against 2,309, Priya's is. The pooled regression is ranking Maya's traffic. The within regression is measuring what each host did with each minute, and by that measure the Monday stream is the better pitch.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Where DoWhy and EconML pick up<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The within-stream regression answers "on average, inside a stream, what does a CTA minute do to CTOR". It does not answer "for which hosts, in which rooms, does it do the most". That is a heterogeneous-effects question, and two libraries in the panel are built for it.</p>
+        <ul>
+          <li><strong>DoWhy 0.14</strong> makes the causal claim explicit before estimating it: <code>CausalModel(data, treatment, outcome, graph)</code>, then <code>identify_effect()</code>, <code>estimate_effect()</code>, and a <code>refute_estimate()</code> step that adds a random common cause or a placebo treatment and checks the estimate survives. The graph is where you write down that the boost moves both the giveaway and the room, which is exactly what the pooled regression could not say.</li>
+          <li><strong>EconML 0.17.0</strong> estimates conditional effects: <code>LinearDML</code> or <code>CausalForestDML</code> with the minute's context (room size, minute of show, host) as the effect modifiers. The output is a per-minute estimate of what a CTA is worth, which is what a coach needs at minute 43 and a pooled average cannot give.</li>
+        </ul>
+        <p>Both need the identification argument that fixed effects gave you tonight: within a stream, what varies is the pitch. The method ladder for that argument, from DAGs through backdoor adjustment to doubly robust estimators, is a course of its own: <a href="https://phoebefu6.github.io/learn-causal-inference-with-phoebe/">learn causal inference with phoebe</a>.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers LightGBM held out by stream, SHAP, and the playbook the leader track hands to hosts</span>
+      <h2>A model that agrees</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">A regression with hand-chosen columns is one witness. A gradient-boosted model that was never told which columns mattered is a second, and if its ranking lands on the same columns the within-stream table found, the playbook rests on two legs. If it lands somewhere else, you have learned something before a host did.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Horizontal bar chart of mean absolute SHAP values for a LightGBM model of per-minute orders on 12 held-out streams: impressions 1.058, is_cta 0.684, close_up_ratio 0.463, product_in_hand 0.417, room 0.414, fomo_run 0.310, is_hook 0.261, price_overlay 0.193, is_price 0.192, is_ai 0.153. Traffic features are shaded darker than content features. To the right, MAE 1.43 orders per minute against a mean-only baseline of 2.56.">
+        <style>
+          .b6bHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b6bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b6bB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b6bM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b6bQ { font: 600 11px "SFMono-Regular", Menlo, monospace; fill: #0B1A20; }
+          .b6bV { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+          .b6bN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+          .b6bR { font: 700 11px Inter, sans-serif; fill: #C8173F; }
+        </style>
+        <text class="b6bHd" x="14" y="24">What the model leaned on: mean absolute SHAP, 12 held-out streams</text>
+        <text class="b6bM" x="14" y="42">LightGBM 4.7.0 on per-minute orders · SHAP 0.52.0 TreeExplainer · bar length is the mean absolute SHAP value</text>
+
+        <text class="b6bQ" x="150" y="76" text-anchor="end">impressions</text>
+        <rect x="160" y="64" width="400" height="16" rx="3" fill="#075E70"></rect>
+        <text class="b6bV" x="568" y="76">1.058</text>
+
+        <text class="b6bQ" x="150" y="104" text-anchor="end">is_cta</text>
+        <rect x="160" y="92" width="259" height="16" rx="3" fill="#22C3DD"></rect>
+        <text class="b6bV" x="427" y="104">0.684</text>
+
+        <text class="b6bQ" x="150" y="132" text-anchor="end">close_up_ratio</text>
+        <rect x="160" y="120" width="175" height="16" rx="3" fill="#22C3DD"></rect>
+        <text class="b6bV" x="343" y="132">0.463</text>
+
+        <text class="b6bQ" x="150" y="160" text-anchor="end">product_in_hand</text>
+        <rect x="160" y="148" width="158" height="16" rx="3" fill="#22C3DD"></rect>
+        <text class="b6bV" x="326" y="160">0.417</text>
+
+        <text class="b6bQ" x="150" y="188" text-anchor="end">room</text>
+        <rect x="160" y="176" width="156" height="16" rx="3" fill="#075E70"></rect>
+        <text class="b6bV" x="324" y="188">0.414</text>
+
+        <text class="b6bQ" x="150" y="216" text-anchor="end">fomo_run</text>
+        <rect x="160" y="204" width="117" height="16" rx="3" fill="#22C3DD"></rect>
+        <text class="b6bV" x="285" y="216">0.310</text>
+
+        <text class="b6bQ" x="150" y="244" text-anchor="end">is_hook</text>
+        <rect x="160" y="232" width="99" height="16" rx="3" fill="#22C3DD"></rect>
+        <text class="b6bV" x="267" y="244">0.261</text>
+
+        <text class="b6bQ" x="150" y="272" text-anchor="end">price_overlay</text>
+        <rect x="160" y="260" width="73" height="16" rx="3" fill="#22C3DD"></rect>
+        <text class="b6bV" x="241" y="272">0.193</text>
+
+        <text class="b6bQ" x="150" y="300" text-anchor="end">is_price</text>
+        <rect x="160" y="288" width="73" height="16" rx="3" fill="#22C3DD"></rect>
+        <text class="b6bV" x="241" y="300">0.192</text>
+
+        <text class="b6bQ" x="150" y="328" text-anchor="end">is_ai</text>
+        <rect x="160" y="316" width="58" height="16" rx="3" fill="#A5EAF4"></rect>
+        <text class="b6bV" x="226" y="328">0.153</text>
+
+        <rect x="160" y="352" width="12" height="12" rx="2" fill="#075E70"></rect>
+        <text class="b6bB" x="178" y="362">traffic: the room and its exposures</text>
+        <rect x="400" y="352" width="12" height="12" rx="2" fill="#22C3DD"></rect>
+        <text class="b6bB" x="418" y="362">content: what was said or shown</text>
+        <rect x="640" y="352" width="12" height="12" rx="2" fill="#A5EAF4"></rect>
+        <text class="b6bB" x="658" y="362">who the host is</text>
+
+        <!-- MAE panel -->
+        <rect x="640" y="60" width="226" height="130" rx="10" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b6bHd" x="656" y="84">Held-out error, orders/min</text>
+        <text class="b6bB" x="656" y="106">model MAE</text>
+        <rect x="656" y="112" width="106" height="14" rx="3" fill="#0B7F94"></rect>
+        <text class="b6bV" x="770" y="124">1.43</text>
+        <text class="b6bB" x="656" y="150">mean-only baseline</text>
+        <rect x="656" y="156" width="190" height="14" rx="3" fill="#BFD8DE"></rect>
+        <text class="b6bV" x="656" y="184">2.56 · the model halves it</text>
+
+        <rect x="640" y="206" width="226" height="120" rx="10" fill="#FFF0F4" stroke="#C8173F"></rect>
+        <text class="b6bR" x="656" y="230">Read the shape, not the size</text>
+        <text class="b6bB" x="656" y="250">Traffic dominates: impressions</text>
+        <text class="b6bB" x="656" y="266">and room are 2 of the top 5.</text>
+        <text class="b6bB" x="656" y="286">After them, the same columns</text>
+        <text class="b6bB" x="656" y="302">the within table found: CTA,</text>
+        <text class="b6bB" x="656" y="318">close-up, in hand, urgency.</text>
+
+        <rect x="14" y="392" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b6bN" x="38" y="404">A SHAP value is a share of a prediction, not a causal effect. The within table is the evidence; the model confirms it.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the model was never told which columns mattered, and it leaned on the traffic first and then on the same content columns the regression found.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>LightGBM, split by stream and not by row<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The model is LightGBM 4.7.0's <code>LGBMRegressor</code> on per-minute orders, with 24 features: the traffic columns (room, impressions), the content columns (the three visual scores, scene cuts, words per minute, the urgency run counter, the eight segment indicators), the giveaway state, the clock (hour, minute of show), the engagement counts, and whether the host is an AI avatar. The settings are modest on purpose: <code>n_estimators=400, learning_rate=0.03, num_leaves=15, min_child_samples=40, subsample=0.8, subsample_freq=1, colsample_bytree=0.8, random_state=20260924</code>. Fifteen leaves and forty minimum samples per leaf keep it from memorising individual minutes.</p>
+        <p>The split is the part that matters. Twelve streams, chosen by a seeded shuffle, are held out whole, every minute of them unseen by the model. Splitting by row would let the model train on minute 42 of stream 9 and be tested on minute 43 of the same stream, and adjacent minutes of one room are near copies of each other. That test scores brilliantly and tells you nothing about a stream you have not seen. On the 12 held-out streams the model's MAE is 1.43 orders per minute against 2.56 for predicting the mean; the model's error is a little over half the baseline's.</p>
+        <div class="callout tip">
+          <p><strong>Say the baseline every time you say the score.</strong> "MAE 1.43" is a number. "MAE 1.43 against 2.56 for the mean" is a claim. The same rule returns in session 7 with the nowcast, where a naive baseline is the only thing standing between a forecast and a guess.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>SHAP and what the ranking says<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>SHAP 0.52.0's <code>TreeExplainer</code> is exact for tree ensembles: for every held-out minute and every feature it returns the share of that minute's prediction the feature is responsible for, and the shares sum to the prediction. Take the absolute value, average over the held-out minutes, sort, and you have the ranking in the diagram.</p>
+        <p>Impressions is first at 1.058 and room is fifth at 0.414. That is the traffic, and it should dominate a model of order counts: a minute in a room of 1,500 has more orders than a minute in a room of 300 whatever the host does. The model is not being clever there. The interesting part is everything between and after: <code>is_cta</code> at 0.684, <code>close_up_ratio</code> at 0.463, <code>product_in_hand</code> at 0.417, <code>fomo_run</code> at 0.310, <code>is_hook</code> at 0.261, then <code>price_overlay</code> and <code>is_price</code> at 0.19. Those are, almost column for column, the rows of the two within-stream tables that had a p-value below .05. The model found them without being told, from a different objective (orders, not a rate) with a different method (trees, not demeaned OLS).</p>
+        <p>Note what is not in the top ten: <code>giveaway_live</code> and <code>giveaway_open</code>. In a model that already has the room and impressions as features, the giveaway has nothing left to explain. Its whole effect on orders was the traffic it bought, which the model reads directly from the room. That is the pooled-versus-within lesson again, from a third angle.</p>
+        <p><code>is_ai</code> is tenth at 0.153. The host being an avatar matters, and it matters less than what the host is doing in the minute. On TikTok Shop the point is moot: the Requirements for High-Quality Videos and LIVEs, effective 2026-09-17, require real-time verbal interaction and do not permit AI-generated voices on a promotional LIVE, so the AI-host streams in this data describe a trade that is not on offer there.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The playbook, with a number on every line<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A playbook line a host will follow needs a verb, a moment and a number. The number comes from the within-stream table, because that is the one that compares a host with herself; the model is the corroborating witness, not the source. Here is the table the leader track's sessions 3 and 4 hand out, as the build-along writes it.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>Lever</th><th>Moves</th><th>Within-stream effect</th><th>p</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Say: the ask (CTA)</td><td>CTOR</td><td>+6.50 pts</td><td>below .001</td></tr>
+            <tr><td>Say: the price</td><td>CTOR</td><td>+3.78 pts</td><td>below .001</td></tr>
+            <tr><td>Say: two minutes of urgency, then stop</td><td>CTOR</td><td>+4.93 pts (run 1-2)</td><td>below .001</td></tr>
+            <tr><td>Never: stretch the urgency past two</td><td>CTOR</td><td>-1.84 pts (run 3+)</td><td>.0001</td></tr>
+            <tr><td>Show: product in hand</td><td>CTR</td><td>+1.38 pts</td><td>below .001</td></tr>
+            <tr><td>Show: a close-up</td><td>CTR</td><td>+1.01 pts</td><td>below .001</td></tr>
+            <tr><td>Show: the price on screen</td><td>CTR</td><td>+0.97 pts</td><td>below .001</td></tr>
+            <tr><td>Answer the room</td><td>CTOR</td><td>+0.96 pts</td><td>.012</td></tr>
+            <tr><td>Giveaway: a traffic decision</td><td>CTOR while live</td><td>-2.31 pts</td><td>.010</td></tr>
+          </tbody>
+        </table>
+        <p>Short urgency on this data is minutes one and two of a run, with CTOR at 14.71 and 15.45 for those two minutes and 8.28 from the third. The playbook says two minutes because that is where the number turns, and because the TikTok Shop Content Policy (effective 2026-09-17) and the UK DMCC Act both treat a limited-time claim that is not genuine as a violation; a countdown that runs six minutes is not a countdown. The giveaway line is not a "never". It is worth 5,576 dollars of GMV through traffic on the pooled read and costs 2.31 points of CTOR while it is live, and whoever owns the traffic budget makes that call with both numbers in front of them.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What the model cannot tell you<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A SHAP value is a share of a prediction. If the model had learned that CTA minutes tend to come after price minutes, and price minutes tend to be high-order minutes, the CTA feature would carry a large SHAP value for reasons that have nothing to do with the CTA. SHAP faithfully reports what the model used; it makes no promise that what the model used is what caused the orders. The within-stream regression, with the segment indicators entered together and the stream fixed, is the design that lets you read a coefficient as "holding the rest of the minute's content and the stream fixed, this segment does this". That is why the playbook cites the regression and merely mentions the model.</p>
+        <p>Two more things the model cannot say. It cannot price a cue the host has never done, because a tree has no leaf for it; the bench in session 8 is where a policy is actually applied. And it cannot separate "the host did a CTA" from "the host did a CTA at the right moment", because the moment is exactly the thing session 7's nowcast exists to find. The model tells you the CTA column matters. It does not tell you when.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>The two regressions, the model, and the playbook file</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">Five steps. The pooled OLS in one statsmodels formula, the demeaning function you write yourself, the same fit with CTR as the outcome, LightGBM with the stream-level split and SHAP, and a playbook CSV with the evidence beside every line. statsmodels 0.15.0, LightGBM 4.7.0, SHAP 0.52.0 (Python 3.12 or later).</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>The pooled OLS on the summary table.</strong> Sixty rows, one per stream. Control host type and hour so the giveaway coefficient is not carrying the AI penalty or the evening effect, and watch it stay large anyway.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Pooled: what the giveaway opener is worth across streams</span>
+import pandas as pd
+import numpy as np
+import statsmodels.formula.api as smf
+
+m = pd.read_csv("data/streams.csv")          # 7,200 minute rows
+s = pd.read_csv("data/summary.csv")          # 60 stream rows
+
+pooled = smf.ols("gmv ~ giveawayOpen + C(hostType) + C(hour)", data=s).fit()
+print(round(pooled.params["giveawayOpen"]), pooled.pvalues["giveawayOpen"])
+# 5576  3.5e-08   -> a real number, about traffic
+
+print(s.groupby("giveawayOpen")[["gmv", "views", "cvr", "gpm", "avgWatchMin"]].mean().round(2))
+# the same table shows cvr, gpm and watch all lower with the giveaway
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Demean by stream, then OLS with no intercept and clustered errors.</strong> The function is the whole of fixed effects. The outcome is CTOR in points; minutes with zero clicks have no CTOR and are dropped, as analyze.py does.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Within: minutes compared with their own stream</span>
+m["ctr"] = np.where(m.impressions > 0, m.clicks / m.impressions, np.nan)
+m["cvr"] = np.where(m.clicks > 0, m.orders / m.clicks, np.nan)
+
+mm = m.dropna(subset=["cvr"]).copy()
+mm["cvr100"] = 100 * mm["cvr"]
+mm["ctr100"] = 100 * mm["ctr"]
+for c in ["cta", "demo", "price", "fomo", "qna", "hook", "filler", "dead"]:
+    mm[f"is_{c}"] = (mm.segment == c).astype(int)
+mm["fomo_short"]     = ((mm.segment == "fomo") &amp; (mm.fomo_run &lt; 3)).astype(int)
+mm["fomo_stretched"] = ((mm.segment == "fomo") &amp; (mm.fomo_run >= 3)).astype(int)
+
+X = ["is_cta", "is_demo", "is_price", "fomo_short", "fomo_stretched", "is_qna", "is_hook",
+     "is_filler", "is_dead", "product_in_hand", "close_up_ratio", "price_overlay", "giveaway_live"]
+
+def within(df_, cols, y):
+    """Subtract each stream's mean from every column: the stream fixed effect, by hand."""
+    g = df_.groupby("stream_id")
+    d = df_[cols + [y]].copy()
+    for c in cols + [y]:
+        d[c] = df_[c] - g[c].transform("mean")
+    return d
+
+def fe_fit(y):
+    d = within(mm, X, y)
+    fit = smf.ols(f"{y} ~ " + " + ".join(X) + " - 1", data=d).fit(
+        cov_type="cluster", cov_kwds={"groups": mm["stream_id"]})
+    return pd.DataFrame({"coef": fit.params.round(2), "p": fit.pvalues.round(4)})
+
+fe_cvr = fe_fit("cvr100")
+print(fe_cvr)
+# is_cta 6.50, is_price 3.78, fomo_short 4.93, fomo_stretched -1.84, giveaway_live -2.31,
+# product_in_hand 0.04 (p .81), close_up_ratio 0.46 (p .65), price_overlay -0.13 (p .58)
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>The CTR version.</strong> Same function, same regressors, the click rate as the outcome. The three visual rows that were flat on CTOR come alive here.</p>
+        <div class="prompt-box good">
+          <span class="label">★ What you show moves the click</span>
+fe_ctr = fe_fit("ctr100")
+print(fe_ctr.loc[["product_in_hand", "close_up_ratio", "price_overlay", "is_cta", "is_demo", "is_price", "is_qna"]])
+# product_in_hand 1.38, close_up_ratio 1.01, price_overlay 0.97, is_cta 3.28, is_demo 2.54,
+# is_price 1.55, is_qna -0.97 : all p below .001
+
+# the one-line equivalent with linearmodels 7.0, same numbers to the third decimal
+# from linearmodels.panel import PanelOLS
+# p = mm.set_index(["stream_id", "t"])
+# res = PanelOLS(p["cvr100"], p[X], entity_effects=True).fit(cov_type="clustered", cluster_entity=True)
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>LightGBM with a stream-level split, then SHAP.</strong> Shuffle the stream ids with the seeded generator, hold twelve out whole, fit, score against the mean-only baseline, and rank features by mean absolute SHAP over the held-out minutes.</p>
+        <div class="prompt-box good">
+          <span class="label">★ A second witness that was never told the answer</span>
+import lightgbm as lgb
+import shap
+
+SEED = 20260924
+rng = np.random.default_rng(SEED)
+
+feat = ["room", "impressions", "product_in_hand", "close_up_ratio", "price_overlay", "scene_cuts", "wpm",
+        "fomo_run", "giveaway_live", "giveaway_open", "hour", "t", "replies", "comments", "likes"] \
+       + [f"is_{c}" for c in ["cta", "demo", "price", "fomo", "qna", "hook", "filler", "dead"]]
+mm["is_ai"] = (mm.host_type == "ai").astype(int)
+feat.append("is_ai")
+
+streams = mm.stream_id.unique()
+rng.shuffle(streams)
+test_ids = set(streams[:12])                           # 12 whole streams, never seen in training
+tr, te = mm[~mm.stream_id.isin(test_ids)], mm[mm.stream_id.isin(test_ids)]
+
+model = lgb.LGBMRegressor(n_estimators=400, learning_rate=0.03, num_leaves=15, min_child_samples=40,
+                          subsample=0.8, subsample_freq=1, colsample_bytree=0.8,
+                          random_state=SEED, verbose=-1)
+model.fit(tr[feat], tr["orders"])
+pred = model.predict(te[feat])
+mae      = np.mean(np.abs(pred - te["orders"]))
+base_mae = np.mean(np.abs(te["orders"].mean() - te["orders"]))
+print(round(mae, 2), round(base_mae, 2))               # 1.43 vs 2.56
+
+expl = shap.TreeExplainer(model)
+sv = expl.shap_values(te[feat])                        # one row per held-out minute; rows sum to the prediction
+imp = pd.Series(np.abs(sv).mean(axis=0), index=feat).sort_values(ascending=False)
+print(imp.head(10).round(3))
+# impressions 1.058, is_cta 0.684, close_up_ratio 0.463, product_in_hand 0.417, room 0.414, ...
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Write the playbook with its evidence.</strong> One row per lever, which metric it moves, the within-stream coefficient and its p-value. The model is not in the file; it is the reason you trust the file.</p>
+        <div class="prompt-box good">
+          <span class="label">★ data/derived/playbook.csv</span>
+rows = [
+    ("Say: the ask (CTA)",                     "CTOR", fe_cvr, "is_cta"),
+    ("Say: the price",                         "CTOR", fe_cvr, "is_price"),
+    ("Say: two minutes of urgency, then stop", "CTOR", fe_cvr, "fomo_short"),
+    ("Never: stretch the urgency past two",    "CTOR", fe_cvr, "fomo_stretched"),
+    ("Show: product in hand",                  "CTR",  fe_ctr, "product_in_hand"),
+    ("Show: a close-up",                       "CTR",  fe_ctr, "close_up_ratio"),
+    ("Show: the price on screen",              "CTR",  fe_ctr, "price_overlay"),
+    ("Answer the room",                        "CTOR", fe_cvr, "is_qna"),
+    ("Giveaway: a traffic decision",           "CTOR", fe_cvr, "giveaway_live"),
+]
+playbook = pd.DataFrame(
+    [{"lever": lever, "moves": moves, "within_effect": tbl.loc[k, "coef"], "p": tbl.loc[k, "p"]}
+     for lever, moves, tbl, k in rows])
+playbook.to_csv("data/derived/playbook.csv", index=False)
+print(playbook)
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <p><strong>If your hand-demeaned coefficients and PanelOLS disagree, the dropped rows are the reason.</strong> The zero-click minutes with no CTOR have to be dropped before the demeaning, not after, or the stream means are computed on rows the regression never sees. analyze.py drops them first; so should you.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 7</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>Run the pooled minute-level regression, <code>cvr100</code> on the same X with no demeaning, clustered by stream. Put its coefficients beside the within-stream ones and write one sentence per row where the two differ by more than a point. Every one of those rows is a confound with a name.</li>
+      <li>Add <code>time_effects=True</code> to the PanelOLS call, so minute-of-show is absorbed as well as stream. Which coefficients move? The hook and the CTA both happen at predictable minutes, so this is a real test of whether the segment or the clock is doing the work.</li>
+      <li>Re-run the LightGBM split with a different seed three times. Record the MAE and the top five SHAP features each time. Report the ranking as "in the top five on every draw" and "in the top five on some draws"; a ranking quoted from one draw is a single sample.</li>
+      <li>Take stream 17 (Maya, giveaway) and stream 16 (Priya, no giveaway). For each, compute the mean of every X column, and write the two rows of the playbook each host follows least. That is the coaching note the leader track's session 5 would hand them.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">The pooled regression says a giveaway opener is worth plus 5,576 dollars of GMV. The within-stream regression says a giveaway minute costs 2.31 points of CTOR. Which is wrong?</p>
+      <button class="qopt" type="button">A · The pooled one: it forgot to control for host type and hour</button>
+      <button class="qopt" type="button">B · The within one: demeaning removes the giveaway's main effect, so it can only see noise</button>
+      <button class="qopt" type="button">C · Neither. Pooled compares streams and sees the traffic the boost bought; within compares minutes of one stream and sees what the bigger, colder room does to the pitch</button>
+      <p class="qwhy">Both are right about different questions. GMV is traffic times selling. The giveaway buys traffic (boost x1.93 against x1.25, views 10,364 against 7,546) and costs selling (CTOR 11.16 against 13.10). The pooled model sees the product; the within model sees the second factor alone.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Why is the LightGBM test set twelve whole streams rather than a random 20 percent of minute rows?</p>
+      <button class="qopt" type="button">A · Adjacent minutes of one room are near copies; a row split lets the model train on minute 42 and be tested on minute 43 of the same stream, which scores well and proves nothing about an unseen stream</button>
+      <button class="qopt" type="button">B · LightGBM cannot handle a random row split when the data has a time column</button>
+      <button class="qopt" type="button">C · Twelve is the number of streams with an AI host, and they need to be tested separately</button>
+      <p class="qwhy">The unit the model will be used on is a stream nobody has seen. The test has to be that unit. Held out by stream, MAE is 1.43 against a mean-only 2.56; held out by row it would look far better and mean far less.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">The mean absolute SHAP value for <code>is_cta</code> is 0.684, second only to impressions. What does that number tell you?</p>
+      <button class="qopt" type="button">A · That a CTA causes 0.684 extra orders per minute, holding everything else fixed</button>
+      <button class="qopt" type="button">B · That the model leaned on the CTA column heavily when predicting held-out minutes; whether the CTA caused the orders is the within-stream regression's job, not SHAP's</button>
+      <button class="qopt" type="button">C · That 68.4 percent of held-out orders happened in CTA minutes</button>
+      <p class="qwhy">SHAP attributes a prediction to features. It is faithful to the model, not to the world. The playbook cites the within-stream coefficient (+6.50 points of CTOR, p below .001) as the evidence and the SHAP ranking as the confirmation that a second method found the same columns.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Pooled versus within-stream regression, with the canon numbers</span>
+        <span class="note">Pooled OLS +5,576 dollars (p below 1e-7); within-stream CTOR and CTR tables from the demeaned, cluster-robust fit; the split between what you show and what you say.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">LightGBM 4.7.0 and SHAP 0.52.0, held out by stream</span>
+        <span class="note">LGBMRegressor with the seeded stream split, MAE 1.43 against 2.56, TreeExplainer ranking with impressions, is_cta, close_up_ratio, product_in_hand, room at the top.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">The playbook with per-line evidence</span>
+        <span class="note">Nine levers, each with the metric it moves, its within-stream coefficient and its p-value, written to data/derived/playbook.csv.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">linearmodels 7.0 PanelOLS</span>
+        <span class="note">Named as the one-line equivalent of the hand demeaning (entity_effects=True, clustered by entity). Homework adds time effects; the fit itself is not walked through.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">DoWhy 0.14 and EconML 0.17.0</span>
+        <span class="note">Self-study only: where an explicit causal graph and conditional effects pick up from fixed effects. The method ladder lives in the causal inference course.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Heterogeneous treatment effects</span>
+        <span class="note">Not covered. Tonight's coefficients are averages within streams; which hosts and rooms benefit most from each lever is an EconML question left to the causal inference course.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 6 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Two questions</b><span>"What do top streams share" has a traffic answer and a selling answer. Pooled across streams gives only the first.</span></div>
+      <div class="cheat-item"><b>The giveaway, twice</b><span>Pooled: +5,576 dollars GMV, p below 1e-7. Within: -2.31 points CTOR while live, p .01. Both right.</span></div>
+      <div class="cheat-item"><b>Fixed effects is a subtraction</b><span>Subtract each stream's mean from every column, OLS with no intercept, cluster SE by stream. PanelOLS(entity_effects=True) is the same line.</span></div>
+      <div class="cheat-item"><b>Say moves the order</b><span>CTOR: CTA +6.50, price +3.78, short urgency +4.93, stretched -1.84, Q&amp;A +0.96, dead air -4.72.</span></div>
+      <div class="cheat-item"><b>Show moves the click</b><span>CTR: product in hand +1.38, close-up +1.01, price overlay +0.97. All three flat on CTOR.</span></div>
+      <div class="cheat-item"><b>Split by stream</b><span>12 whole streams held out. MAE 1.43 vs mean-only 2.56. A row split tests memory, not generalisation.</span></div>
+      <div class="cheat-item"><b>SHAP ranking</b><span>impressions, is_cta, close_up_ratio, product_in_hand, room, fomo_run, is_hook, price_overlay, is_price, is_ai. Traffic first, then the same content columns.</span></div>
+      <div class="cheat-item"><b>A SHAP value is not an effect</b><span>It is a share of a prediction. The within table is the evidence; the model is the confirmation. Cite the regression.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Builder session 6 of 8 · learn-live-commerce-analytics-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="b5-score-content.html">← Builder session 5 · Score the content</a>
+      <a href="b7-live-nowcast.html">Builder session 7 · The live nowcast →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

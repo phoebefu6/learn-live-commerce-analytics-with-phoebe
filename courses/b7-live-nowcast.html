@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Builder session 7 of 8. A nowcaster for the next five minutes of orders, an EWMA order rate times a damped room projection, backtested over 6,720 windows against the naive baseline, and an alert rule that carries its own base rate.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="The live nowcast - learn live commerce analytics with phoebe">
+<meta property="og:description" content="Builder session 7 of 8. Forecast the next five minutes of orders while the stream is running, beat next-five-equals-last-five over 6,720 windows, and turn a dip into one sentence in the producer's ear.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/courses/b7-live-nowcast.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The live nowcast - learn live commerce analytics with phoebe">
+<meta name="twitter:description" content="EWMA rate times a room projection, alpha 0.1 MAE 9.41 against a naive 11.97, and an alert that only fires when the last CTA is six minutes back.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Builder session 7 · The live nowcast - learn live commerce analytics with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-live-commerce-analytics-with-phoebe</a> / Builder session 7 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LIVE Commerce Analytics with Phoebe · Builder session 7 of 8</div>
+    <h1>The live <span class="accent">nowcast</span></h1>
+    <p class="sub">Everything so far has been done to a recording. Tonight the stream is still running. A producer sits behind the host with an earpiece, and the only useful thing you can put in that earpiece is a number about the next five minutes that is better than her own guess, delivered with enough context that she knows what to do with it. That is a nowcast, and it is smaller than it sounds: a smoothed order rate times a projection of where the room is going, summed over five minutes. The work is not the arithmetic. The work is the backtest that proves it beats "the next five minutes will look like the last five", and the alert rule that stays quiet when the dip is noise.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Hardest</span>
+      <span class="chip audience">Data scientists</span>
+      <span class="chip audience">Anyone who wants a number in the producer's ear</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · A five-minute forecast</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: backtest and alert</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where session 7 sits</h2>
+    </div>
+    <p class="lede">Session 6 ended with a playbook: say the ask, say the price, two minutes of urgency and stop, show the product, answer the room. Each line has a within-stream number. None of them says when. A CTA at minute 43 of a stream that is already converting is a CTA wasted; the same CTA at minute 43 of a stream that has been quietly sliding for three minutes is the one that pays. Tonight builds the thing that can tell those two minute-43s apart while they are happening, and session 8 puts it on the replay bench to find out what it was worth.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> A nowcaster for the next five minutes of orders that beats "next five equals last five" over 6,720 backtest windows: MAE 9.41 orders per window at alpha 0.1 against 11.97 for the naive rule. An alert rule with two conditions, orders under 70 percent of the nowcast for three minutes and no CTA in the last six, and the base-rate table that says how often it fires on a host's own plan. And a replay loop that prints the producer's line minute by minute for one real stream.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why five minutes<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The horizon is chosen by the people, not the model. A host can act on a cue within a minute: pick up the serum, say the price, ask for the order. A cue takes about two minutes to land in the ledger, because the viewer who hears it has to tap the card, read the page and pay, and session 2 found the stream itself carries a delay before the words even arrive. So one minute is too short to see anything change, and two is the earliest a change shows. Five is the shortest horizon a producer can plan against: long enough that a cue given now is fully inside it, short enough that the room at the end of it is still recognisably the room at the start.</p>
+        <p>Go longer and the forecast gets easier to hit and useless to act on. A thirty-minute forecast is mostly the room's slow drift, which the producer can see with her own eyes. The five-minute number is the one she cannot see: whether the next five will be better or worse than the last five, and by roughly how much.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lumen Glow's first producer dashboard showed the running GMV total and a line for the room. The producer's own words on it: "It tells me what already happened. I need to know if I should interrupt her." The nowcast replaced the running total with one line, orders expected in the next five minutes against orders in the last five, and an amber state when the second was falling short of the first. She stopped watching the room curve within a week.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary tonight leans on<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Nowcast</strong> - a forecast of the immediate future from the immediate past, made while the thing is still happening. Distinguished from a forecast by the horizon (minutes, not weeks) and by the fact that the same model runs again every minute with one more row.</li>
+          <li><strong>Horizon</strong> - how far ahead the number reaches. Five minutes here. The backtest scores the sum over the horizon, not each minute inside it.</li>
+          <li><strong>EWMA</strong> - exponentially weighted moving average. <code>rate = alpha * new + (1 - alpha) * rate</code>. Small alpha means long memory; the newest minute barely moves the estimate. Large alpha means the estimate chases the newest minute.</li>
+          <li><strong>Backtest window</strong> - one (stream, minute t) pair at which the nowcaster is run using only rows before t and scored against rows t to t+4. Every window is a fresh forecast; 6,720 of them tonight.</li>
+          <li><strong>MAE</strong> - mean absolute error, in the unit of the thing forecast. Orders per five-minute window here. It is the average size of the miss, in either direction.</li>
+          <li><strong>Base rate</strong> - how often a rule fires when nothing is done about it, and how often a firing is followed by the thing it was supposed to predict. An alert without one cannot be judged.</li>
+          <li><strong>Alert</strong> - a rule that turns the nowcast into a yes or no. It is the only part of tonight a producer ever sees, so it carries the most design.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the nowcaster's arithmetic, the backtest and the alpha sweep</span>
+      <h2>A small honest model</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">The nowcaster is two estimates and a loop. An order rate per viewer, smoothed so one noisy minute does not swing it, and a room projection, the last five minutes' slope carried forward but damped so it cannot run away. Multiply, sum five times, and you have a number. The diagram is the whole model and the whole backtest on one canvas, because a model this small should fit.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Left: the nowcaster as arithmetic. An EWMA of orders per viewer with weight alpha, times a room projection that carries the last five minutes' slope forward damped by 0.6, summed over five minutes. Right: backtest bars over 6,720 windows, MAE in orders per window: alpha 0.1 gives 9.41, alpha 0.3 gives 10.84, alpha 0.6 gives 11.28, and the naive rule next five equals last five gives 11.97.">
+        <style>
+          .b7aHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b7aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b7aB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b7aM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b7aQ { font: 600 11px "SFMono-Regular", Menlo, monospace; fill: #062B33; }
+          .b7aV { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+          .b7aN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+          .b7aR { font: 700 11px Inter, sans-serif; fill: #C8173F; }
+        </style>
+        <defs>
+          <marker id="b7aAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#BFD8DE"></path>
+          </marker>
+        </defs>
+
+        <text class="b7aHd" x="14" y="24">The nowcaster, and what it scored</text>
+        <text class="b7aM" x="14" y="42">left: the arithmetic at minute t · right: MAE over 6,720 five-minute windows, all 60 streams</text>
+
+        <!-- left: arithmetic -->
+        <rect x="14" y="60" width="190" height="72" rx="10" fill="#0B7F94"></rect>
+        <text class="b7aT" x="30" y="84">order rate per viewer</text>
+        <text class="b7aQ" x="30" y="104" fill="#EEFCFE" style="fill:#fff">rr = orders[t-1]/room[t-1]</text>
+        <text class="b7aQ" x="30" y="120" fill="#EEFCFE" style="fill:#fff">rate = a*rr + (1-a)*rate</text>
+
+        <rect x="14" y="150" width="190" height="72" rx="10" fill="#0B7F94"></rect>
+        <text class="b7aT" x="30" y="174">room projection</text>
+        <text class="b7aQ" x="30" y="194" fill="#EEFCFE" style="fill:#fff">slope = 5-min change / 5</text>
+        <text class="b7aQ" x="30" y="210" fill="#EEFCFE" style="fill:#fff">next = room + 0.6*slope</text>
+
+        <line x1="208" y1="96" x2="254" y2="150" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b7aAr)"></line>
+        <line x1="208" y1="186" x2="254" y2="170" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b7aAr)"></line>
+
+        <rect x="258" y="132" width="180" height="82" rx="10" fill="#075E70"></rect>
+        <text class="b7aT" x="274" y="156">next five minutes</text>
+        <text class="b7aQ" x="274" y="176" style="fill:#A5EAF4">for 5 steps:</text>
+        <text class="b7aQ" x="274" y="192" style="fill:#A5EAF4">  room = room + 0.6*slope</text>
+        <text class="b7aQ" x="274" y="208" style="fill:#A5EAF4">  orders += room * rate</text>
+
+        <text class="b7aB" x="14" y="250">Two knobs. <tspan class="b7aV">alpha</tspan> is the rate's memory; 0.1 remembers</text>
+        <text class="b7aB" x="14" y="266">about ten minutes, 0.6 remembers about two.</text>
+        <text class="b7aB" x="14" y="286"><tspan class="b7aV">0.6 damping</tspan> keeps a two-minute spike in arrivals</text>
+        <text class="b7aB" x="14" y="302">from being projected as a room that doubles.</text>
+        <text class="b7aM" x="14" y="326">The room is what moves inside five minutes.</text>
+        <text class="b7aM" x="14" y="342">The rate barely does. Project the room, smooth the rate.</text>
+
+        <!-- right: backtest bars -->
+        <rect x="470" y="60" width="396" height="290" rx="10" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b7aHd" x="486" y="84">Backtest: MAE, orders per 5-minute window</text>
+        <text class="b7aM" x="486" y="100">every minute 3 to 115 of every stream; lower is better</text>
+
+        <text class="b7aB" x="560" y="130" text-anchor="end">alpha 0.1</text>
+        <rect x="570" y="118" width="188" height="16" rx="3" fill="#075E70"></rect>
+        <text class="b7aV" x="766" y="130">9.41</text>
+
+        <text class="b7aB" x="560" y="164" text-anchor="end">alpha 0.3</text>
+        <rect x="570" y="152" width="217" height="16" rx="3" fill="#0B7F94"></rect>
+        <text class="b7aV" x="795" y="164">10.84</text>
+
+        <text class="b7aB" x="560" y="198" text-anchor="end">alpha 0.6</text>
+        <rect x="570" y="186" width="226" height="16" rx="3" fill="#22C3DD"></rect>
+        <text class="b7aV" x="804" y="198">11.28</text>
+
+        <text class="b7aB" x="560" y="232" text-anchor="end">naive: last 5</text>
+        <rect x="570" y="220" width="239" height="16" rx="3" fill="#BFD8DE"></rect>
+        <text class="b7aV" x="817" y="232">11.97</text>
+
+        <line x1="570" y1="246" x2="570" y2="256" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <line x1="809" y1="246" x2="809" y2="256" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <line x1="570" y1="251" x2="809" y2="251" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <text class="b7aM" x="690" y="270" text-anchor="middle">naive = "next five equals last five", the bar to beat</text>
+
+        <text class="b7aR" x="486" y="300">Slower memory wins. Per-minute order rates are noisy;</text>
+        <text class="b7aR" x="486" y="316">chasing the last minute chases the noise.</text>
+        <text class="b7aB" x="486" y="338">6,720 windows = 60 streams x 112 minutes each.</text>
+
+        <rect x="14" y="372" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b7aN" x="38" y="384">Without the naive bar, 9.41 is just a number. With it, the nowcast beats a producer's rule of thumb by 21 percent.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the whole nowcaster as arithmetic, and the four-bar backtest that says whether it earned its place.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The arithmetic, and why the room matters more than the rate<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Orders in a minute are the room times the rate at which that room is ordering. Both move, but not equally. Across a five-minute window the per-viewer order rate of a given host in a given stream is nearly a constant with noise on it: one minute has three orders from a room of 800, the next has nine, the one after has four. Smoothing it is the right treatment. The room is different. It rises when the feed sends a burst of arrivals and falls when a segment goes stale, and those moves are real and they persist for minutes. A projection of the room is the right treatment for that.</p>
+        <p>So the nowcaster smooths the thing that is mostly noise and projects the thing that is mostly signal. The rate is an EWMA of <code>orders[t-1] / room[t-1]</code>. The room projection takes the change over the last five minutes, divides by five for a per-minute slope, and carries it forward five steps with a damping of 0.6 at each step, so a slope of plus twenty viewers a minute contributes twelve to the first projected minute and never compounds into a room that doubles. Each projected minute's room times the smoothed rate is that minute's expected orders; the five of them add up to the nowcast.</p>
+        <p>That is all of it. There is no seasonality, no exogenous regressor, no state vector. A model a producer can hold in her head is a model she will believe when it disagrees with her, and the backtest is what earns it the right to.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The backtest, and the bar that makes it mean something<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A backtest replays history as if it were live. For every stream and every minute t from 3 to 115, the nowcaster is given rows 1 to t-1 only, asked for the sum of orders in minutes t to t+4, and scored against what actually happened. Minute 3 is the first with enough history for a slope; minute 115 is the last whose five-minute horizon fits inside the 120. That is 112 windows a stream, 6,720 across the 60. The score is the mean absolute error over all of them, in orders per window.</p>
+        <p>The naive baseline is computed in the same loop, at the same windows: the sum of orders in minutes t-5 to t-1, offered as the forecast for t to t+4. "The next five minutes will look like the last five" is what a producer does in her head, and it is not stupid; it scores 11.97. Any nowcast that cannot beat it has no business in an earpiece. The rule is simple and it is not negotiable: the naive number goes in the same table as the model's number, every time, or the model's number means nothing.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>Forecaster</th><th>MAE, orders per 5-min window</th><th>Against naive</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>EWMA rate x room projection, alpha 0.1</td><td>9.41</td><td>21 percent lower</td></tr>
+            <tr><td>Same, alpha 0.3</td><td>10.84</td><td>9 percent lower</td></tr>
+            <tr><td>Same, alpha 0.6</td><td>11.28</td><td>6 percent lower</td></tr>
+            <tr><td>Naive: next five equals last five</td><td>11.97</td><td>the bar</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <p><strong>Score the sum, not the minutes.</strong> The producer acts on "about 40 orders in the next five", not on a per-minute path. Scoring each of the five minutes separately rewards a model for getting the shape right and the total wrong, which is the opposite of what she needs.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Alpha: why the slow memory wins here<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three alphas, three MAEs: 0.1 gives 9.41, 0.3 gives 10.84, 0.6 gives 11.28. The ordering is monotone and the gap is not small. With alpha 0.6 the rate estimate is mostly the last minute, and the last minute's rate in a room of 800 is a count of three or nine divided by 800, a number with enormous relative noise. The nowcaster then multiplies that noise by five projected rooms. With alpha 0.1 the newest minute gets a tenth of the weight and the estimate is effectively an average over the last ten or so, which is where the true rate lives.</p>
+        <p>This is a property of the data, not a law. A stream whose host changes what she is doing every two minutes has a rate that genuinely moves, and a slow alpha would lag it. The 60 Lumen Glow streams have segments of a few minutes each and a rate that mostly rides on the host, so the slow memory wins. The sweep in the build-along is there so you re-run it on your own streams rather than inheriting 0.1 as a constant.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>On Priya's stream 16 (Monday 18:00, no giveaway, peak room 498) the per-minute order count is small enough that a single bundle order swings the rate visibly. The alpha 0.6 nowcast on that stream oscillates by tens of orders from one minute to the next while the actual five-minute totals barely move; the alpha 0.1 version tracks them. Small rooms are where the slow memory pays most, and small rooms are most streams.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The next rungs: statsforecast and a Kalman local level<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Tonight's nowcaster is the bottom rung of a ladder, and it is worth knowing the next two by name so you reach for them when the bottom rung stops beating naive.</p>
+        <ul>
+          <li><strong>statsforecast 2.1.1</strong> (Apache-2.0): <code>AutoETS</code>, <code>AutoTheta</code> and <code>MSTL</code> on a frame of <code>unique_id, ds, y</code> with <code>freq="min"</code>, then <code>sf.forecast(df, h=5, level=[90])</code> for a prediction interval as well as a point. MSTL takes <code>season_length=[60]</code> or a list if a stream has a repeating segment cycle. One caution: the package has had no release since 2024-09. It is stable and it works; it is not being extended.</li>
+          <li><strong>statsmodels 0.15.0 <code>UnobservedComponents</code></strong> with <code>level="local level"</code>: the textbook Kalman filter for a true room hidden under noisy per-minute reads. <code>y_t = mu_t + e_t</code>, <code>mu_t = mu_{t-1} + eta_t</code>; the filtered level is the room estimate and <code>res.forecast(5)</code> is the projection. It replaces the slope-and-damping rule with something that learns how noisy the room reads are and how fast the true room drifts.</li>
+        </ul>
+        <p>Both need the same backtest loop and the same naive bar. A forecaster that is more sophisticated and scores 11.5 has lost to the arithmetic. The full method ladder, from naive through ETS and Theta to state space and beyond, with the backtesting discipline that goes with each rung, is a course on its own: <a href="https://phoebefu6.github.io/learn-timeseries-forecasting-with-phoebe/">learn time series forecasting with phoebe</a>.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the alert rule, its base rate and the sentence the producer hears</span>
+      <h2>An alert that does not fire on noise</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">A nowcast is a number every minute. A producer cannot act on a number every minute; she can act on a handful of moments a night. The alert is the rule that picks them, and a rule that fires on every noisy minute is worse than no rule, because by the third false alarm the earpiece is muted. Two conditions and a base rate, drawn on one stream.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A schematic timeline of one stream over 120 minutes. A solid line for orders per minute and a dotted line for the nowcast made five minutes earlier. Around minute 40 the actual line falls under the nowcast for three consecutive minutes and the last CTA was eight minutes back, so the alert fires, marked with a flag. Around minute 75 the actual line also dips but a CTA is running, so the second condition holds it silent. The two conditions and the base-rate question are written beneath.">
+        <style>
+          .b7bHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b7bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b7bB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b7bM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b7bQ { font: 600 11px "SFMono-Regular", Menlo, monospace; fill: #062B33; }
+          .b7bN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+          .b7bR { font: 700 11px Inter, sans-serif; fill: #C8173F; }
+        </style>
+        <text class="b7bHd" x="14" y="24">One stream, one night: where the alert fires and where it holds</text>
+        <text class="b7bM" x="14" y="42">schematic of a two-hour stream · solid: orders per minute · dotted: the nowcast made five minutes earlier</text>
+
+        <!-- axes -->
+        <line x1="60" y1="70" x2="60" y2="230" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <line x1="60" y1="230" x2="860" y2="230" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <text class="b7bM" x="14" y="78">orders</text>
+        <text class="b7bM" x="14" y="92">/ min</text>
+        <text class="b7bM" x="60" y="248" text-anchor="middle">0</text>
+        <text class="b7bM" x="260" y="248" text-anchor="middle">30</text>
+        <text class="b7bM" x="460" y="248" text-anchor="middle">60</text>
+        <text class="b7bM" x="660" y="248" text-anchor="middle">90</text>
+        <text class="b7bM" x="866" y="248" text-anchor="end">120 min</text>
+
+        <!-- CTA markers -->
+        <rect x="266" y="70" width="14" height="160" fill="#A5EAF4" opacity=".6"></rect>
+        <text class="b7bM" x="273" y="64" text-anchor="middle">CTA</text>
+        <rect x="546" y="70" width="14" height="160" fill="#A5EAF4" opacity=".6"></rect>
+        <text class="b7bM" x="553" y="64" text-anchor="middle">CTA</text>
+        <rect x="713" y="70" width="14" height="160" fill="#A5EAF4" opacity=".6"></rect>
+        <text class="b7bM" x="720" y="64" text-anchor="middle">CTA</text>
+
+        <!-- nowcast, dotted -->
+        <polyline points="80,200 120,176 160,160 200,150 240,146 280,142 320,140 360,142 400,144 440,150 480,152 520,156 560,150 600,146 640,150 680,154 720,150 760,160 800,172 840,186" fill="none" stroke="#0B7F94" stroke-width="2" stroke-dasharray="4 4"></polyline>
+
+        <!-- actual, solid with a dip at ~40 and a CTA-covered dip at ~78 -->
+        <polyline points="80,206 100,190 120,180 140,166 160,158 180,150 200,146 220,140 240,144 260,138 280,120 300,132 320,138 340,168 350,182 360,184 370,178 380,180 400,150 420,144 440,148 460,152 480,150 500,156 520,160 540,158 560,132 580,144 600,148 620,168 630,180 640,176 660,158 680,152 700,150 720,126 740,138 760,158 780,164 800,174 820,182 840,190" fill="none" stroke="#0B1A20" stroke-width="2.2"></polyline>
+
+        <!-- alert flag at ~minute 42 -->
+        <rect x="336" y="166" width="38" height="22" fill="#FFF0F4" stroke="#C8173F" stroke-width="1.2" rx="3"></rect>
+        <line x1="355" y1="120" x2="355" y2="166" stroke="#C8173F" stroke-width="1.5"></line>
+        <rect x="355" y="104" width="52" height="18" rx="3" fill="#C8173F"></rect>
+        <text class="b7bT" x="381" y="117" text-anchor="middle">FIRES</text>
+        <text class="b7bR" x="392" y="196">3 min under 70%, last CTA 8 min back</text>
+
+        <!-- held at ~minute 78 -->
+        <rect x="616" y="164" width="30" height="20" fill="#EEFCFE" stroke="#0B7F94" stroke-width="1.2" rx="3"></rect>
+        <line x1="631" y1="120" x2="631" y2="164" stroke="#0B7F94" stroke-width="1.5"></line>
+        <rect x="631" y="104" width="52" height="18" rx="3" fill="#0B7F94"></rect>
+        <text class="b7bT" x="657" y="117" text-anchor="middle">HOLDS</text>
+        <text class="b7bB" x="660" y="196">dip, but a CTA ran 3 min ago</text>
+
+        <!-- rule boxes -->
+        <rect x="14" y="268" width="270" height="88" rx="10" fill="#075E70"></rect>
+        <text class="b7bT" x="30" y="292">Condition 1: a real shortfall</text>
+        <text class="b7bQ" x="30" y="312" style="fill:#A5EAF4">sum(orders[t-3:t])</text>
+        <text class="b7bQ" x="30" y="328" style="fill:#A5EAF4">  &lt; 0.7 * nowcast for those 3</text>
+        <text class="b7bB" x="30" y="346" style="fill:#fff">three minutes, not one, so noise cannot trip it</text>
+
+        <rect x="304" y="268" width="270" height="88" rx="10" fill="#0B7F94"></rect>
+        <text class="b7bT" x="320" y="292">Condition 2: room to act</text>
+        <text class="b7bQ" x="320" y="312" style="fill:#fff">minutes since last CTA >= 6</text>
+        <text class="b7bB" x="320" y="330" style="fill:#fff">a CTA takes two minutes to land;</text>
+        <text class="b7bB" x="320" y="346" style="fill:#fff">firing during one asks for a second ask</text>
+
+        <rect x="594" y="268" width="272" height="88" rx="10" fill="#FFF0F4" stroke="#C8173F"></rect>
+        <text class="b7bR" x="610" y="292">The base rate, on the history</text>
+        <text class="b7bB" x="610" y="312">How many times a night does it fire</text>
+        <text class="b7bB" x="610" y="328">on the host's own plan, and what share</text>
+        <text class="b7bB" x="610" y="344">of firings precede a real five-minute dip?</text>
+
+        <rect x="14" y="382" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b7bN" x="38" y="394">This rule is the "CTA on a dip" policy on session 8's bench: +14.6 percent GMV over 40 nights. Same code, simulated night.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - two dips on one stream; the rule fires on the first and holds on the second because a CTA was already running.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The rule as the bench uses it<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The alert has two conditions and both must hold. First, the last three minutes of orders sum to under 70 percent of what the nowcast expected for those three minutes. Three, not one, because one minute under forecast happens constantly in a room where the count is a handful; three in a row is a slide. Seventy percent, not ninety, because a five-order miss on a forty-order forecast is noise and a fifteen-order miss is a room that has stopped buying. Second, the host's last CTA was six or more minutes ago.</p>
+        <p>This rule, followed exactly, is the "CTA on a dip" policy on session 8's replay bench: when it fires, the host is cued to do a CTA, and over 40 seeded nights of tonight's stream (Jules, Friday 20:00) that policy takes 20,847 dollars against the host's own plan at 18,198, plus 14.6 percent. The bench computes those means live in the browser. The rule you write tonight and the rule the bench runs are the same code.</p>
+        <p>The second condition is the one people want to delete, and it is the one that makes the rule usable. Without it, the rule fires during CTAs that are already running. A CTA minute has its orders arriving one to two minutes later, so the minute of the ask itself often looks like a shortfall; the rule would then cue a CTA into a CTA, the host would be asked to ask again, and the third time it happened she would take the earpiece out. Six minutes is two for the CTA to land, then a few more of the room converting on it, before it is reasonable to ask a second time.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The base rate, or why an alert without one is a guess<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Before a rule goes in anyone's ear, run it over the 60 historical streams with nothing done about it and count two things. How many times a night it fires on the host's own plan, which is the number of interruptions the producer is signing up for. And of those firings, what share were followed by an actual five-minute shortfall against the nowcast, which is how often the interruption was warranted. The build-along computes both from the history and prints them as a table; they are properties of your streams and your thresholds and they are not the same for a small room as for a large one.</p>
+        <p>Then move the thresholds and watch both numbers move. Loosen 70 percent to 85 and the rule fires more often on less; tighten six minutes to ten and it fires less often and later. There is no right setting, there is a trade the producer should make with the two numbers in front of her, and a rule shipped without them is a rule whose trade was made by whoever wrote the first draft.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>What to report</th><th>How it is computed on the history</th><th>What it tells the producer</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Firings per stream</td><td>Count of minutes where both conditions hold, over 60 streams</td><td>Interruptions a night</td></tr>
+            <tr><td>Share of firings before a real dip</td><td>Of the firings, the share where the next five minutes fall under 70 percent of the nowcast</td><td>How often the interruption was warranted</td></tr>
+            <tr><td>Dips caught</td><td>Of the real dips, the share with a firing in the three minutes before</td><td>What it misses</td></tr>
+          </tbody>
+        </table>
+        <div class="callout tip">
+          <p><strong>A base rate measured on a different stream mix is a different base rate.</strong> If your streams are half the size of these, the counts are noisier and the 70 percent threshold trips more. Rerun the table on your own history before you quote a firing rate to anyone.</p>
+          </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The human in the loop<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The producer does not hear "fire". She hears a sentence: "orders under forecast, last CTA 8 minutes ago". That is the two conditions read out, and it is deliberately not an instruction. She can see the host, the chat and the product table; the rule can see three columns. She decides whether the cue is a CTA, a price reminder or nothing, because the host is mid-story and the story is working. The rule's job is to make sure she looks, at the right moment, with the reason in her ear.</p>
+        <p>Two words of the sentence carry the design. "Under forecast" says the shortfall is against what the room was expected to do, not against a number from a different night. "8 minutes ago" says there is room for an ask. When the leader track's session 5 teaches producers to coach live, this is the sentence they practise reacting to.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What the nowcast will never see<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The nowcaster reads two columns of the minute table, orders and room, and knows nothing else. A change in how the feed is routing traffic shows up in the room only after it has happened, so the projection is late by exactly the amount it matters. A competitor's flash sale at the same hour pulls viewers out of the room for reasons the room curve cannot explain and the rate cannot anticipate. A product going out of stock stops orders dead while the nowcast keeps forecasting them for five more minutes.</p>
+        <p>None of that is a reason to add columns. It is the reason the horizon stays at five minutes. Every one of those shocks is invisible before it arrives and obvious within two minutes of arriving, and a five-minute forecast re-run every minute is wrong about it for at most a few windows before the new rate and the new slope take over. A thirty-minute forecast would be wrong for thirty. Short horizons are not a limitation the ladder grows out of; they are how a model with two inputs stays honest about the things it cannot see.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Backtest the nowcast, then write the alert</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">Five steps, pandas and numpy only. The nowcast function, the backtest loop with the naive baseline in the same table, the alpha sweep, the alert rule with its base rate computed on the 60 streams, and a replay loop that prints the producer's sentence minute by minute for Priya's stream 16. The loop matches analyze.py's <code>nowcast_backtest</code> so your numbers are its numbers.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>The nowcast function.</strong> Takes the order and room arrays of one stream and a minute t, uses only rows before t, returns the expected orders in t to t+4. The EWMA rate is carried between calls, so the function takes the previous rate and returns the new one.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Two estimates and a loop</span>
+import pandas as pd
+import numpy as np
+
+m = pd.read_csv("data/streams.csv").sort_values(["stream_id", "t"])
+
+def nowcast(orders, room, t, rate, alpha=0.1, horizon=5, damp=0.6):
+    """Expected orders in minutes t..t+horizon-1, using rows before t only. Returns (forecast, rate)."""
+    rr = orders[t - 1] / room[t - 1] if room[t - 1] else 0.0
+    rate = rr if rate is None else alpha * rr + (1 - alpha) * rate      # EWMA of orders per viewer
+    k = min(5, t - 1)
+    slope = (room[t - 1] - room[t - 1 - k]) / k                          # last-5-minute slope
+    pr, po = room[t - 1], 0.0
+    for _ in range(horizon):
+        pr = max(0, pr + slope * damp)                                   # damped room projection
+        po += pr * rate
+    return po, rate
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>The backtest loop, with the naive baseline in the same table.</strong> Every stream, every minute 3 to 115. The naive forecast is the last five minutes' orders. Both errors are collected at the same windows so the comparison is fair.</p>
+        <div class="prompt-box good">
+          <span class="label">★ 6,720 windows, two error lists</span>
+def nowcast_backtest(alpha=0.1, horizon=5):
+    errs, naive_errs = [], []
+    for sid, g in m.groupby("stream_id"):
+        orders, room = g.orders.to_numpy(), g.room.to_numpy()
+        rate = None
+        for t in range(3, len(g) - horizon):
+            po, rate = nowcast(orders, room, t, rate, alpha=alpha, horizon=horizon)
+            actual = orders[t:t + horizon].sum()
+            errs.append(abs(po - actual))
+            naive_errs.append(abs(orders[t - horizon:t].sum() - actual))   # "next 5 = last 5"
+    return {"alpha": alpha, "mae": round(float(np.mean(errs)), 2),
+            "naive_last5_mae": round(float(np.mean(naive_errs)), 2), "n": len(errs)}
+
+print(nowcast_backtest(0.1))
+# {'alpha': 0.1, 'mae': 9.41, 'naive_last5_mae': 11.97, 'n': 6720}
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>The alpha sweep.</strong> Three values, one table, the naive column repeated in every row so nobody reads the model column alone.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Slower memory wins on this data</span>
+sweep = pd.DataFrame([nowcast_backtest(a) for a in (0.1, 0.3, 0.6)])
+print(sweep)
+#    alpha    mae  naive_last5_mae     n
+#      0.1   9.41            11.97  6720
+#      0.3  10.84            11.97  6720
+#      0.6  11.28            11.97  6720
+sweep.to_csv("data/derived/nowcast_backtest.csv", index=False)
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>The alert rule and its base rate on the history.</strong> At each minute, compare the last three minutes' orders with the nowcast that was made for them three minutes earlier, and check the minutes since the last CTA. Then count firings per stream and the share followed by a real five-minute shortfall.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Two conditions, then count how often they hold on the host's own plan</span>
+def alert_table(alpha=0.1, short=0.7, gap=6):
+    rows = []
+    for sid, g in m.groupby("stream_id"):
+        orders, room, seg = g.orders.to_numpy(), g.room.to_numpy(), g.segment.to_numpy()
+        rate, fc3, fc5 = None, {}, {}
+        last_cta = -99
+        for t in range(3, len(g) - 5):
+            po3, _    = nowcast(orders, room, t, rate, alpha=alpha, horizon=3)
+            po5, rate = nowcast(orders, room, t, rate, alpha=alpha, horizon=5)
+            fc3[t], fc5[t] = po3, po5                       # forecasts made at t, for t..t+2 and t..t+4
+            if seg[t - 1] == "cta":
+                last_cta = t - 1
+            if t - 3 in fc3:
+                recent = orders[t - 3:t].sum()
+                cond1 = recent &lt; short * fc3[t - 3]         # last 3 minutes under 70% of their nowcast
+                cond2 = (t - last_cta) >= gap                # last CTA 6+ minutes back
+                real_dip = orders[t:t + 5].sum() &lt; short * po5
+                rows.append({"stream_id": sid, "t": t, "fires": cond1 and cond2, "real_dip": real_dip})
+    a = pd.DataFrame(rows)
+    fires = a[a.fires]
+    return pd.Series({
+        "firings_per_stream":       round(len(fires) / a.stream_id.nunique(), 2),
+        "share_before_real_dip":    round(fires.real_dip.mean(), 3),
+        "real_dips_per_stream":     round(a.real_dip.sum() / a.stream_id.nunique(), 2),
+        "dips_with_a_firing":       round(a[a.real_dip].fires.mean(), 3),
+    })
+
+base = alert_table()
+print(base)                     # the numbers the producer signs up for; rerun on your own streams
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Replay one stream and print the producer's line.</strong> Priya's stream 16, minute by minute. The sentence is the two conditions read out; "fire" never appears.</p>
+        <div class="prompt-box good">
+          <span class="label">★ What the earpiece would have said on stream 16</span>
+def replay(sid, alpha=0.1, short=0.7, gap=6):
+    g = m[m.stream_id == sid]
+    orders, room, seg = g.orders.to_numpy(), g.room.to_numpy(), g.segment.to_numpy()
+    rate, fc3, last_cta = None, {}, -99
+    for t in range(3, len(g) - 5):
+        po3, _    = nowcast(orders, room, t, rate, alpha=alpha, horizon=3)
+        po5, rate = nowcast(orders, room, t, rate, alpha=alpha, horizon=5)
+        fc3[t] = po3
+        if seg[t - 1] == "cta":
+            last_cta = t - 1
+        line = f"min {t:3d} | room {room[t-1]:4.0f} | next 5 expected {po5:5.1f} | last 5 actual {orders[t-5:t].sum():3d}"
+        if t - 3 in fc3 and orders[t-3:t].sum() &lt; short * fc3[t - 3] and (t - last_cta) >= gap:
+            line += f"  ->  orders under forecast, last CTA {t - last_cta} minutes ago"
+        print(line)
+
+replay(16)
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <p><strong>The forecast you compare against must be the one made before the minutes it covers.</strong> Comparing the last three minutes with a nowcast made at t, which already saw them, is a rule that fires on its own hindsight. Keep the forecast dictionary keyed by the minute it was made, and look three minutes back.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 8</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>Sweep the damping factor (0.4, 0.6, 0.8, 1.0) at alpha 0.1 and add the rows to the backtest table. Write one sentence on what a damping of 1.0 does to the error on streams with a giveaway opener, where the room moves fastest.</li>
+      <li>Split the backtest error by room size: windows where the room is under 400 and windows where it is over 800. Report both MAEs and both naive MAEs. The nowcast's advantage over naive is not the same in both, and you should be able to say why before you look.</li>
+      <li>Move the alert thresholds: 70 percent to 85 percent, and six minutes to ten. Produce the base-rate table for each of the four combinations and write two lines a producer could choose between, with the firings per stream and the share before a real dip on each.</li>
+      <li>Fit a statsmodels 0.15.0 <code>UnobservedComponents(room, level="local level")</code> to one stream's room column and compare its five-step forecast with the slope-and-damping projection at ten minutes of your choosing. Do not add it to the nowcaster yet; just see whether the two disagree and where.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">The nowcast scores an MAE of 9.41 orders per five-minute window. Why does the backtest table also carry the naive "next five equals last five" rule at 11.97?</p>
+      <button class="qopt" type="button">A · Because the naive rule is what the model is initialised from, so its error is needed to compute the model's</button>
+      <button class="qopt" type="button">B · Because 9.41 on its own says nothing; the naive rule is what a producer already does in her head, and the nowcast earns its place only by beating it at the same windows</button>
+      <button class="qopt" type="button">C · Because the platform reports the naive number and the two must reconcile</button>
+      <p class="qwhy">A forecast number without a baseline cannot be judged good or bad. Computed at the same 6,720 windows, the nowcast is 21 percent lower than naive. A more elaborate model that scored 11.5 would have lost to arithmetic.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Alpha 0.1 gives MAE 9.41, alpha 0.6 gives 11.28. Why does the slower memory win?</p>
+      <button class="qopt" type="button">A · Per-minute order counts in a room of a few hundred are noisy, so an estimate that leans on the newest minute chases noise and then multiplies it by five projected rooms</button>
+      <button class="qopt" type="button">B · A smaller alpha makes the room projection more conservative, which reduces the error on falling rooms</button>
+      <button class="qopt" type="button">C · Alpha 0.6 overfits the training streams; alpha 0.1 regularises</button>
+      <p class="qwhy">Alpha only touches the rate, not the room projection, and there is no training set. The per-viewer order rate of a host inside a stream is close to a constant with noise on it; the long memory averages the noise out.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">The alert's second condition is "last CTA six or more minutes ago". What does it prevent?</p>
+      <button class="qopt" type="button">A · It prevents the rule from firing in the first six minutes of the stream, before the nowcast has a history</button>
+      <button class="qopt" type="button">B · It prevents the host from doing more than one CTA per segment, which the content policy limits</button>
+      <button class="qopt" type="button">C · It prevents the rule firing during a CTA that is already running: the ask's orders land one to two minutes later, so the CTA minute itself looks like a shortfall and the rule would cue a second ask into the first</button>
+      <p class="qwhy">Without the second condition the rule fires on its own remedy. The producer would be asked to cue a CTA while one is in progress, and after the third time the earpiece comes out. Six minutes is time for the ask to land and the room to convert on it.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">The nowcaster and its backtest</span>
+        <span class="note">EWMA order rate times a damped room projection over a five-minute horizon; 6,720 windows; alpha 0.1 MAE 9.41, 0.3 at 10.84, 0.6 at 11.28, naive last-five 11.97.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">The alert rule and its base rate</span>
+        <span class="note">Three minutes under 70 percent of nowcast and six or more minutes since the last CTA; firings per stream and share before a real dip computed on the 60-stream history; the producer's sentence.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">statsforecast 2.1.1 and statsmodels 0.15.0 UnobservedComponents, named with versions</span>
+        <span class="note">AutoETS, AutoTheta and MSTL with freq="min" (no release since 2024-09), and the local-level Kalman nowcaster of the true room. Homework fits the second on one stream.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">The forecasting method ladder</span>
+        <span class="note">Only the bottom rung is built tonight and the next two are named. The ladder, its backtesting discipline and prediction intervals live in the time series forecasting course.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">The replay bench</span>
+        <span class="note">Tonight's alert is the "CTA on a dip" policy the bench runs at plus 14.6 percent over 40 nights. Session 8 puts the rule on the bench and adds the switchback design that makes the result believable.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Deep forecasters</span>
+        <span class="note">Not covered. With 120 minutes per stream and two input columns, a neural forecaster has nothing to learn that the arithmetic and a state-space model do not already capture, and it cannot be explained in an earpiece.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 7 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The horizon</b><span>Five minutes. A host acts within one, a cue lands in two, five is the shortest a producer can plan against.</span></div>
+      <div class="cheat-item"><b>The nowcaster</b><span>EWMA of orders per viewer (alpha) times a room projection from the last five minutes' slope, damped 0.6, summed over five steps.</span></div>
+      <div class="cheat-item"><b>Smooth the rate, project the room</b><span>The rate is a constant with noise on it. The room is what actually moves inside five minutes.</span></div>
+      <div class="cheat-item"><b>The backtest</b><span>Every minute 3 to 115 of every stream, forecast t to t+4 from rows before t. 6,720 windows, MAE on the five-minute sum.</span></div>
+      <div class="cheat-item"><b>The naive bar</b><span>"Next five equals last five" scores 11.97. Alpha 0.1 scores 9.41. Never quote the second without the first.</span></div>
+      <div class="cheat-item"><b>Alpha</b><span>0.1 beats 0.3 beats 0.6 here because per-minute order rates are noisy. Re-run the sweep on your own streams.</span></div>
+      <div class="cheat-item"><b>The alert</b><span>Fire when the last 3 minutes are under 70 percent of their nowcast AND the last CTA is 6+ minutes back. The second condition stops it firing into a running CTA.</span></div>
+      <div class="cheat-item"><b>The base rate</b><span>Firings per stream and share before a real dip, computed on the history before the rule goes in anyone's ear. The producer hears the conditions, not "fire".</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Builder session 7 of 8 · learn-live-commerce-analytics-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="b6-traits-to-playbook.html">← Builder session 6 · From traits to a playbook</a>
+      <a href="b8-intervene.html">Builder session 8 · Intervene, then prove it →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

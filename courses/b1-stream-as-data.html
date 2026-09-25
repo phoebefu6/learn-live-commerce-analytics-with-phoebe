@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Builder session 1 of 8. Four recordings of one LIVE stream - video, transcript, comment feed, sales ledger - become one row per minute. The grain, the event model and the metric definitions every later session inherits.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="The stream as data - learn live commerce analytics with phoebe">
+<meta property="og:description" content="Builder session 1 of 8. A two-hour LIVE is four recordings on four clocks. Pick the minute as the grain and every one of them fits in one row.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/courses/b1-stream-as-data.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The stream as data - learn live commerce analytics with phoebe">
+<meta name="twitter:description" content="60 streams, 7,200 minutes, 26 columns. The table the rest of the builder track is built on, and the three grains that lie.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Builder session 1 · The stream as data - learn live commerce analytics with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-live-commerce-analytics-with-phoebe</a> / Builder session 1 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LIVE Commerce Analytics with Phoebe · Builder session 1 of 8</div>
+    <h1>The stream <span class="accent">as data</span></h1>
+    <p class="sub">A two-hour TikTok Shop LIVE leaves four recordings behind: the video file, the audio inside it, the comment feed, and the seller dashboard's ledger of who was in the room and who bought. They are recorded on four clocks, at four grains, by four systems that were never designed to be joined. Tonight you pick the one grain they all fit into, the minute, and build the table the rest of the builder track is built on: sixty streams of one skincare brand, 7,200 rows, one row per minute, with what was said, what was shown and what was sold sitting side by side.</p>
+    <div class="chip-row">
+      <span class="chip level">🟢 Foundational</span>
+      <span class="chip audience">Data scientists and analytics engineers</span>
+      <span class="chip audience">Anyone who owns a LIVE dashboard</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · Four sources, one grain</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: the minute table</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>How the builder track works</h2>
+    </div>
+    <p class="lede">Eight sessions, 45 minutes each, one pipeline. Tonight the grain and the table. Session 2 gets the four recordings onto one clock. Sessions 3 and 4 add what the camera shows and what the host says, as columns. Session 5 scores every minute, session 6 works out which traits actually move the money and which only look like they do, session 7 forecasts the next five minutes while the stream is still running, and session 8 cues the host on a replay bench and measures what the cue was worth. The brand throughout is <strong>Lumen Glow</strong>, one hero SKU, a 29 dollar serum sold by four human hosts and two AI avatars across <strong>60 streams</strong>.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> A 26-column minute table you can open in pandas, with every later column already reserved: segment, product in hand, close-up ratio, price on screen, comments, replies, room size, product impressions, clicks, orders, GMV. The funnel arithmetic that turns those columns into the metrics a seller dashboard reports, checked to the cent against the stream totals. And a clear head about grain, because the three most common analysis mistakes in live commerce are all grain mistakes wearing a costume.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why the minute, and not the frame or the stream<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Every source has a natural grain. Video is frames, 30 a second. Speech is words, with a start and an end time each. Comments are events with a timestamp. The seller dashboard reports the whole stream as one row, or at best a curve you can hover. None of those grains can hold the others. A frame does not know what was sold, a stream total does not know what was said at minute 43.</p>
+        <p>The minute is the coarsest grain at which a host can still change something. A host cannot react to a frame, and a stream total arrives after the room has gone home. Every question the leader track asks (which minutes convert, what the host was doing in them, whether a cue at minute 43 paid off by minute 48) is a minute question. So the table is built at the minute, and finer sources are aggregated up to it: share of frames with the product in hand, count of comments, dominant speech segment.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lumen Glow's first attempt at this joined comments to orders by second and found nothing. The comment "is it good for oily skin?" and the order it produced were 40 to 90 seconds apart, so no second-level join ever matched them. At the minute grain, with a one-minute lag column, the pattern was obvious: minutes with an answered question were followed by minutes with more orders.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary the whole track uses<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Room</strong> - the number of viewers watching at a given minute. Also called concurrent viewers. Rises with arrivals, falls with leavers.</li>
+          <li><strong>Views</strong> - the count of entries into the stream. One person leaving and coming back is two views. TikTok Shop reports <strong>Viewers</strong> (unique people) beside it, plus <strong>Peak Concurrent Viewers</strong> and <strong>Average Concurrent Viewers</strong>.</li>
+          <li><strong>Product impressions</strong> - how many times the pinned product card was shown. Roughly the room times the share of viewers who see the card each minute.</li>
+          <li><strong>Product clicks and CTR</strong> - taps on the product card, and clicks divided by impressions.</li>
+          <li><strong>Orders and click-to-order rate</strong> - purchases, and orders divided by clicks. TikTok Shop's analytics call the rate <strong>CTOR</strong>; the course's tables write CVR, the same number.</li>
+          <li><strong>GMV</strong> - gross merchandise value, the sum of order values before refunds.</li>
+          <li><strong>GPM</strong> - GMV per thousand views, <strong>Watch GPM</strong> in TikTok Shop's LIVE analytics. The one number that lets a small room and a large room be compared on how well they sold.</li>
+          <li><strong>Segment</strong> - what the host is doing in a minute, as a tagger would label it from the transcript: hook, product build, demo, price, CTA, urgency, Q&amp;A, filler, dead air. Session 4 builds the tagger; tonight it is a column.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the four sources and the event model that joins them</span>
+      <h2>Four recordings, one row per minute</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">The four sources arrive at wildly different rates, and the temptation is to build four tables and join them later. Build the minute table first and treat every source as something that contributes columns to it. The join key is the stream id and the minute number, and nothing else.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four source lanes on the left - video at 30 frames a second, audio as timestamped words, comments as timestamped events, and the seller ledger per minute - each aggregated to the minute and landing as columns in one minute row on the right, keyed by stream id and minute.">
+        <style>
+          .b1aHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b1aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b1aB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b1aM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b1aQ { font: 600 11px "SFMono-Regular", Menlo, monospace; fill: #062B33; }
+          .b1aN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+        </style>
+        <defs>
+          <marker id="b1aAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#BFD8DE"></path>
+          </marker>
+        </defs>
+
+        <text class="b1aHd" x="14" y="24">Four sources, four grains, one join key</text>
+
+        <rect x="14" y="52" width="188" height="64" rx="10" fill="#075E70"></rect>
+        <text class="b1aT" x="30" y="76">Video</text>
+        <text class="b1aB" x="30" y="94" style="fill:#fff">30 frames a second</text>
+        <text class="b1aB" x="30" y="108" style="fill:#fff">what the camera showed</text>
+
+        <rect x="14" y="128" width="188" height="64" rx="10" fill="#0B7F94"></rect>
+        <text class="b1aT" x="30" y="152">Audio</text>
+        <text class="b1aB" x="30" y="170" style="fill:#fff">words with start and end</text>
+        <text class="b1aB" x="30" y="184" style="fill:#fff">what the host said</text>
+
+        <rect x="14" y="204" width="188" height="64" rx="10" fill="#0B7F94"></rect>
+        <text class="b1aT" x="30" y="228">Comment feed</text>
+        <text class="b1aB" x="30" y="246" style="fill:#fff">one event per comment</text>
+        <text class="b1aB" x="30" y="260" style="fill:#fff">what the room said</text>
+
+        <rect x="14" y="280" width="188" height="64" rx="10" fill="#22C3DD"></rect>
+        <text class="b1aHd" x="30" y="304">Seller ledger</text>
+        <text class="b1aB" x="30" y="322">room, impressions, clicks,</text>
+        <text class="b1aB" x="30" y="336">orders, GMV per minute</text>
+
+        <text class="b1aHd" x="250" y="46">Aggregate to the minute</text>
+        <rect x="250" y="60" width="236" height="48" rx="8" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b1aQ" x="262" y="80">share of frames: product in hand</text>
+        <text class="b1aQ" x="262" y="98">mean close-up ratio, scene cuts</text>
+        <rect x="250" y="136" width="236" height="48" rx="8" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b1aQ" x="262" y="156">dominant segment label</text>
+        <text class="b1aQ" x="262" y="174">words per minute</text>
+        <rect x="250" y="212" width="236" height="48" rx="8" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b1aQ" x="262" y="232">count(comments), count(likes)</text>
+        <text class="b1aQ" x="262" y="250">count(host replies)</text>
+        <rect x="250" y="288" width="236" height="48" rx="8" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b1aQ" x="262" y="308">already per minute</text>
+        <text class="b1aQ" x="262" y="326">shift by the stream delay (b2)</text>
+
+        <line x1="206" y1="84" x2="246" y2="84" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b1aAr)"></line>
+        <line x1="206" y1="160" x2="246" y2="160" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b1aAr)"></line>
+        <line x1="206" y1="236" x2="246" y2="236" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b1aAr)"></line>
+        <line x1="206" y1="312" x2="246" y2="312" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b1aAr)"></line>
+
+        <line x1="490" y1="84" x2="546" y2="176" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b1aAr)"></line>
+        <line x1="490" y1="160" x2="546" y2="190" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b1aAr)"></line>
+        <line x1="490" y1="236" x2="546" y2="206" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b1aAr)"></line>
+        <line x1="490" y1="312" x2="546" y2="222" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b1aAr)"></line>
+
+        <rect x="552" y="120" width="314" height="160" rx="12" fill="#075E70"></rect>
+        <text class="b1aT" x="568" y="146">one minute row</text>
+        <text class="b1aB" x="568" y="168" style="fill:#fff">key: stream_id, t</text>
+        <text class="b1aB" x="568" y="190" style="fill:#fff">segment · product_in_hand · close_up_ratio</text>
+        <text class="b1aB" x="568" y="208" style="fill:#fff">price_overlay · scene_cuts · wpm</text>
+        <text class="b1aB" x="568" y="226" style="fill:#fff">comments · likes · replies</text>
+        <text class="b1aB" x="568" y="244" style="fill:#fff">room · impressions · clicks · orders · gmv</text>
+        <text class="b1aB" x="568" y="266" style="fill:#fff">26 columns, 7,200 rows across 60 streams</text>
+
+        <rect x="14" y="372" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b1aN" x="38" y="384">Every later session adds or reads a column here. Nothing downstream joins on anything but stream_id and t.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - four grains aggregated up to the minute and landing as columns of one row.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The four sources and what each one actually knows<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Each source answers one question and is nearly blind to the others. Knowing the blind spots is what stops you asking a source for something it never recorded.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>Source</th><th>Knows</th><th>Blind to</th><th>Native grain</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Video file</td><td>What was in frame: the host, the product, a price card, a cut</td><td>Who was watching and what they did</td><td>Frame</td></tr>
+            <tr><td>Audio track</td><td>What was said, when, how fast</td><td>Whether anyone heard it or believed it</td><td>Word</td></tr>
+            <tr><td>Comment feed</td><td>What the room said back, and how much of it the host answered</td><td>The silent majority who never type</td><td>Event</td></tr>
+            <tr><td>Seller ledger</td><td>Room size, product impressions, clicks, orders, GMV</td><td>Why. It has no idea what the host was doing</td><td>Minute, or stream</td></tr>
+          </tbody>
+        </table>
+        <p>The whole course is the fourth row's blind spot filled in by the first three. The ledger says minute 43 sold 19 units. The other three say the host was holding the serum up to the camera, had just said the price, and was answering a question about oily skin. Neither half is analysis on its own.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Two conventions that save you a week<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>Minute t is the interval [t-1, t) from the start of the stream</strong>, indexed from 1. Not from the top of the wall-clock hour, not from when the recording started. Every source is shifted to this clock in session 2, and once it is, "minute 43" means the same thing in every column.</p>
+        <p><strong>Counts are sums, states are end-of-minute.</strong> Arrivals, comments, clicks, orders and GMV are what happened during the minute, so they add up: summing a stream's minute rows must give the stream total exactly, and tonight's demo checks that it does. Room size is a state, so it is the value at the end of the minute and it does not add up to anything. Mixing the two is the first grain mistake, and it produces "average room" numbers that are quietly wrong.</p>
+        <div class="callout tip">
+          <p><strong>Write the check, not the note.</strong> A one-line assertion that the minute GMV sums to the stream GMV for every stream is worth more than a paragraph in the README saying it should. It ran on tonight's data and passed for 60 of 60.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The event model behind the minute table<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The minute table is a derived table. Underneath it, when you have real recordings, sit five raw tables that you keep and never edit:</p>
+        <ul>
+          <li><code>streams</code> - one row per stream: id, host, host type, start time, weekday, whether it opened with a giveaway, the platform's stream id.</li>
+          <li><code>frames</code> - one row per sampled frame (1 per second is plenty): stream, offset seconds, then detector outputs as columns. Session 3 fills it.</li>
+          <li><code>words</code> - one row per transcribed word: stream, start, end, text, confidence. Session 4 fills it and tags segments from it.</li>
+          <li><code>comments</code> - one row per comment or like event: stream, offset, author hash, text, whether the host replied to it.</li>
+          <li><code>ledger</code> - the seller dashboard export at whatever grain it gives you, with its own timestamps untouched.</li>
+        </ul>
+        <p>The minute table is rebuilt from these every time a detector or tagger improves. That is the point of keeping them: an analysis you cannot rebuild from raw is an analysis you cannot correct.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the funnel arithmetic and the three grains that lie</span>
+      <h2>The funnel, and what a ratio is a ratio of</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">Every metric a seller dashboard reports is a count or a ratio of two counts from the minute table. Once you can rebuild each one from the columns, you also know exactly which denominator it stands on, and that is what protects you from the three ways a live-commerce ratio lies.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The LIVE funnel for an average Lumen Glow stream: 9,049 views into the room, 60,000 product impressions, 3,997 clicks at a 6.6 percent click rate, 484 orders at a 12.1 percent click-to-order rate, 16,139 dollars of GMV, and GPM of 1,750 dollars per thousand views. Impressions exceed views because the card is shown every minute a viewer stays.">
+        <style>
+          .b1bHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b1bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b1bV { font: 800 16px Inter, sans-serif; fill: #fff; }
+          .b1bB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b1bM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b1bR { font: 700 11px Inter, sans-serif; fill: #C8173F; }
+          .b1bN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+        </style>
+        <text class="b1bHd" x="14" y="24">The funnel of an average Lumen Glow stream, rebuilt from the minute table</text>
+        <text class="b1bM" x="14" y="42">means over 60 streams; every number is a column sum or a ratio of two</text>
+
+        <rect x="14" y="62" width="150" height="74" rx="10" fill="#075E70"></rect>
+        <text class="b1bT" x="89" y="86" text-anchor="middle">Views</text>
+        <text class="b1bV" x="89" y="110" text-anchor="middle">9,049</text>
+        <text class="b1bB" x="89" y="128" text-anchor="middle" style="fill:#fff">sum(arrivals)</text>
+
+        <rect x="188" y="62" width="150" height="74" rx="10" fill="#0B7F94"></rect>
+        <text class="b1bT" x="263" y="86" text-anchor="middle">Impressions</text>
+        <text class="b1bV" x="263" y="110" text-anchor="middle">60,000</text>
+        <text class="b1bB" x="263" y="128" text-anchor="middle" style="fill:#fff">sum(impressions)</text>
+
+        <rect x="362" y="62" width="150" height="74" rx="10" fill="#0B7F94"></rect>
+        <text class="b1bT" x="437" y="86" text-anchor="middle">Clicks</text>
+        <text class="b1bV" x="437" y="110" text-anchor="middle">3,997</text>
+        <text class="b1bB" x="437" y="128" text-anchor="middle" style="fill:#fff">sum(clicks)</text>
+
+        <rect x="536" y="62" width="150" height="74" rx="10" fill="#22C3DD"></rect>
+        <text class="b1bHd" x="611" y="86" text-anchor="middle">Orders</text>
+        <text class="b1bHd" x="611" y="110" text-anchor="middle" style="font-size:16px">484</text>
+        <text class="b1bB" x="611" y="128" text-anchor="middle">sum(orders)</text>
+
+        <rect x="710" y="62" width="156" height="74" rx="10" fill="#C8173F"></rect>
+        <text class="b1bT" x="788" y="86" text-anchor="middle">GMV</text>
+        <text class="b1bV" x="788" y="110" text-anchor="middle">$16,139</text>
+        <text class="b1bB" x="788" y="128" text-anchor="middle" style="fill:#fff">sum(gmv)</text>
+
+        <text class="b1bN" x="263" y="160" text-anchor="middle">CTR 6.6%</text>
+        <text class="b1bM" x="263" y="176" text-anchor="middle">clicks / impressions</text>
+        <text class="b1bN" x="437" y="160" text-anchor="middle">CVR 12.1%</text>
+        <text class="b1bM" x="437" y="176" text-anchor="middle">orders / clicks</text>
+        <text class="b1bN" x="611" y="160" text-anchor="middle">$33.36 per order</text>
+        <text class="b1bM" x="611" y="176" text-anchor="middle">22% take the $49 bundle</text>
+        <text class="b1bN" x="788" y="160" text-anchor="middle">GPM $1,750</text>
+        <text class="b1bM" x="788" y="176" text-anchor="middle">gmv / views x 1000</text>
+
+        <rect x="14" y="204" width="852" height="1" fill="#DCEBEF"></rect>
+
+        <text class="b1bHd" x="14" y="232">Why impressions are bigger than views</text>
+        <text class="b1bB" x="14" y="252">A viewer who stays nine minutes sees the pinned card nine times. Impressions count exposures, views count people</text>
+        <text class="b1bB" x="14" y="268">arriving. So CTR is a per-exposure rate and it falls as watch time rises, even when nothing about the pitch changed.</text>
+
+        <text class="b1bHd" x="14" y="300">Why GPM and not GMV</text>
+        <text class="b1bB" x="14" y="320">GMV is traffic times selling. GPM divides the traffic out. Two rooms, one of 400 and one of 1,400, can be judged on</text>
+        <text class="b1bB" x="14" y="336">what they did with what they were given. Across these 60 streams GPM tracks CVR at 0.86; GMV tracks peak room at 0.96.</text>
+
+        <rect x="14" y="356" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b1bN" x="38" y="368">Peak room tells you about the traffic a stream got. GPM tells you how well it sold it. Keep them on separate lines.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the average stream's funnel, with the column arithmetic under every number.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Rebuilding the dashboard's numbers from columns<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The seller dashboard reports these per stream. Every one of them is a one-line aggregate of the minute table, which means you can recompute them, compare, and find out where your export and the platform disagree before you build anything on top.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>Dashboard number</th><th>From the minute table</th><th>Kind</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Views</td><td><code>sum(arrivals)</code></td><td>Count</td></tr>
+            <tr><td>Peak viewers</td><td><code>max(room)</code></td><td>State</td></tr>
+            <tr><td>Average watch time</td><td><code>sum(room) / sum(arrivals)</code> minutes</td><td>Ratio of viewer-minutes to people</td></tr>
+            <tr><td>Product impressions</td><td><code>sum(impressions)</code></td><td>Count</td></tr>
+            <tr><td>Product clicks, CTR</td><td><code>sum(clicks)</code>, <code>/ sum(impressions)</code></td><td>Count, ratio</td></tr>
+            <tr><td>Orders, click-to-order rate (CTOR)</td><td><code>sum(orders)</code>, <code>/ sum(clicks)</code></td><td>Count, ratio</td></tr>
+            <tr><td>GMV</td><td><code>sum(gmv)</code></td><td>Count, in dollars</td></tr>
+            <tr><td>Watch GPM</td><td><code>1000 * sum(gmv) / sum(arrivals)</code></td><td>Ratio</td></tr>
+          </tbody>
+        </table>
+        <p>Average watch time is the one people get wrong. It is viewer-minutes divided by viewers, which is the sum of the room column divided by the sum of arrivals. Averaging the room column gives you the average room size, a different number with a different meaning.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The three grains that lie<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three mistakes account for most wrong conclusions in this field, and each one is a ratio computed at the wrong grain.</p>
+        <ul>
+          <li><strong>The per-minute ratio on a small denominator.</strong> A minute with 3 clicks and 2 orders has a 67 percent order rate. It means nothing. Session 5 uses orders per thousand viewer-minutes, whose denominator is the room, and weights ratios by their denominators when averaging them.</li>
+          <li><strong>The per-stream comparison that is really a traffic comparison.</strong> Stream A made 30,000 dollars and stream B made 12,000. If A had three times the room, B sold better. Comparing streams on GMV is comparing them on how much traffic the platform sent. Session 6 is entirely about this.</li>
+          <li><strong>The state summed like a count.</strong> Adding up room sizes gives viewer-minutes, which is useful and is not "total viewers". Reporting it as viewers overstates the audience by a factor of the average watch time, which here is about nine.</li>
+        </ul>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A brand-side report once claimed 74,000 viewers for a stream whose dashboard showed 8,200 views. Nobody had lied: somebody had summed the concurrent-viewer curve, which had been sampled every minute. Nine minutes of average watch time, nine times the audience. The deck went to a CFO before anyone checked the grain.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What the platform reports, and what it does not<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>TikTok Shop's LIVE analytics reports the stream-level figures in the table above under its own names (Views, Viewers, Peak Concurrent Viewers, Average Watch Duration, Product Impressions, Product Clicks, CTR, CTOR, GMV, Watch GPM, Items Sold), plus New Followers, Comments, Likes, Shares and a traffic-source split (Feed, Promoted, Follow). Its LIVE Diagnosis page reads the funnel in four stages: tap-through rate into the room, average viewing duration per view, CTR, then CTOR. One stage is missing from the minute table on purpose: tap-through rate needs the feed impressions of the LIVE card, which the platform holds and the recording never sees.</p>
+        <p>It also offers per-product breakdowns. What it does not give you is the minute-by-minute ledger joined to the content. The room curve is visible but not trivially exportable, orders carry a timestamp in the order export, and nothing in the platform knows what the host was saying. That gap is why the pipeline exists.</p>
+        <p>Where the platform's definitions and yours differ, yours must be documented and reconciled, not silently preferred. Two common gaps: the platform counts a view on entry while your recording starts a few seconds later, so the first minute is short; and the platform's GPM may be computed on a slightly different view count from the one you see. Neither matters for the analysis. Both matter the first time you put your number next to the platform's on a slide.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Open the minute table and rebuild the funnel</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">Two files, twenty minutes, pandas only. The 7,200-row minute table and the 60-row stream summary that the same generator produced. You rebuild every dashboard number from the minute rows, check them against the summary, and find the one that does not reconcile the way you expected.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Load both files and look at the grain.</strong> Twenty-six columns, one row per stream and minute. Check the key is unique before anything else: 60 streams times 120 minutes must be exactly 7,200 rows.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Load and check the key</span>
+import pandas as pd
+
+m = pd.read_csv("data/streams.csv")          # one row per stream_id, t
+s = pd.read_csv("data/summary.csv")          # one row per stream
+
+assert len(m) == 60 * 120
+assert not m.duplicated(["stream_id", "t"]).any()
+m.head(3)[["stream_id", "t", "segment", "room", "impressions", "clicks", "orders", "gmv"]]
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Rebuild the funnel per stream from the minute rows.</strong> Counts are sums, the room is a state. Average watch time is viewer-minutes over arrivals, not the mean of the room column.</p>
+        <div class="prompt-box good">
+          <span class="label">★ The funnel, one groupby</span>
+f = (m.groupby("stream_id")
+       .agg(views=("arrivals", "sum"), peak=("room", "max"), viewer_min=("room", "sum"),
+            impressions=("impressions", "sum"), clicks=("clicks", "sum"),
+            orders=("orders", "sum"), gmv=("gmv", "sum"))
+       .reset_index())
+f["watch_min"] = f.viewer_min / f.views
+f["ctr"]  = 100 * f.clicks / f.impressions
+f["cvr"]  = 100 * f.orders / f.clicks
+f["gpm"]  = 1000 * f.gmv / f.views
+f.round(2).head()
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Reconcile against the summary file.</strong> GMV, orders, clicks, impressions and views must match to the unit. Watch time and the ratios match to rounding. If anything is off by more than rounding, the grain is wrong somewhere and you stop here until you know where.</p>
+        <div class="prompt-box good">
+          <span class="label">★ The check that replaces a README note</span>
+chk = f.merge(s, left_on="stream_id", right_on="id", suffixes=("_m", "_s"))
+for col in ["views", "impressions", "clicks", "orders", "gmv"]:
+    assert (chk[f"{col}_m"] == chk[f"{col}_s"]).all(), col
+assert (chk.watch_min - chk.avgWatchMin).abs().max() &lt; 0.01
+print("60 of 60 streams reconcile")
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Now do the wrong thing on purpose.</strong> Compute the "audience" as the sum of the room column, and the "average order rate" as the mean of the per-minute orders-over-clicks ratio. Put them next to the right numbers. The first is about nine times too big. The second is undefined for every minute with no clicks and wildly noisy for the rest; the weighted version is the one the dashboard reports.</p>
+        <div class="prompt-box bad">
+          <span class="label">✗ Two grain mistakes, computed so you recognise them later</span>
+wrong_audience = m.groupby("stream_id").room.sum()             # viewer-minutes, not viewers
+right_audience = m.groupby("stream_id").arrivals.sum()
+print((wrong_audience / right_audience).mean())                # about 9: the average watch time
+
+m["cvr_min"] = m.orders / m.clicks                             # NaN where clicks == 0, 100% where 1 of 1
+print(m.groupby("stream_id").cvr_min.mean().describe())        # unweighted mean of a noisy ratio
+print((100 * m.groupby("stream_id").orders.sum() / m.groupby("stream_id").clicks.sum()).describe())
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Save the funnel table.</strong> It is the leader track's session 1 material and the base for session 5. Write it next to the raw files, never over them.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Derived, never raw</span>
+f.to_csv("data/derived/funnel_by_stream.csv", index=False)
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <p><strong>The ledger has a delay you have not corrected yet.</strong> In real recordings the seller's per-minute figures land a few seconds after the host's words reached the viewer, because the stream itself is delayed. Tonight's data is already on one clock. Session 2 shows what happens to every result in this course if it is not.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 2</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>Export one real stream's data from a seller dashboard you have access to, or take any two-hour LIVE recording you are allowed to use. List which of the four sources you actually have, at what grain, and with what timestamp format. Bring the list.</li>
+      <li>From the funnel table, rank the 60 streams by GMV and by GPM. Count how many streams are in the top ten on both lists. Write one sentence about what the streams in the GMV top ten but not the GPM top ten have in common. Session 2 of the leader track answers it.</li>
+      <li>Compute average watch time for human hosts and AI hosts separately, the right way. Then compute the mean of the room column for both and notice which comparison changes.</li>
+      <li>Read the columns you have not used yet: <code>segment</code>, <code>product_in_hand</code>, <code>close_up_ratio</code>, <code>price_overlay</code>, <code>replies</code>. For each, write down which of the four sources it will come from once the pipeline is real.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">A report sums the concurrent-viewer curve, sampled once a minute, and calls the result "total viewers". The dashboard shows 8,200 views and the report shows 74,000. What happened?</p>
+      <button class="qopt" type="button">A · The dashboard undercounts because it only counts logged-in viewers</button>
+      <button class="qopt" type="button">B · A state was summed like a count: the total is viewer-minutes, about nine minutes of watch time per person</button>
+      <button class="qopt" type="button">C · The stream had many repeat visitors and the dashboard deduplicates them</button>
+      <p class="qwhy">Room size is a state, not an event. Adding it across minutes gives viewer-minutes, which divided by the true view count is the average watch time. Nine minutes, nine times the audience.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">Why does GPM, not GMV, belong on the line that judges how well a host sold?</p>
+      <button class="qopt" type="button">A · GPM is what the platform uses to rank streams, so hosts are already optimising for it</button>
+      <button class="qopt" type="button">B · GMV includes refunds and GPM does not</button>
+      <button class="qopt" type="button">C · GMV is traffic times selling, and GPM divides the traffic out so two rooms of different size can be compared on what they did with what they were given</button>
+      <p class="qwhy">Across the 60 streams GMV tracks peak room at 0.96 and GPM tracks conversion at 0.86. The first number is mostly about what the platform sent; the second is mostly about the pitch.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Product impressions for an average stream are 60,000 while views are 9,049. Is something broken?</p>
+      <button class="qopt" type="button">A · No. Impressions count exposures to the pinned card, one per viewer per minute they stay, so they scale with watch time</button>
+      <button class="qopt" type="button">B · Yes. Impressions can never exceed views because each viewer sees the card once</button>
+      <button class="qopt" type="button">C · Yes. The card must have been pinned twice and double-counted</button>
+      <p class="qwhy">A viewer who stays nine minutes is shown the card about nine times. It also means CTR is a per-exposure rate that falls as watch time rises even when the pitch is unchanged, which is why session 5 uses a per-viewer-minute rate instead.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">TikTok Shop LIVE analytics metrics: views, viewers, watch time, product impressions, clicks, orders, GMV, GPM</span>
+        <span class="note">Each rebuilt as a column aggregate of the minute table and reconciled against the stream totals.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">The minute-grain event model for multimodal stream data</span>
+        <span class="note">Four sources, native grains, aggregation to the minute, the five raw tables the minute table is rebuilt from.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Counts versus states, and ratio denominators</span>
+        <span class="note">The three grain mistakes, each computed on purpose in the build-along so it is recognisable later.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Clock alignment across sources</span>
+        <span class="note">Named tonight as the reason the ledger cannot be joined raw. Session 2 measures the stream delay and shifts every source onto one clock.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Content columns: segment, product in hand, close-up, price on screen</span>
+        <span class="note">Present in the table tonight as reserved columns. Sessions 3 and 4 build the detectors and the tagger that fill them from real recordings.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Order-level data: refunds, SKUs, buyer cohorts</span>
+        <span class="note">Not covered by design. The course works at the minute grain with GMV before refunds; buyer-level analysis belongs to the customer retention and e-commerce metrics courses.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 1 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The grain</b><span>One row per stream and minute. The coarsest grain at which a host can still change something.</span></div>
+      <div class="cheat-item"><b>Four sources</b><span>Video (frames), audio (words), comment feed (events), seller ledger (minutes or stream). Each blind to the others.</span></div>
+      <div class="cheat-item"><b>One join key</b><span>stream_id and t. Every source is aggregated up to it; nothing downstream joins on anything else.</span></div>
+      <div class="cheat-item"><b>Counts sum, states do not</b><span>Arrivals, clicks, orders, GMV add up to the stream total. Room is end-of-minute and never summed as viewers.</span></div>
+      <div class="cheat-item"><b>Watch time</b><span>sum(room) / sum(arrivals). Not the mean of the room column, which is average room size.</span></div>
+      <div class="cheat-item"><b>GPM</b><span>1000 x GMV / views. Traffic divided out. Tracks CVR at 0.86 here; GMV tracks peak room at 0.96.</span></div>
+      <div class="cheat-item"><b>Impressions exceed views</b><span>One exposure per viewer per minute they stay. CTR is per exposure and falls as watch time rises.</span></div>
+      <div class="cheat-item"><b>Write the check</b><span>Minute sums must equal stream totals for every stream. An assertion beats a README sentence.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Builder session 1 of 8 · learn-live-commerce-analytics-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="../index.html">← All sessions</a>
+      <a href="b2-ingest-and-align.html">Builder session 2 · Ingest and align →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

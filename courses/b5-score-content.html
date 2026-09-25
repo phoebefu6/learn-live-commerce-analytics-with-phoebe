@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Builder session 5 of 8. Orders per thousand viewer-minutes for all nine segment labels, the weighting rule for every ratio computed at the minute grain, run length and lag as features, and the urgency cliff at minute three.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Score the content - learn live commerce analytics with phoebe">
+<meta property="og:description" content="Builder session 5 of 8. A minute with 3 clicks and 2 orders is 67 percent and means nothing. Put the room in the denominator and CTA minutes order at 11.47 per thousand viewer-minutes, a hook at 1.81.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/courses/b5-score-content.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Score the content - learn live commerce analytics with phoebe">
+<meta name="twitter:description" content="The segment table, the weighting rule, the one-minute lag, and the urgency cliff: CTOR 14.71, 15.45, then 8.28 from the third consecutive minute.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Builder session 5 · Score the content - learn live commerce analytics with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-live-commerce-analytics-with-phoebe</a> / Builder session 5 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LIVE Commerce Analytics with Phoebe · Builder session 5 of 8</div>
+    <h1>Score <span class="accent">the content</span></h1>
+    <p class="sub">Sessions 3 and 4 gave every minute a picture and a label. Tonight every label gets a number, and the number has to survive the smallest denominator in the table. Click rate and click-to-order rate are honest at the stream grain and liars at the minute grain, because a minute has a handful of clicks. The fix is a denominator that is never small: the room. Orders per thousand viewer-minutes, summed the right way, gives you a nine-row table a leader can read aloud, a rule for every ratio you will ever compute on minute rows, and two features (how long a segment has been running, and what happens one minute later) that session 6 cannot do without.</p>
+    <div class="chip-row">
+      <span class="chip level">🟠 Advanced</span>
+      <span class="chip audience">Data scientists</span>
+      <span class="chip audience">Anyone who has averaged a ratio and regretted it</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · Rates at the minute grain</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: the segment table</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where session 5 sits in the pipeline</h2>
+    </div>
+    <p class="lede">The minute table is complete: 7,200 rows of <strong>Lumen Glow</strong>, one per stream and minute, with what was said, what was shown and what was sold. Tonight is the first session that reads it instead of building it. Session 6 will ask which of tonight's numbers survive holding the traffic still; session 7 will forecast the next five minutes from them; session 8 will cue a host with them. So the numbers built tonight are the ones the rest of the track stands on, and the point of the session is that they stand on the right denominator.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> The segment table: orders per 1,000 viewer-minutes for all nine labels, from CTA at 11.47 down to dead air at 0.79, with the minutes share and the click and order rates beside each. A rule for every ratio you compute at the minute grain, and the two answers it separates. A run-length column and a lagged-orders column ready for session 6. And a clear reading of what the AI-host rows show at this grain, before session 6 says what they mean.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why per-minute CTR and CTOR lie<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>At the stream grain the funnel ratios are fine: an average stream has 3,997 clicks and 484 orders, and 12.1 percent is a stable number. Divide the same stream into 120 minutes and each minute has a few dozen clicks and a few orders. A minute with 3 clicks and 2 orders has a click-to-order rate of 67 percent. A minute with 1 click and 0 orders has a rate of zero. Neither number means anything, and averaging 7,200 of them means nothing with more decimals.</p>
+        <p>The cure is not a bigger sample; it is a bigger denominator. Every minute has a room, and the room is never small: even a quiet stream holds hundreds of viewers a minute. So the rate that is honest at the minute grain is <strong>orders divided by the room</strong>, scaled to <strong>orders per 1,000 viewer-minutes</strong>. Across the whole table it averages <strong>5.73</strong>. Its numerator is still small, but its denominator is stable enough that averaging over a segment's minutes lands in the same place whichever way you sum it, which is the property the click-based ratios lack.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>A Lumen Glow weekly report once ranked hosts by their "average minute conversion", the mean of orders over clicks across each host's minutes. The winner was the host with the most minutes of two clicks and one order. The leaderboard flipped when the ratio was rebuilt as orders per thousand viewer-minutes, and flipped back to the stream-level GPM ranking everyone already trusted, which was the first sign the new number was right.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary tonight uses<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Viewer-minute</strong> - one viewer watching for one minute. The sum of the room column over a stream is its viewer-minutes; dividing by views gives average watch time, as session 1 showed.</li>
+          <li><strong>Weighted mean</strong> - a ratio's average across rows computed as the sum of numerators over the sum of denominators. Rows with a bigger denominator count for more, which is the point.</li>
+          <li><strong>Small-denominator bias</strong> - what an unweighted mean of per-row ratios does: the rows with the fewest clicks contribute the most extreme values and the same weight as everyone else.</li>
+          <li><strong>Lag</strong> - a column shifted in time within each stream. <code>orders_next1</code> at minute 40 is the orders at minute 41. Session 6's regressions need it because an order takes a moment to place.</li>
+          <li><strong>Run length</strong> - how many consecutive minutes a segment has been running, counting the current one. The <code>fomo_run</code> column session 4 built.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the segment table and the weighting rule</span>
+      <h2>The segment table</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">Nine labels, one row each, three rates and a minutes share. It is the most-quoted table in the course: the leader track's script card is read off it, and session 6's regressions start from it. Read it with the denominator in mind.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 404" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Horizontal bar ladder of orders per 1,000 viewer-minutes by segment across 60 Lumen Glow streams: CTA 11.47, price 7.78, demo 7.59, urgency 5.98, build 4.49, Q and A 3.71, hook 1.81, filler 1.39, dead air 0.79. Columns beside each bar give the minutes share, click rate and click-to-order rate: CTA 9.9 percent of minutes, CTR 9.56, CTOR 16.61; price 6.6, 7.81, 13.90; demo 20.9, 9.34, 11.29; urgency 16.4, 6.19, 13.33; build 19.0, 5.98, 10.35; Q and A 9.1, 4.34, 11.80; hook 12.8, 3.80, 6.38; filler 4.6, 2.74, 6.98; dead 0.8, 1.93, 5.48.">
+        <style>
+          .b5aHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b5aB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b5aM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b5aC { font: 700 11px Inter, sans-serif; fill: #4F6B73; }
+          .b5aL { font: 700 12px Inter, sans-serif; fill: #0B1A20; }
+          .b5aV { font: 800 12px Inter, sans-serif; fill: #0B1A20; }
+          .b5aN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+        </style>
+        <text class="b5aHd" x="14" y="24">Orders per 1,000 viewer-minutes by segment, 60 streams, 7,200 minutes</text>
+        <text class="b5aM" x="14" y="42">bar = orders per 1,000 viewer-minutes · table mean 5.73 · the three right-hand columns are the same minutes on other denominators</text>
+
+        <text class="b5aC" x="14" y="68">Segment</text>
+        <text class="b5aC" x="110" y="68">Orders per 1,000 viewer-minutes</text>
+        <text class="b5aC" x="560" y="68">Minutes</text>
+        <text class="b5aC" x="660" y="68">CTR</text>
+        <text class="b5aC" x="760" y="68">CTOR</text>
+        <rect x="14" y="76" width="852" height="1" fill="#DCEBEF"></rect>
+
+        <text class="b5aL" x="14" y="99">CTA</text>
+        <rect x="110" y="84" width="360" height="20" rx="4" fill="#075E70"></rect>
+        <text class="b5aV" x="478" y="99">11.47</text>
+        <text class="b5aB" x="560" y="99">9.9%</text>
+        <text class="b5aB" x="660" y="99">9.56</text>
+        <text class="b5aB" x="760" y="99">16.61</text>
+
+        <text class="b5aL" x="14" y="129">price</text>
+        <rect x="110" y="114" width="244" height="20" rx="4" fill="#0B7F94"></rect>
+        <text class="b5aV" x="362" y="129">7.78</text>
+        <text class="b5aB" x="560" y="129">6.6%</text>
+        <text class="b5aB" x="660" y="129">7.81</text>
+        <text class="b5aB" x="760" y="129">13.90</text>
+
+        <text class="b5aL" x="14" y="159">demo</text>
+        <rect x="110" y="144" width="238" height="20" rx="4" fill="#0B7F94"></rect>
+        <text class="b5aV" x="356" y="159">7.59</text>
+        <text class="b5aB" x="560" y="159">20.9%</text>
+        <text class="b5aB" x="660" y="159">9.34</text>
+        <text class="b5aB" x="760" y="159">11.29</text>
+
+        <text class="b5aL" x="14" y="189">urgency</text>
+        <rect x="110" y="174" width="188" height="20" rx="4" fill="#0B7F94"></rect>
+        <text class="b5aV" x="306" y="189">5.98</text>
+        <text class="b5aB" x="560" y="189">16.4%</text>
+        <text class="b5aB" x="660" y="189">6.19</text>
+        <text class="b5aB" x="760" y="189">13.33</text>
+
+        <text class="b5aL" x="14" y="219">build</text>
+        <rect x="110" y="204" width="141" height="20" rx="4" fill="#22C3DD"></rect>
+        <text class="b5aV" x="259" y="219">4.49</text>
+        <text class="b5aB" x="560" y="219">19.0%</text>
+        <text class="b5aB" x="660" y="219">5.98</text>
+        <text class="b5aB" x="760" y="219">10.35</text>
+
+        <text class="b5aL" x="14" y="249">Q&amp;A</text>
+        <rect x="110" y="234" width="116" height="20" rx="4" fill="#22C3DD"></rect>
+        <text class="b5aV" x="234" y="249">3.71</text>
+        <text class="b5aB" x="560" y="249">9.1%</text>
+        <text class="b5aB" x="660" y="249">4.34</text>
+        <text class="b5aB" x="760" y="249">11.80</text>
+
+        <text class="b5aL" x="14" y="279">hook</text>
+        <rect x="110" y="264" width="57" height="20" rx="4" fill="#A5EAF4"></rect>
+        <text class="b5aV" x="175" y="279">1.81</text>
+        <text class="b5aB" x="560" y="279">12.8%</text>
+        <text class="b5aB" x="660" y="279">3.80</text>
+        <text class="b5aB" x="760" y="279">6.38</text>
+
+        <text class="b5aL" x="14" y="309">filler</text>
+        <rect x="110" y="294" width="44" height="20" rx="4" fill="#A5EAF4"></rect>
+        <text class="b5aV" x="162" y="309">1.39</text>
+        <text class="b5aB" x="560" y="309">4.6%</text>
+        <text class="b5aB" x="660" y="309">2.74</text>
+        <text class="b5aB" x="760" y="309">6.98</text>
+
+        <text class="b5aL" x="14" y="339">dead</text>
+        <rect x="110" y="324" width="25" height="20" rx="4" fill="#A5EAF4"></rect>
+        <text class="b5aV" x="143" y="339">0.79</text>
+        <text class="b5aB" x="560" y="339">0.8%</text>
+        <text class="b5aB" x="660" y="339">1.93</text>
+        <text class="b5aB" x="760" y="339">5.48</text>
+
+        <line x1="110" y1="80" x2="110" y2="350" stroke="#DCEBEF" stroke-width="1"></line>
+        <rect x="14" y="382" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b5aN" x="38" y="394">A CTA minute is worth about six hook minutes per viewer. The hook is 12.8% of the show; it is where the room is built.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the nine segments on the denominator that is never small, with the click-based rates beside them.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Reading it<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three things the table says, in the order a leader will hear them. <strong>CTA minutes sell.</strong> 11.47 orders per thousand viewer-minutes, against a table mean of 5.73: twice the average minute, and about six times a hook minute at 1.81. <strong>Price and demo are the next tier</strong>, 7.78 and 7.59, close enough that the difference is not worth a script line. <strong>The bottom three are not failures.</strong> The hook orders at 1.81 because nobody buys in the first minutes of a show; they arrive. It is 12.8 percent of all minutes and the room curve is built there. Filler at 1.39 and dead air at 0.79 are the two rows a host can actually remove.</p>
+        <p>Now read the right-hand columns with the denominator in mind. CTOR for CTA is 16.61 and for dead air 5.48; the ranking mostly agrees with the bar, which is reassuring, but the click-based rates are computed on a few clicks a minute and they wobble. The bar does not. When a per-segment CTOR and a per-segment orders-per-viewer-minute disagree on a small segment, believe the bar.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>Segment</th><th>Orders per 1,000 viewer-min</th><th>Times the mean (5.73)</th><th>What it is for</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>CTA</td><td>11.47</td><td>2.0</td><td>Converting the room that is already there</td></tr>
+            <tr><td>price</td><td>7.78</td><td>1.4</td><td>Removing the last objection</td></tr>
+            <tr><td>demo</td><td>7.59</td><td>1.3</td><td>Showing, which also moves clicks (session 3)</td></tr>
+            <tr><td>urgency</td><td>5.98</td><td>1.0</td><td>Two good minutes, then a cliff (Part 2)</td></tr>
+            <tr><td>hook</td><td>1.81</td><td>0.3</td><td>Building the room, not selling to it</td></tr>
+            <tr><td>filler, dead</td><td>1.39, 0.79</td><td>0.2, 0.1</td><td>Nothing. The removable minutes</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The weighting rule<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>To average a ratio across minutes, sum the numerators and sum the denominators, then divide. Never average the per-minute ratio.</strong> That is the whole rule, and it is the difference between a number the dashboard would agree with and one it would not.</p>
+        <p>Watch the two answers separate on a toy pair. Minute A: 3 clicks, 2 orders, rate 67 percent. Minute B: 300 clicks, 30 orders, rate 10 percent. The mean of the two rates is 38.5 percent. The pooled rate is 32 orders over 303 clicks, 10.6 percent. The dashboard, which counts orders and clicks for the whole stream, reports the second. The first is a number about minute A's three clicks, dressed up as a number about the stream.</p>
+        <p>The rule holds for every ratio in the table. It is why orders per thousand viewer-minutes is computed as sum(orders) over sum(room) within a segment, and why CTR and CTOR in the segment table should be read as pooled clicks over pooled impressions and pooled orders over pooled clicks. When the denominator is the room, the pooled and the averaged versions land within a tenth of each other, because the room is never small; that closeness is the test that the denominator is safe. When the denominator is clicks, they can separate by a factor of three on a small segment, and the pooled one is right.</p>
+        <div class="callout tip">
+          <p><strong>Keep numerator and denominator as columns until the last line.</strong> A DataFrame with <code>orders</code> and <code>room</code> can be re-grouped by segment, by host, by run length, by anything, and every regrouping is correct. A DataFrame with only <code>opv</code> can be regrouped only wrongly.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The example that made it stick<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Maya's stream 17, a Wednesday at 21:00 with a giveaway opener: 16,404 views, peak room 1,579, 6.86 CTR, 11.58 CTOR, GMV $29,799. Priya's stream 16, a Monday at 18:00 with no giveaway: 4,858 views, peak room 498, 6.90 CTR, 14.01 CTOR, GMV $11,217. Per minute, Priya's stream had a fraction of the clicks, so its per-minute CTOR was all over the place and its unweighted mean looked worse than Maya's. Pooled, Priya converted better: 14.01 to 11.58, and her GPM was 2,309 to Maya's 1,817. The stream with a third of the room sold the room it had better. Only the weighted number could say so.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The chat is where the room talks back<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Add a fourth column to the table: comments per 100 viewers, computed the same weighted way, sum of comments over sum of room. Q&amp;A minutes run at <strong>3.6</strong>; every other segment sits between 1.6 and 2.0, with filler and dead air below one. The Q&amp;A minute is the only kind in which the room speaks at nearly twice its normal rate, and it is also the segment with plus 0.96 points of click-to-order within a stream: not a selling minute, but the minute the room decides to stay.</p>
+        <p>Two things follow. The comment column is a denominator problem too: comments per minute is a count that grows with the room, and only per-viewer is comparable across segments. And the AI-host rows, coming up in Part 2, have no Q&amp;A minutes at all, which this column predicts will show up in the room curve before it shows up in orders.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers run length, the one-minute lag and the AI-host rows at this grain</span>
+      <h2>Runs, lags and the urgency cliff</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">A segment's value is not a constant. It depends on how long the segment has already been running, and it arrives a minute late. Both facts become columns tonight, because session 6 will regress on them and session 8 will cue a host with them.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Step chart of click-to-order rate by consecutive urgency minute across 60 streams: minute 1 of a run 14.71 percent, minute 2 15.45, then minute 3 8.28, minute 4 8.50, minute 5 8.56, minute 6 9.20. The step from minute 2 to 3 is drawn in the flag colour: the cliff.">
+        <style>
+          .b5bHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b5bB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b5bM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b5bV { font: 800 12px Inter, sans-serif; fill: #0B1A20; }
+          .b5bR { font: 800 12px Inter, sans-serif; fill: #C8173F; }
+          .b5bN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+        </style>
+        <text class="b5bHd" x="14" y="24">CTOR by consecutive urgency minute, pooled over 60 streams</text>
+        <text class="b5bM" x="14" y="42">x = how many urgency minutes in a row so far (fomo_run) · y = click-to-order rate in that minute, percent</text>
+
+        <line x1="70" y1="60" x2="70" y2="300" stroke="#DCEBEF" stroke-width="1"></line>
+        <line x1="70" y1="300" x2="830" y2="300" stroke="#BFD8DE" stroke-width="1.5"></line>
+        <line x1="70" y1="180" x2="830" y2="180" stroke="#DCEBEF" stroke-width="1" stroke-dasharray="4 4"></line>
+        <line x1="70" y1="60" x2="830" y2="60" stroke="#DCEBEF" stroke-width="1" stroke-dasharray="4 4"></line>
+        <text class="b5bM" x="30" y="304">0</text>
+        <text class="b5bM" x="24" y="184">10</text>
+        <text class="b5bM" x="24" y="64">20</text>
+
+        <rect x="76" y="123" width="120" height="177" fill="#0B7F94"></rect>
+        <text class="b5bV" x="136" y="115" text-anchor="middle">14.71</text>
+        <text class="b5bM" x="136" y="318" text-anchor="middle">run 1</text>
+
+        <rect x="202" y="115" width="120" height="185" fill="#0B7F94"></rect>
+        <text class="b5bV" x="262" y="107" text-anchor="middle">15.45</text>
+        <text class="b5bM" x="262" y="318" text-anchor="middle">run 2</text>
+
+        <rect x="328" y="201" width="120" height="99" fill="#C8173F"></rect>
+        <text class="b5bR" x="388" y="193" text-anchor="middle">8.28</text>
+        <text class="b5bM" x="388" y="318" text-anchor="middle">run 3</text>
+
+        <rect x="454" y="198" width="120" height="102" fill="#A5EAF4"></rect>
+        <text class="b5bV" x="514" y="190" text-anchor="middle">8.50</text>
+        <text class="b5bM" x="514" y="318" text-anchor="middle">run 4</text>
+
+        <rect x="580" y="197" width="120" height="103" fill="#A5EAF4"></rect>
+        <text class="b5bV" x="640" y="189" text-anchor="middle">8.56</text>
+        <text class="b5bM" x="640" y="318" text-anchor="middle">run 5</text>
+
+        <rect x="706" y="190" width="120" height="110" fill="#A5EAF4"></rect>
+        <text class="b5bV" x="766" y="182" text-anchor="middle">9.20</text>
+        <text class="b5bM" x="766" y="318" text-anchor="middle">run 6</text>
+
+        <line x1="325" y1="70" x2="325" y2="300" stroke="#C8173F" stroke-width="1.5" stroke-dasharray="5 4"></line>
+        <text class="b5bR" x="334" y="82">the cliff: minute 3</text>
+        <text class="b5bM" x="334" y="98">soft flag here, policy risk from 4</text>
+
+        <rect x="14" y="350" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b5bN" x="38" y="362">Scarcity is worth two minutes. From the third the rate nearly halves and never recovers within the run.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the urgency cliff at the third consecutive minute, and why run length is a feature and not a footnote.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Run length as a feature<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Urgency minutes as one row in the segment table score 5.98 per thousand viewer-minutes, a hair above the mean. That single number hides two very different minutes. In the first and second minute of a run the click-to-order rate is 14.71 and 15.45 percent, better than every segment except CTA. From the third it is 8.28, then 8.50, 8.56, 9.20: the room has heard "almost gone" three times in three minutes and stopped believing it. Session 6 will price the two halves separately, plus 4.93 points within a stream for short urgency and minus 1.84 for stretched, and the sign flips only because the run length was a column.</p>
+        <p>So the <code>fomo_run</code> column session 4 built is not a diagnostic; it is a feature. A segment's value depends on how long it has already been running, and the only way a model can learn that is if the table says how long. The same logic applies more gently to CTA (a fourth consecutive CTA minute is a host who has run out of things to say) and to Q&amp;A, but urgency is where the cliff is sharp enough to draw.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The one-minute lag<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A CTA at minute 40 sells at minute 40 and at minute 41. Placing an order takes a tap, a size, a checkout, and for a fair share of viewers that crosses the minute boundary. If the regression in session 6 only looks at same-minute orders it under-credits every segment and mis-credits whatever segment came next. So tonight builds <code>orders_next1</code>, each minute's orders shifted back by one within the stream, and session 6 uses the sum of the current and the next minute as its outcome.</p>
+        <p>The shift must be within the stream. A plain <code>shift(-1)</code> on the whole table hands the last minute of stream 16 the first minute of stream 17, and the first minute of a stream is a hook with a room of near nothing. The last minute of every stream gets a missing value, which is correct: nothing was observed after it.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What the AI-host rows show at this grain<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two of the six hosts are AI avatars, Nova and Kai. At the minute grain their rows are unusual in three ways that the stream-level comparison (GMV 8,132 versus 19,850 for humans) cannot see. <strong>There are no Q&amp;A minutes.</strong> The tagger never fires the name-plus-question rule because the avatar never reads a name. <strong>Replies are zero</strong>, every minute of every AI stream, against 95.6 per human stream. And <strong>the room fades by script cycle</strong>: the average room across the eight cycles of the script runs 216, 442, 484, 468, 441, 413, 383, 366 for the AI hosts and 419, 856, 961, 961, 935, 880, 847, 790 for the humans. The AI room peaks lower, peaks earlier, and gives back more of its peak.</p>
+        <p>What the table cannot say is why. The AI streams also sit mostly outside the evening (26 percent of them in the evening against 95 percent of human streams), and traffic follows the hour. Session 6 holds the hour still and finds the gap survives it. Before that, one fact sits outside the data entirely: TikTok Shop's requirements for LIVEs, in force since 2026-09-17, say "Do not use non-real-time verbal interaction such as AI-generated voices, audio recordings, or radio", so on that platform a fully AI-voiced avatar host is a compliance stop before it is an analytics question. The dataset's AI rows show what the trade would be on a platform that allows it.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>At the minute grain</th><th>Human hosts</th><th>AI hosts</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Q&amp;A minutes</td><td>9.1% of all minutes are Q&amp;A across the table</td><td>none</td></tr>
+            <tr><td>Host replies per stream</td><td>95.6</td><td>0</td></tr>
+            <tr><td>Room by script cycle 1 to 8</td><td>419, 856, 961, 961, 935, 880, 847, 790</td><td>216, 442, 484, 468, 441, 413, 383, 366</td></tr>
+            <tr><td>Average watch</td><td>9.80 min</td><td>7.28 min</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What this table cannot say yet<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The segment table is pooled across 60 streams. That is its strength for a leader and its weakness for a scientist. A segment that appears more often in high-traffic streams borrows those streams' room, and orders per viewer-minute is a rate, so it borrows their conversion too: a segment that good hosts use more will look better than it is, and one that weak hosts lean on will look worse. Urgency is the obvious case: the hosts who stretch it are not a random sample of hosts.</p>
+        <p>The fix is to compare minutes within a stream, subtracting each stream's own mean before asking what a segment does. Session 6 does exactly that, with stream fixed effects and clustered standard errors, and its numbers (CTA plus 6.50 points of CTOR within a stream, short urgency plus 4.93, stretched minus 1.84) are the ones that survive the confound. Tonight's table is the map; session 6 checks the map against the territory. Read tonight's numbers as "what the minutes did", never yet as "what the segment causes".</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Build the segment table</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">pandas only, the 7,200-row minute table in, a nine-row table and two new columns out. You compute the rate the right way, then the wrong way on purpose so you recognise it in someone else's notebook, then the run-length and lag features session 6 needs.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Orders per viewer-minute, then both ways of averaging it.</strong> Per minute first, so the column exists for session 7's nowcast. Then per segment as the mean of the per-minute rate, and as the pooled sum over sum. Keep both; the gap between them is your denominator test.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Numerator and denominator stay as columns</span>
+import numpy as np
+import pandas as pd
+
+m = pd.read_csv("data/streams.csv")
+m["opv"] = np.where(m.room &gt; 0, 1000 * m.orders / m.room, np.nan)   # per minute
+
+g = m.groupby("segment")
+seg = pd.DataFrame({
+    "minutes":   g.size(),
+    "share":     100 * g.size() / len(m),
+    "opv_mean":  g.opv.mean(),                                        # mean of per-minute rates
+    "opv_pool":  1000 * g.orders.sum() / g.room.sum(),                # sum over sum
+    "ctr":       100 * g.clicks.sum() / g.impressions.sum(),
+    "ctor":      100 * g.orders.sum() / g.clicks.sum(),
+}).sort_values("opv_pool", ascending=False)
+seg.round(2)
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Reproduce the segment table and assert the CTA row.</strong> The published table's rate column is the mean of the per-minute rate, and the two versions land within a tenth of each other on every row because the room is never small. Assert the CTA value to two decimals, and assert the gap, which is the actual lesson.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Two asserts: the number, and the reason the number is safe</span>
+assert round(float(seg.loc["cta", "opv_mean"]), 2) == 11.47
+assert (seg.opv_mean - seg.opv_pool).abs().max() &lt; 0.2       # a stable denominator: both ways agree
+
+order = ["cta", "price", "demo", "fomo", "build", "qna", "hook", "filler", "dead"]
+seg.loc[order, ["share", "opv_mean", "ctr", "ctor"]].round(2)
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Now the wrong way on purpose.</strong> The same table with click-to-order rate as the mean of the per-minute ratio, minutes with no clicks dropped, beside the pooled version. Pooled over 7,200 minutes the two are close; group by stream and segment, where a segment can be a handful of minutes, and watch the columns separate on the small rows.</p>
+        <div class="prompt-box bad">
+          <span class="label">✗ The mean of a per-minute ratio, so you know it when you see it</span>
+m["cvr_min"] = np.where(m.clicks &gt; 0, 100 * m.orders / m.clicks, np.nan)   # 67% on 3 clicks, NaN on 0
+
+by_ss = m.groupby(["stream_id", "segment"])
+wrong = by_ss.cvr_min.mean()                                     # unweighted mean of a noisy ratio
+right = 100 * by_ss.orders.sum() / by_ss.clicks.sum()            # pooled
+cmp = pd.DataFrame({"n_min": by_ss.size(), "mean_of_ratio": wrong, "pooled": right})
+cmp["gap"] = cmp.mean_of_ratio - cmp.pooled
+cmp.sort_values("n_min").head(12).round(1)                       # the smallest groups, the widest gaps
+        </div>
+        <div class="prompt-box good">
+          <span class="label">★ The rule, as a function you reuse for every ratio</span>
+def pooled_rate(df, num, den, by, scale=100):
+    g = df.groupby(by)
+    return scale * g[num].sum() / g[den].sum()
+
+pooled_rate(m, "orders", "clicks", "segment")            # CTOR by segment
+pooled_rate(m, "orders", "room", "segment", 1000)        # orders per 1,000 viewer-minutes
+pooled_rate(m, "comments", "room", "segment")            # comments per 100 viewers: qna 3.6
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>The urgency run table.</strong> Click-to-order rate by <code>fomo_run</code> for urgency minutes only, with the minutes count beside it so the reader knows how much data sits under each step. Run 7 and beyond is a handful of minutes; do not draw it.</p>
+        <div class="prompt-box good">
+          <span class="label">★ fomo_run by run length</span>
+fomo = m[m.segment == "fomo"]
+runs = pd.DataFrame({
+    "minutes": fomo.groupby("fomo_run").size(),
+    "ctor":    pooled_rate(fomo, "orders", "clicks", "fomo_run"),
+    "opv":     pooled_rate(fomo, "orders", "room", "fomo_run", 1000),
+})
+runs.loc[1:6].round(2)                                    # 14.71, 15.45, then the cliff at 3
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Lagged columns, within the stream.</strong> Orders and clicks one minute ahead, grouped by stream so the last minute of one stream never sees the first minute of the next. Session 6's outcome is the current plus the next minute.</p>
+        <div class="prompt-box good">
+          <span class="label">★ orders_next1, clicks_next1</span>
+m = m.sort_values(["stream_id", "t"])
+m["orders_next1"] = m.groupby("stream_id").orders.shift(-1)
+m["clicks_next1"] = m.groupby("stream_id").clicks.shift(-1)
+m["orders_2min"]  = m.orders + m.orders_next1
+
+assert m.orders_next1.isna().sum() == 60                  # exactly one missing per stream: its last minute
+m.groupby("segment").orders_2min.mean().sort_values(ascending=False).round(2)
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Save the derived tables.</strong> Next to the raw file, never over it. The segment table is the leader track's script card material; the minute table with its new columns is session 6's input.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Derived, never raw</span>
+seg.loc[order].round(2).to_csv("data/derived/segment_table.csv")
+runs.loc[1:6].round(2).to_csv("data/derived/fomo_by_run.csv")
+m.to_csv("data/derived/minutes_with_lags.csv", index=False)
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <p><strong>Test the rule on your own data before trusting the table.</strong> The assert in step 2 is not decoration. On a table where the room is sometimes tiny (a stream that started before anyone arrived, a feed that dropped for a minute) the mean of the per-minute rate and the pooled rate will separate, and the assert will tell you before a leader reads the wrong row aloud. When it fails, the pooled column is the one to publish.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 6</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>Rebuild the segment table for human hosts and AI hosts separately, both ways. Write one sentence about which segment's rank changes between the two groups and whether the mean-of-ratio or the pooled version would have told you.</li>
+      <li>Compute the segment table per stream and count, for each segment, how many streams have fewer than five minutes of it. Those are the rows where a per-minute ratio is at its most dangerous.</li>
+      <li>Build a CTA run table like the urgency one. Say at which run length, if any, a CTA stops paying, and how many minutes sit under that step.</li>
+      <li>Regress <code>orders_2min</code> on the segment dummies, pooled, with plain OLS. Keep the coefficients. Session 6 runs the same regression within streams and you will compare the two sets.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">Why is the segment table built on orders per 1,000 viewer-minutes rather than on per-minute click-to-order rate?</p>
+      <button class="qopt" type="button">A · Because the platform does not report clicks per minute</button>
+      <button class="qopt" type="button">B · Because a minute has a handful of clicks and hundreds of viewers, so a ratio on the room is stable and a ratio on clicks swings to 67 percent on three clicks</button>
+      <button class="qopt" type="button">C · Because viewer-minutes are what the advertiser pays for</button>
+      <p class="qwhy">The room is the denominator that is never small. The test is that the mean of the per-minute rate and the pooled rate agree within a tenth; on clicks they can differ by a factor of three on a small segment.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">Across 60 streams, what happens to click-to-order rate at the third consecutive urgency minute?</p>
+      <button class="qopt" type="button">A · It keeps rising; scarcity compounds</button>
+      <button class="qopt" type="button">B · It is unchanged; the segment table gives urgency one number, 5.98</button>
+      <button class="qopt" type="button">C · It nearly halves, from 15.45 in minute 2 to 8.28, and stays there for the rest of the run</button>
+      <p class="qwhy">14.71, 15.45, then 8.28, 8.50, 8.56, 9.20. The single-row figure of 5.98 hides it, which is why run length is a column and why session 4's checker raises a flag at run 3.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Demo minutes score 7.59 per thousand viewer-minutes in the pooled table. Why can that number still mislead about what a demo does?</p>
+      <button class="qopt" type="button">A · The table is pooled across streams, so a segment that good hosts use more borrows their rooms and their conversion; only a within-stream comparison removes that</button>
+      <button class="qopt" type="button">B · Demo minutes have too few clicks for any rate to be meaningful</button>
+      <button class="qopt" type="button">C · The demo label comes from the picture, not the words, so it is less reliable</button>
+      <p class="qwhy">Pooling mixes "what this segment does" with "who does this segment". Session 6 subtracts each stream's own mean first, and its within-stream numbers are the ones a leader can act on.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Orders per 1,000 viewer-minutes by segment</span>
+        <span class="note">All nine labels from CTA 11.47 to dead air 0.79, with minutes share, CTR and CTOR beside each, reproduced in the build-along and asserted.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">The weighting rule for ratios at the minute grain</span>
+        <span class="note">Sum numerators, sum denominators, divide. The wrong way computed on purpose, and the agreement test that shows when a denominator is safe.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Run length and lag as features</span>
+        <span class="note">The urgency cliff by fomo_run, and orders_next1 shifted within the stream.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">The confound: pooled versus within-stream</span>
+        <span class="note">Named tonight as the reason the table cannot yet say "causes". Session 6 runs the within-stream regression with stream fixed effects.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">The leader's script card</span>
+        <span class="note">Leader session 3 reads the segment table as a running order for a host: hook, build, price, CTA, two minutes of urgency at most.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Order-level attribution</span>
+        <span class="note">Not covered by design. The table credits minutes, not viewers; which viewer saw which segment before buying needs a buyer-level log the recording does not contain.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 5 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>The unit</b><span>Orders per 1,000 viewer-minutes: 1000 x orders / room. Table mean 5.73. The denominator is never small.</span></div>
+      <div class="cheat-item"><b>The ladder</b><span>CTA 11.47 · price 7.78 · demo 7.59 · urgency 5.98 · build 4.49 · Q&amp;A 3.71 · hook 1.81 · filler 1.39 · dead 0.79.</span></div>
+      <div class="cheat-item"><b>The weighting rule</b><span>Sum numerators, sum denominators, divide. Never average the per-minute ratio. Keep both columns until the last line.</span></div>
+      <div class="cheat-item"><b>The safety test</b><span>Mean-of-ratio and pooled agree within a tenth on the room; they can split threefold on clicks. When they split, publish the pooled one.</span></div>
+      <div class="cheat-item"><b>The urgency cliff</b><span>CTOR by run: 14.71, 15.45, 8.28, 8.50, 8.56, 9.20. Two minutes, then stop.</span></div>
+      <div class="cheat-item"><b>The lag</b><span>orders_next1 = groupby(stream).orders.shift(-1). Sixty missing values, one per last minute. Outcome for session 6 is this minute plus the next.</span></div>
+      <div class="cheat-item"><b>AI rows at this grain</b><span>No Q&amp;A minutes, zero replies, room by cycle 216 to 484 to 366 against 419 to 961 to 790 for humans. Compliance stop on TikTok Shop first.</span></div>
+      <div class="cheat-item"><b>What it cannot say</b><span>Pooled across streams, so a segment borrows the rooms of the hosts who use it. Session 6 compares within a stream.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Builder session 5 of 8 · learn-live-commerce-analytics-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="b4-hear-it.html">← Builder session 4 · Hear it</a>
+      <a href="b6-traits-to-playbook.html">Builder session 6 · From traits to a playbook →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Builder session 8 of 8. The replay bench: seven coaching policies as functions of the past, run over forty seeded nights in the browser, read as a ladder with two traps. Then the switchback design that takes the result into a real room, and the bandits that come after.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Intervene, then prove it - learn live commerce analytics with phoebe">
+<meta property="og:description" content="Builder session 8 of 8. A policy is a function of the minute, the room so far and the host's plan. Seven of them, forty nights each, computed live. The playbook is worth 27 percent; the giveaway costs 11.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/courses/b8-intervene.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Intervene, then prove it - learn live commerce analytics with phoebe">
+<meta name="twitter:description" content="Write a policy that only sees the past, bench it over forty seeded nights, then design the switchback that proves it in a real room.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Builder session 8 · Intervene, then prove it - learn live commerce analytics with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-live-commerce-analytics-with-phoebe</a> / Builder session 8 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LIVE Commerce Analytics with Phoebe · Builder session 8 of 8</div>
+    <h1>Intervene, <span class="accent">then prove it</span></h1>
+    <p class="sub">Seven sessions built a pipeline that explains a stream after it ends. Tonight it acts during one. A coaching policy is a small function: given the minute, the room so far and what the host was about to do, return an override or nothing. Because the generator is seeded, you can run the same policy on the same night forty times with different dice and read the mean, which is the only honest way to price a cue. Then the harder part: the bench is a rehearsal, and a real room needs a switchback test before anyone quotes a number to a finance director. Both halves tonight, one page, in the browser and in pandas.</p>
+    <div class="chip-row">
+      <span class="chip level">🔴 Hardest</span>
+      <span class="chip audience">Data scientists</span>
+      <span class="chip audience">The capstone</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · Policies, nights, switchbacks</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: the replay bench</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>The whole track, in one paragraph</h2>
+    </div>
+    <p class="lede">Session 1 chose the minute as the grain and built a 7,200-row table. Session 2 put four recordings on one clock. Sessions 3 and 4 filled the content columns from the camera and the transcript, and session 4's claims checker counted the stretched urgency runs. Session 5 scored every minute in orders per thousand viewer-minutes, and session 6 separated what moves the money from what only rides the traffic, with pooled and within-stream models side by side. Session 7 built the nowcast and backtested it over 6,720 windows. Tonight the nowcast goes into a policy, the policy goes onto a bench, and the bench result goes into a test design. The brand is still <strong>Lumen Glow</strong>, the stream is Jules on a Friday at 20:00, and every number below is computed in this tab.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> A bench that runs seven coaching policies over forty seeded nights in the browser, from the same engine that made the 60 streams, and prints a ladder: the host's own plan at $18,198, the playbook at $23,166, and two traps that the room asks for, one worth $92 and 3.18 policy-risk flags a night, the other costing $2,033. The shape of a policy you can write yourself in twelve lines and bench in one call. And a switchback design, with blocks, washout, metric and clustering, that takes the bench's best rule into a real TikTok Shop room without confounding it with the feed.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>What a policy is here, and why that shape is the honest one<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>In the engine a policy is <code>fn(t, st, m)</code>: the minute <code>t</code>, the state so far <code>st</code> (every row up to <code>t-1</code>, the current urgency run), and <code>m</code>, the minute the host's own script was about to play (its segment, its shot). It returns an override object, such as <code>{seg: "cta", inHand: 1, priceOverlay: 1}</code>, or <code>null</code>. The engine merges the override into the minute before it draws the room's response.</p>
+        <p>That shape is not a convenience. It is the constraint that makes the bench mean something. A policy sees the past and the plan, never the future and never the dice. It cannot know that minute 47 would have converted anyway; it can only see that minutes 44 to 46 came in under the nowcast. A real producer with an earpiece has exactly the same information, so a policy that wins on the bench is a policy a producer could actually run. Any analysis that peeks (choosing the cue minute after seeing which minutes sold) would win on the bench and lose in the room.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The first version of Lumen Glow's coaching rule was written from the session 6 regression: "cue a CTA in the minutes with the highest predicted orders". It benched beautifully. It was also unusable, because the prediction used the room size at the end of the minute, which the producer does not have until the minute is over. Rewriting it to use only rows up to <code>t-1</code> cost about a third of the lift and made it real.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary tonight adds<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Policy</strong> - a function of the minute, the room so far and the host's plan that returns an override or nothing. Seven live in <code>LIVE_ENGINE.POLICIES</code>.</li>
+          <li><strong>Override</strong> - the fields a cue changes in the minute about to play: segment, product in hand, close-up ratio, price overlay, replies, giveaway.</li>
+          <li><strong>Seeded night</strong> - one run of tonight's stream from a fixed seed. Same seed, same dice, so two policies on one seed differ only by the cues.</li>
+          <li><strong>Ladder</strong> - every policy benched over the same nights, sorted by GMV, read against the host's own plan.</li>
+          <li><strong>Carryover</strong> - the effect of a minute leaking into the next: the one-minute ledger lag from session 2, and the urgency hangover that lowers conversion for three minutes after a stretched run.</li>
+          <li><strong>Washout</strong> - minutes at the start of each block dropped from the analysis so carryover from the previous block does not land in this one.</li>
+          <li><strong>Switchback</strong> - an experiment that alternates treatment on and off in time blocks within one unit (here one stream), so the comparison is within the same night and the same feed.</li>
+          <li><strong>Bandit</strong> - an algorithm that chooses among cues online, spending some minutes exploring and most exploiting the current best. Named tonight, not built.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the seven policies, how each is written, and why means over forty nights</span>
+      <h2>Seven policies, forty nights</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">The engine ships seven policies: the host's own plan, three cues the leader track recommends, two the room asks for when it gets nervous, and the three good cues combined. Each is benched over forty seeded nights of the same stream. The ladder below is the canon; the widget in the build-along recomputes it in this tab.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The ladder as horizontal bars, GMV per night as the mean of forty seeded nights of tonight's stream. Host's own plan 18,198 dollars, watch 9.63 minutes. Cue a CTA on a dip 20,847, watch 9.72. Product in hand on every CTA 19,960, watch 9.63. Answer the room every ten minutes 19,006, watch 9.87. Stretch the urgency on a drop 18,290, watch 9.84, with 3.18 policy-risk flags a night. Giveaway on a drop 16,165, watch 9.63, views up to 8,732 from 8,519. The playbook of all three good cues 23,166, watch 9.90. A dashed line marks the own-plan value.">
+        <style>
+          .b8aHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b8aL { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+          .b8aS { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b8aV { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+          .b8aR { font: 700 11px Inter, sans-serif; fill: #C8173F; }
+          .b8aN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+        </style>
+        <text class="b8aHd" x="14" y="24">Seven policies on tonight's stream, GMV a night, means of 40 seeded nights</text>
+        <text class="b8aS" x="14" y="42">Jules, Friday 20:00, Dew Serum at $29. Bars scaled to the playbook. Watch time beside each bar.</text>
+
+        <line x1="643" y1="56" x2="643" y2="318" stroke="#4F6B73" stroke-width="1" stroke-dasharray="3 3"></line>
+
+        <text class="b8aL" x="14" y="72">The host's own plan</text>
+        <text class="b8aS" x="14" y="86">no coaching, 544 orders</text>
+        <rect x="250" y="62" width="377" height="22" rx="4" fill="#075E70"></rect>
+        <text class="b8aV" x="651" y="77">$18,198 · 9.63 min</text>
+
+        <text class="b8aL" x="14" y="110">Cue a CTA when orders dip</text>
+        <text class="b8aS" x="14" y="124">under 70 pct of nowcast, CTA 6+ min back</text>
+        <rect x="250" y="100" width="432" height="22" rx="4" fill="#0B7F94"></rect>
+        <text class="b8aV" x="691" y="115">$20,847 · 9.72 min</text>
+
+        <text class="b8aL" x="14" y="148">Product in hand on every CTA</text>
+        <text class="b8aS" x="14" y="162">same words, different picture</text>
+        <rect x="250" y="138" width="414" height="22" rx="4" fill="#0B7F94"></rect>
+        <text class="b8aV" x="689" y="153">$19,960 · 9.63 min</text>
+
+        <text class="b8aL" x="14" y="186">Answer the room every 10 min</text>
+        <text class="b8aS" x="14" y="200">six replies, names read</text>
+        <rect x="250" y="176" width="394" height="22" rx="4" fill="#0B7F94"></rect>
+        <text class="b8aV" x="669" y="191">$19,006 · 9.87 min</text>
+
+        <text class="b8aL" x="14" y="224">Stretch the urgency on a drop</text>
+        <text class="b8aR" x="14" y="238">3.18 policy-risk flags a night</text>
+        <rect x="250" y="214" width="379" height="22" rx="4" fill="#C8173F"></rect>
+        <text class="b8aV" x="653" y="229">$18,290 · 9.84 min</text>
+
+        <text class="b8aL" x="14" y="262">Giveaway on a drop</text>
+        <text class="b8aR" x="14" y="276">views 8,732 from 8,519</text>
+        <rect x="250" y="252" width="335" height="22" rx="4" fill="#C8173F"></rect>
+        <text class="b8aV" x="607" y="267">$16,165 · 9.63 min</text>
+
+        <text class="b8aL" x="14" y="300">The playbook: all three good cues</text>
+        <text class="b8aS" x="14" y="314">692 orders, peak room 885</text>
+        <rect x="250" y="290" width="480" height="22" rx="4" fill="#22C3DD"></rect>
+        <text class="b8aV" x="738" y="305">$23,166 · 9.89 min</text>
+
+        <text class="b8aS" x="250" y="332">dashed line: the host's own plan. Red bars: the two the room asks for. Playbook: +27.3 percent.</text>
+
+        <rect x="14" y="350" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b8aN" x="38" y="362">Stretched urgency buys $92 and three flags. The giveaway fills the room and gives back $2,033 a night.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - the seven-policy ladder, means of forty seeded nights, with the two traps in red.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>How each policy is written<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Every policy in <code>LIVE_ENGINE.POLICIES</code> is a few lines. Reading them is the fastest way to know exactly what the ladder measured, because the label is a summary and the function is the spec.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>Policy</th><th>The logic, as written</th><th>Override returned</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>none</code></td><td><code>fn</code> is <code>null</code>. Jules runs the script as written.</td><td>nothing</td></tr>
+            <tr><td><code>ctaOnDip</code></td><td>From minute 12. Take the three-minute nowcast from rows up to <code>t-1</code>. If the last 3 minutes ordered under 70 percent of it, and the last CTA is 6+ minutes back: fire.</td><td><code>seg</code> is <code>price</code> if the last price line is 6+ minutes back, else <code>cta</code>; <code>inHand: 1, priceOverlay: 1</code></td></tr>
+            <tr><td><code>showOnCta</code></td><td>Whenever the host's own minute is a <code>cta</code> or a <code>price</code> minute.</td><td><code>inHand: 1, closeUp: 0.8, priceOverlay: 1</code></td></tr>
+            <tr><td><code>replyEvery10</code></td><td>Every tenth minute, unless the host's own minute is a CTA.</td><td><code>seg: "qna", replies: 6</code></td></tr>
+            <tr><td><code>stretchFomo</code></td><td>After minute 10. If the last minute was urgency and the run is under 6, keep going while the room sits below 97 percent of its 8-minute high. Otherwise start a run on three consecutive shrinking minutes.</td><td><code>seg: "fomo"</code></td></tr>
+            <tr><td><code>giveawayOnDrop</code></td><td>After minute 10, on three consecutive shrinking minutes.</td><td><code>seg: "hook", giveaway: true</code></td></tr>
+            <tr><td><code>playbook</code></td><td><code>replyEvery10</code>, else <code>ctaOnDip</code>, else <code>showOnCta</code>. First non-null wins.</td><td>whichever fired</td></tr>
+          </tbody>
+        </table>
+        <p>Two details that matter for the numbers. The dip rule uses a three-minute nowcast horizon for the comparison and the widget's tile shows the five-minute one; both come from the same function. And <code>stretchFomo</code> is capped at six consecutive minutes, which is about as long as a host can say "almost gone" before even they stop believing it, so its 3.18 flags a night is a floor for what a real host in a real panic would produce, not a ceiling.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Why means over forty nights<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The bench seeds are written down: <code>424242 + s * 101</code> for <code>s</code> from 0 to 39. Night 0 is the one the replay panel shows; nights 1 to 39 differ only in the dice. Every policy is run on all forty and the summary means are reported. That is the whole method, and it is what <code>LIVE_ENGINE.benchPolicy(name, 40)</code> does.</p>
+        <p>One night is drawn. On seed 424242 a CTA at minute 43 lands on whatever the room happened to be at minute 43. The difference against the host's own plan on that seed is a real number and it is a story: it could be twice the mean or negative. Forty nights is measured, because the same rule fires at whatever minutes its trigger fires on across forty rooms, and the mean of the difference is the rule's value with the dice averaged out. The widget shows both and labels which is which: the replay's final line says "on this seed", the forty-night button says "mean of 40 seeded nights", and the ladder says "means" in its header.</p>
+        <div class="callout tip">
+          <p><strong>The seeds are the reproducibility.</strong> Anyone with the engine file can recompute the ladder to the dollar. That is why the canon in <code>data/canon.json</code> carries <code>builtFrom: assets/live-engine.js</code> and the night count, and why a number quoted from this page can be checked rather than trusted.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Reading the traps<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p><strong>Stretched urgency</strong> moves the number the host watches. Watch time goes from 9.63 to 9.84 minutes, the room holds, and GMV moves from $18,198 to $18,290: $92 a night, well inside the spread of a Friday. What it also buys is 3.18 policy-risk flags a night, the session 4 counter firing on every fourth consecutive urgency minute. On the ladder it is the row where the metric a nervous host optimises and the metric the business is paid in point in different directions.</p>
+        <p><strong>The giveaway on a drop</strong> moves views up, 8,732 from 8,519, and GMV down by $2,033 to $16,165. The engine's giveaway minutes multiply arrivals and engagement and cut the conversion rate during them and for the rest of the stream after them; that is the session 2 finding placed mid-stream, where it lands on people who were about to buy. Orders fall from 544 to 482. The ladder row reads as a bigger room with an emptier till, which is exactly what the seller dashboard would show the next morning, as views up and GPM down.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>The first time the ladder was shown to Lumen Glow's hosts, one of them asked why the two red rows were on it at all. The answer was that they were the two rules the hosts were already running, unwritten. Writing them down as functions was the only way to bench them, and benching them was the only way the conversation stopped being about feelings.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>What the bench cannot measure<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Two things are outside the engine by construction. The first is <strong>the feed's reaction to a flagged account</strong>. The bench counts flags; it does not model what the platform does with them. A LIVE stamped Risk on the diagnosis page loses future traffic, and the size of that loss is the platform's and not in any recording. So the stretched-urgency row's $92 is an overstatement: the true value of that rule is $92 minus whatever three flags a night cost in next week's rooms, and the sign of that is not in doubt.</p>
+        <p>The second is <strong>a real room's memory of last week</strong>. The engine draws each night fresh from the seed. A real audience that was promised "last chance" on Friday and saw the same serum at the same price on Monday remembers, and its conversion on the next urgency line is lower than the engine's. Followers who came back for a giveaway that did not repeat are also not modelled. Both effects make the traps worse in reality than on the ladder, and neither makes the good cues better, which is the direction of error you want a rehearsal to have.</p>
+        <p>What the bench also cannot do is prove anything about a room it has not seen. That is the point of Part 2.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the switchback design, its analysis, and the bandits that come after</span>
+      <h2>From the bench to a real room</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">The bench says the playbook is worth 27 percent on a generator whose truth is known. A real TikTok Shop room's truth is not known, and a cue's effect there is confounded with the feed, the hour and the host, exactly the way the giveaway opener was in session 6. The fix is a design that compares on and off within the same night: the switchback.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 352" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A switchback timeline for one 120-minute stream cut into twelve 10-minute blocks, each randomly assigned to coaching on or off. The first two minutes of every block are shaded as washout and dropped from the analysis. Below, the comparison: orders per 1,000 viewer-minutes in on blocks against off blocks within the same night, same host, same feed, clustered by night across many nights.">
+        <style>
+          .b8bHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b8bOn { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b8bOff { font: 800 12px Inter, sans-serif; fill: #0B1A20; }
+          .b8bB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b8bM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b8bN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+          .b8bP { font: 700 11px Inter, sans-serif; fill: #fff; }
+        </style>
+        <text class="b8bHd" x="14" y="24">One stream, twelve 10-minute blocks, coaching randomly on or off in each</text>
+        <text class="b8bM" x="14" y="42">the order below is one random draw; every night gets its own</text>
+
+        <rect x="14" y="60" width="71" height="44" rx="4" fill="#0B7F94"></rect>
+        <rect x="14" y="60" width="14" height="44" fill="#BFD8DE"></rect>
+        <text class="b8bOn" x="56" y="87" text-anchor="middle">on</text>
+        <rect x="85" y="60" width="71" height="44" rx="4" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <rect x="85" y="60" width="14" height="44" fill="#BFD8DE"></rect>
+        <text class="b8bOff" x="127" y="87" text-anchor="middle">off</text>
+        <rect x="156" y="60" width="71" height="44" rx="4" fill="#0B7F94"></rect>
+        <rect x="156" y="60" width="14" height="44" fill="#BFD8DE"></rect>
+        <text class="b8bOn" x="198" y="87" text-anchor="middle">on</text>
+        <rect x="227" y="60" width="71" height="44" rx="4" fill="#0B7F94"></rect>
+        <rect x="227" y="60" width="14" height="44" fill="#BFD8DE"></rect>
+        <text class="b8bOn" x="269" y="87" text-anchor="middle">on</text>
+        <rect x="298" y="60" width="71" height="44" rx="4" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <rect x="298" y="60" width="14" height="44" fill="#BFD8DE"></rect>
+        <text class="b8bOff" x="340" y="87" text-anchor="middle">off</text>
+        <rect x="369" y="60" width="71" height="44" rx="4" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <rect x="369" y="60" width="14" height="44" fill="#BFD8DE"></rect>
+        <text class="b8bOff" x="411" y="87" text-anchor="middle">off</text>
+        <rect x="440" y="60" width="71" height="44" rx="4" fill="#0B7F94"></rect>
+        <rect x="440" y="60" width="14" height="44" fill="#BFD8DE"></rect>
+        <text class="b8bOn" x="482" y="87" text-anchor="middle">on</text>
+        <rect x="511" y="60" width="71" height="44" rx="4" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <rect x="511" y="60" width="14" height="44" fill="#BFD8DE"></rect>
+        <text class="b8bOff" x="553" y="87" text-anchor="middle">off</text>
+        <rect x="582" y="60" width="71" height="44" rx="4" fill="#0B7F94"></rect>
+        <rect x="582" y="60" width="14" height="44" fill="#BFD8DE"></rect>
+        <text class="b8bOn" x="624" y="87" text-anchor="middle">on</text>
+        <rect x="653" y="60" width="71" height="44" rx="4" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <rect x="653" y="60" width="14" height="44" fill="#BFD8DE"></rect>
+        <text class="b8bOff" x="695" y="87" text-anchor="middle">off</text>
+        <rect x="724" y="60" width="71" height="44" rx="4" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <rect x="724" y="60" width="14" height="44" fill="#BFD8DE"></rect>
+        <text class="b8bOff" x="766" y="87" text-anchor="middle">off</text>
+        <rect x="795" y="60" width="71" height="44" rx="4" fill="#0B7F94"></rect>
+        <rect x="795" y="60" width="14" height="44" fill="#BFD8DE"></rect>
+        <text class="b8bOn" x="837" y="87" text-anchor="middle">on</text>
+
+        <line x1="14" y1="112" x2="866" y2="112" stroke="#BFD8DE"></line>
+        <text class="b8bM" x="14" y="128">min 0</text>
+        <text class="b8bM" x="227" y="128" text-anchor="middle">30</text>
+        <text class="b8bM" x="440" y="128" text-anchor="middle">60</text>
+        <text class="b8bM" x="653" y="128" text-anchor="middle">90</text>
+        <text class="b8bM" x="866" y="128" text-anchor="end">120</text>
+
+        <rect x="14" y="146" width="14" height="14" rx="3" fill="#BFD8DE"></rect>
+        <text class="b8bB" x="36" y="158">washout: first 2 minutes of every block dropped from the analysis (3 when the on arm includes urgency)</text>
+
+        <rect x="14" y="180" width="272" height="96" rx="10" fill="#075E70"></rect>
+        <text class="b8bP" x="30" y="204">On blocks, washout removed</text>
+        <text class="b8bB" x="30" y="226" style="fill:#A5EAF4">producer runs the playbook</text>
+        <text class="b8bB" x="30" y="244" style="fill:#A5EAF4">metric: orders per 1,000</text>
+        <text class="b8bB" x="30" y="260" style="fill:#A5EAF4">viewer-minutes in the block</text>
+
+        <text class="b8bHd" x="316" y="232" text-anchor="middle">minus</text>
+
+        <rect x="346" y="180" width="272" height="96" rx="10" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b8bN" x="362" y="204">Off blocks, washout removed</text>
+        <text class="b8bB" x="362" y="226">host's own plan, earpiece silent</text>
+        <text class="b8bB" x="362" y="244">same metric, same night,</text>
+        <text class="b8bB" x="362" y="260">same host, same feed</text>
+
+        <rect x="648" y="180" width="218" height="96" rx="10" fill="#22C3DD"></rect>
+        <text class="b8bHd" x="664" y="204" style="font-size:12px">The estimate</text>
+        <text class="b8bB" x="664" y="226">the within-night lift,</text>
+        <text class="b8bB" x="664" y="244">standard errors clustered</text>
+        <text class="b8bB" x="664" y="260">by night, across nights</text>
+
+        <text class="b8bM" x="14" y="304">the feed, the hour and the host are the same on both sides of every night, so they cancel instead of confounding</text>
+
+        <rect x="14" y="330" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b8bN" x="38" y="342">Block length must clear carryover. A block shorter than the urgency hangover measures the previous block's cue.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - twelve blocks, random on and off, washout shaded, compared within the same night.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The design<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A switchback alternates treatment on and off in time within one unit, so the unit is its own control. For a LIVE the unit is the stream and the time is blocks of minutes. The design, in the order you have to decide it:</p>
+        <ul>
+          <li><strong>Blocks.</strong> 10 minutes. Long enough that a CTA cued in the block converts in the block, given the one-minute ledger lag and the fact that the dip rule needs three minutes of evidence before it fires.</li>
+          <li><strong>Randomisation.</strong> Each block is on or off by a coin flip made before the stream, sealed, and read by the producer at the block boundary. Not alternating, because a host learns an alternating pattern by the third block.</li>
+          <li><strong>Washout.</strong> The first two minutes of every block are dropped from the analysis: one for the ledger lag from session 2, one for the room to settle. If the on arm includes any urgency line, three, because the engine's urgency hangover lowers conversion for three minutes after a stretched run, and a real room's is not shorter.</li>
+          <li><strong>Metric.</strong> Orders per 1,000 viewer-minutes in the block, the session 5 rate, because it puts the room in the denominator and a block with a small room does not get a 67 percent conversion from two orders.</li>
+          <li><strong>Clustering.</strong> Blocks within a night are not independent. Standard errors cluster by night, so the effective sample size is the number of nights, not the number of blocks.</li>
+          <li><strong>How many nights.</strong> Enough that the clustered interval excludes zero if the bench's effect size is real. Compute it from the within-stream residual variance from session 6, not from a rule of thumb.</li>
+        </ul>
+        <p>The design and its analysis are laid out in Bojinov, Simchi-Levi and Zhao (2023), "Design and Analysis of Switchback Experiments", Management Science 69(7), which is where the carryover and block-length reasoning comes from. The randomisation theory behind all of it lives in a separate course: <a href="https://phoebefu6.github.io/learn-experimentation-with-phoebe/">learn-experimentation-with-phoebe</a>.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The analysis<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The analysis is the session 6 within-stream regression with one new column. Stream fixed effects absorb the night, the host and the feed; the treatment column carries the block assignment; standard errors cluster by stream. The coefficient on <code>treated</code> is the lift in orders per 1,000 viewer-minutes.</p>
+        <div class="prompt-box good">
+          <span class="label">★ The switchback estimate with linearmodels 7.0</span>
+import pandas as pd
+from linearmodels.panel import PanelOLS
+
+m = pd.read_csv("data/derived/switchback_minutes.csv")     # stream_id, t, block, treated, room, orders
+m["washout"] = (m.t - 1) % 10 &lt; 2                           # first 2 min of each 10-min block
+d = m[~m.washout].copy()
+d["opk"] = 1000 * d.orders / d.room                         # orders per 1,000 viewer-minutes
+d = d.set_index(["stream_id", "t"])
+
+res = PanelOLS(d.opk, d[["treated"]], entity_effects=True, weights=d.room).fit(
+    cov_type="clustered", cluster_entity=True)
+print(res.params["treated"], res.conf_int().loc["treated"].tolist())
+        </div>
+        <p>Weighting by the room is what stops a two-order block in a room of forty from counting like a twenty-order block in a room of eight hundred. Why the block length must clear carryover: if a stretched urgency run in an off block leaves a three-minute hangover and the next on block is only five minutes long with two of washout, three of the on block's five analysed minutes are still paying for the previous block's pitch, and the on arm is penalised for a cue it did not give. Ten-minute blocks with two or three minutes of washout leave seven clean minutes, which is why ten and not five.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Bandits, as the next step<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>The switchback answers one question: is the playbook better than no playbook. The next question is which cue to fire when several qualify at the same minute, and that is an online choice, not an offline test. The tool for it is a bandit: an algorithm that plays each cue, reads the response, and shifts its choices toward the one that is paying, while still trying the others often enough to notice if the room changes.</p>
+        <ul>
+          <li><strong>MABWiser 2.7.4</strong> - context-free bandits with UCB1 and Thompson sampling, a clean fit for "which of three cues at a dip". The arms are the cues, the reward is the block's orders per 1,000 viewer-minutes.</li>
+          <li><strong>vowpalwabbit 9.11.6</strong> - contextual bandits, where the context is the room so far (the nowcast gap, minutes since the last CTA, the urgency run). The policy becomes a learned function rather than a hand-written one.</li>
+        </ul>
+        <p>Named, not built. A bandit run before the switchback has proven the cues work is a bandit optimising among options nobody has shown to be positive, and its exploration minutes are real minutes in a real room. Prove the playbook first.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Reading the POLICIES block as the spec of the test<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Open <code>assets/live-engine.js</code> at the <code>POLICIES</code> object and read it as the protocol of the switchback. Every decision the producer has to make in an on block is already written there: what counts as a dip (three-minute orders under 70 percent of the three-minute nowcast), how long since the last CTA before another is allowed (six minutes), what the CTA minute looks like (serum in hand, price on screen), when a Q&amp;A minute happens (every tenth minute, never over a CTA). The <code>playbook</code> function's priority order (reply, then dip, then shot) is the tie-break rule when two triggers fire in the same minute.</p>
+        <p>That is what makes the bench a rehearsal rather than a decoration: the on arm in the real room runs the same function a producer reads off a card, and the off arm is <code>none</code>. If the real-room lift comes in near the bench's, the engine's planted structure was close to the truth. If it does not, the gap is itself a finding about what the engine is missing, and the two lists in "What the bench cannot measure" are where to look first.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>The replay bench</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">The bench below is <code>live-bench.js</code> mounted on this page. Top panel: tonight's stream replayed from seed 424242, the nowcast beside the truth, cues at the current minute. Bottom panel: the seven-policy ladder over forty nights, computed when the page loaded. Twenty minutes: run it, then write a policy of your own and bench it from the console.</p>
+
+    <div data-live-bench></div>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Run the replay with no cues to the end and note the single-night GMV.</strong> Press Play and let it run to minute 120. The final line reads the GMV on this seed and a difference of zero against the host's own plan, because with no cues the coached run is the plan. Write the GMV down. It will not equal $18,198: that is a mean, and this is one night.</p>
+      </div>
+      <div class="step">
+        <p><strong>Cue a CTA at the first dip and run forty nights.</strong> Reset, play, and watch the "nowcast, next 5 min" tile against what the engine actually produces. When orders come in under the forecast for a few minutes, press "Cue a CTA". Play to the end, read the single-night difference, then press "Run this exact plan over 40 nights". The mean delta is the number to keep. Compare it with the ladder's <code>ctaOnDip</code> row, and notice why they differ: the ladder's rule fires at every dip on every night; your cue fires at one minute on all forty.</p>
+      </div>
+      <div class="step">
+        <p><strong>Write your own policy and bench it.</strong> In the browser console, add a policy to the engine and call the bench on it. Anything that reads <code>st.rows</code> only up to the current minute is fair.</p>
+        <div class="prompt-box good">
+          <span class="label">★ A policy of your own, benched over 40 nights, in the console</span>
+LIVE_ENGINE.POLICIES.mine = {
+  label: "Demo on a stretched run",
+  note: "If the host has said 'almost gone' for two minutes, cut to a demo with the serum in hand.",
+  fn: function (t, st, m) {
+    if (t &lt; 12) return null;
+    var rows = st.rows, last = rows[rows.length - 1];
+    if (last &amp;&amp; last.seg === "fomo" &amp;&amp; st.fomoRun &gt;= 2) return { seg: "demo", inHand: 1, closeUp: 0.8 };
+    return null;
+  }
+};
+LIVE_ENGINE.benchPolicy("mine", 40);
+// -> { policy: "mine", gmv: ..., orders: ..., avgWatchMin: ..., riskFlags: ..., ... } means of 40 nights
+LIVE_ENGINE.benchPolicy("none", 40).gmv   // 18198, the row to subtract
+        </div>
+        <p>Then score it against the published canon in pandas. The canon file carries the ladder means and the seed count, so your policy's row can sit on the same table as the seven shipped ones.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Scoring a benched policy against data/canon.json</span>
+import json, pandas as pd
+
+canon = json.load(open("data/canon.json"))
+ladder = pd.DataFrame(canon["ladder"]).set_index("policy")
+assert canon["nights"] == 40 and canon["builtFrom"] == "assets/live-engine.js"
+
+mine = {"policy": "mine", "gmv": 0, "orders": 0, "avgWatchMin": 0.0, "riskFlags": 0.0}  # paste the console object
+ladder.loc["mine"] = pd.Series(mine)
+
+own = ladder.loc["none"]
+ladder["delta_gmv"] = ladder.gmv - own.gmv
+ladder["delta_pct"] = 100 * ladder.delta_gmv / own.gmv
+ladder["delta_watch"] = ladder.avgWatchMin - own.avgWatchMin
+print(ladder[["gmv", "delta_gmv", "delta_pct", "avgWatchMin", "riskFlags"]].sort_values("gmv", ascending=False).round(2))
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Write the switchback plan as a table.</strong> One row per design decision, with the value and the reason, so a producer and a finance director can both read it.</p>
+        <div class="prompt-box good">
+          <span class="label">★ The switchback plan for the playbook</span>
+Decision     | Value                                  | Why
+Unit         | one stream (120 min)                   | the feed, hour and host are constant within it
+Blocks       | 12 x 10 min                            | a dip needs 3 min of evidence, a CTA converts within the block
+Assignment   | coin flip per block, sealed pre-stream | alternating patterns are learned by the third block
+Washout      | first 2 min of each block (3 if urgency)| 1-min ledger lag + settling; urgency hangover runs 3 min
+On arm       | LIVE_ENGINE.POLICIES.playbook, by card | reply every 10, CTA on a dip, serum in hand on every CTA
+Off arm      | LIVE_ENGINE.POLICIES.none              | earpiece silent
+Metric       | orders per 1,000 viewer-minutes        | room in the denominator; small blocks cannot fake a rate
+Model        | PanelOLS, stream fixed effects, room-weighted, clustered by stream
+n nights     | from the b6 within-stream residual variance and the bench effect size; nights, not blocks
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>The honesty rail: which numbers here are computed, which are planted.</strong> Write it on the page that carries the ladder. Every GMV, order count, watch time and flag count in the widget is computed in this tab by <code>live-engine.js</code> from the seeds. The causal structure those numbers come from (that a stretched urgency run halves conversion, that a giveaway multiplies arrivals and cuts conversion, that the serum in hand lifts clicks) is planted in the engine's <code>TRUTH</code> object, openly. The ladder is therefore a test that the policies recover a known truth, not evidence about a real room. The switchback is where evidence comes from. A number quoted from the bench without that sentence next to it is a number that will be misread.</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <p><strong>Read the engine before you trust the ladder.</strong> <code>POLICIES</code> is under two hundred lines from <code>TRUTH</code>, and the two together are the complete specification of everything on this page. If a row on the ladder surprises you, the reason is in one of those two blocks, and it is faster to read it than to reason about it.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>After the capstone</h2>
+      <span class="tag exercise">45 min</span>
+    </div>
+    <ol>
+      <li>Write a policy that beats the playbook's $23,166 over forty nights without adding a flag. Bench it with <code>benchPolicy</code>, then read its function back and ask whether a producer with an earpiece could run it. If not, it is a leak: it saw something the producer cannot.</li>
+      <li>Bench <code>stretchFomo</code> with the six-minute cap raised to twelve, by copying it under a new name. Report GMV, watch time and flags. Write one sentence on what a host in a real panic would produce.</li>
+      <li>Fill in the switchback plan's last row. From session 6's within-stream residuals and the playbook's bench effect, compute how many nights the clustered interval needs to exclude zero. Show the arithmetic.</li>
+      <li>Read the leader track's session 6 scorecard and mark which of its rows the switchback can estimate and which it cannot. Bring the list to whoever owns the hosts.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">A policy in the engine is <code>fn(t, st, m)</code> and <code>st.rows</code> holds minutes 1 to t-1 only. Why is that restriction the point rather than a limitation?</p>
+      <button class="qopt" type="button">A · Because the engine cannot compute the current minute until the policy has returned</button>
+      <button class="qopt" type="button">B · Because future minutes would make the bench slower</button>
+      <button class="qopt" type="button">C · Because a producer in a real room has exactly that information, so a policy that wins on the bench with it is one a producer could actually run; one that peeks wins on the bench and loses in the room</button>
+      <p class="qwhy">The bench is a rehearsal for a real earpiece. Choosing the cue minute after seeing which minutes sold is the leak that made Lumen Glow's first rule unusable.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">On the ladder the giveaway-on-a-drop policy shows views of 8,732 against 8,519 and GMV of $16,165 against $18,198. How do both happen at once?</p>
+      <button class="qopt" type="button">A · The giveaway multiplies arrivals and engagement while cutting the conversion rate during it and for the rest of the stream, so the room fills with people who came for the gift and orders fall from 544 to 482</button>
+      <button class="qopt" type="button">B · The extra viewers arrive after the stream's products are sold out</button>
+      <button class="qopt" type="button">C · The engine caps GMV per night, so more views cannot raise it</button>
+      <p class="qwhy">It is the session 2 finding placed mid-stream. GPM falls faster than views rise, so GMV, which is views times GPM, falls. Nothing is capped; the till is emptier because the people are different.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">In the switchback design, what is the two-minute washout at the start of each block for?</p>
+      <button class="qopt" type="button">A · To give the producer time to read the next block's assignment</button>
+      <button class="qopt" type="button">B · To drop the minutes where the previous block's effect is still landing: the one-minute ledger lag, the room settling, and the urgency hangover if the on arm includes it</button>
+      <button class="qopt" type="button">C · To make the on and off blocks the same length</button>
+      <p class="qwhy">Carryover is the switchback's specific weakness. Washout removes the contaminated minutes; the block length must still be long enough that what is left is clean, which is why ten minutes and not five.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Seven policies with bench values</span>
+        <span class="note">Own plan $18,198, CTA on a dip $20,847, product in hand $19,960, answer every 10 min $19,006, stretched urgency $18,290 with 3.18 flags, giveaway on a drop $16,165, playbook $23,166. Each read as the function that produced it.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Means over seeded nights</span>
+        <span class="note">Seeds 424242 + 101 s for forty nights, one night drawn and forty measured, the widget labelling which is which, canon.json carrying the seed count and the engine it was built from.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Switchback design: Bojinov, Simchi-Levi, Zhao (2023), Management Science 69(7)</span>
+        <span class="note">Blocks, sealed randomisation, washout for carryover, orders per 1,000 viewer-minutes, clustering by night, the within-stream PanelOLS estimate with a treatment column.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Bandits: MABWiser 2.7.4 (UCB1, Thompson), vowpalwabbit 9.11.6 (contextual)</span>
+        <span class="note">Named with versions as the step after the switchback, for choosing among cues that qualify at the same minute. Not built tonight.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Randomisation theory</span>
+        <span class="note">Assumed. It lives in learn-experimentation-with-phoebe, linked from Part 2.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">A live A/B on a real TikTok Shop room</span>
+        <span class="note">Not covered by design. The bench is the rehearsal and the switchback is the plan; running it needs a room, a producer and the leader track's sign-off.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 8 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>A policy</b><span>fn(t, st, m): the minute, the rows up to t-1, the host's planned minute. Returns an override or null. Only ever sees the past.</span></div>
+      <div class="cheat-item"><b>The bench call</b><span>LIVE_ENGINE.benchPolicy(name, 40). Seeds 424242 + 101 s. Means of GMV, orders, watch, peak, flags, views, cvr.</span></div>
+      <div class="cheat-item"><b>The ladder</b><span>Own plan $18,198. Playbook $23,166, +27.3 percent. CTA on a dip +10.1, serum in hand +9.7, answer the room +4.4.</span></div>
+      <div class="cheat-item"><b>The two traps</b><span>Stretched urgency: +$92, 3.18 flags a night. Giveaway on a drop: views 8,732 from 8,519, GMV -$2,033.</span></div>
+      <div class="cheat-item"><b>One night vs forty</b><span>The replay's final line is one seed, a story. The forty-night mean is the measurement. Quote the mean, name the seeds.</span></div>
+      <div class="cheat-item"><b>Switchback</b><span>12 x 10-min blocks, coin flip per block, 2-min washout (3 with urgency), orders per 1,000 viewer-minutes, cluster by night.</span></div>
+      <div class="cheat-item"><b>The estimate</b><span>PanelOLS with entity_effects, room-weighted, cov_type clustered, cluster_entity. The coefficient on treated is the lift.</span></div>
+      <div class="cheat-item"><b>What is planted</b><span>TRUTH is the engine's known causal structure. The ladder tests that policies recover it. Evidence about a real room comes from the switchback.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Builder session 8 of 8 · learn-live-commerce-analytics-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="b7-live-nowcast.html">← Builder session 7 · The live nowcast</a>
+      <a href="../index.html">All sessions →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/live-engine.js?v=1"></script>
+<script src="../assets/live-bench.js?v=1"></script>
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

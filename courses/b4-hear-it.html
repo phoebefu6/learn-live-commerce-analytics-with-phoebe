@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Builder session 4 of 8. Word-timestamped transcripts from three local and two managed routes, a nine-label segment tagger that runs keyword rules before any model, and a claims checker built on the phrases TikTok Shop's own guides name.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Hear it: what the host says - learn live commerce analytics with phoebe">
+<meta property="og:description" content="Builder session 4 of 8. The picture moved click rate in session 3. The words move the order rate: CTA plus 6.5 points, price plus 3.8, short urgency plus 4.9. Tonight the words become a column.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/courses/b4-hear-it.html">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Hear it: what the host says - learn live commerce analytics with phoebe">
+<meta name="twitter:description" content="faster-whisper, whisperx, Deepgram and AssemblyAI compared with versions and prices; a nine-label tagger; a claims checker on TikTok's own lists.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Builder session 4 · Hear it: what the host says - learn live commerce analytics with phoebe</title>
+<link rel="stylesheet" href="../assets/style.css?v=1">
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="wrap">
+    <span class="crumb"><a href="../index.html">learn-live-commerce-analytics-with-phoebe</a> / Builder session 4 of 8</span>
+    <button class="btn" id="toggle-all" type="button">Expand all</button>
+    <button class="btn primary" id="zoom-toggle" type="button">Projector zoom: off</button>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn LIVE Commerce Analytics with Phoebe · Builder session 4 of 8</div>
+    <h1>Hear it: <span class="accent">what the host says</span></h1>
+    <p class="sub">Session 3 turned the video into columns and found that what the camera shows moves click rate. Tonight the audio track becomes columns too, and this is where the order rate lives: a call to action, a price said out loud, a scarcity line in its first two minutes. Two hours of talk becomes a word-timestamped transcript, then a label per minute from a tagger whose every decision can be argued with a host, then a claims checker that reads the same phrase lists TikTok Shop's policy pages publish. Five transcription routes, with the versions, the units and the prices, so the choice is yours and not the vendor's.</p>
+    <div class="chip-row">
+      <span class="chip level">🟡 Core</span>
+      <span class="chip audience">Data scientists</span>
+      <span class="chip audience">Anyone who has to tag two hours of talk</span>
+      <span class="chip time">45 min</span>
+    </div>
+    <div class="agenda">
+      <span class="a1" style="flex:1">0-3 · Welcome</span>
+      <span class="a2" style="flex:5">3-20 · Transcripts, tags, claims</span>
+      <span class="a3" style="flex:4">20-40 · Build-along: the segment tagger</span>
+      <span class="a4" style="flex:1">40-45 · Q&amp;A</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ INTRO ============ -->
+  <section class="section" id="intro">
+    <div class="section-kicker">
+      <span class="klabel">Part 0</span>
+      <h2>Where session 4 sits in the pipeline</h2>
+    </div>
+    <p class="lede">Session 1 fixed the grain, session 2 put every source on one clock, session 3 filled the picture columns: product in hand, close-up ratio, price overlay, scene cuts. Tonight fills the speech columns: <code>segment</code>, <code>wpm</code> and a claims flag. Session 5 scores every label at the minute grain, and session 6 asks which of the labels actually move the money once the traffic is held still. The recordings are still <strong>Lumen Glow</strong>, 60 streams of a 29 dollar serum, four human hosts and two AI avatars.</p>
+
+    <div class="legend">
+      <span class="pill">Live = presented in the 45 minutes</span>
+      <span class="pill">Self-study = the full depth, after class</span>
+      <span class="pill">🔍 Every diagram zooms</span>
+    </div>
+
+    <div class="callout win">
+      <p><strong>★ What you walk out with tonight.</strong> A word-timestamped transcript of a two-hour stream, with a start and an end on every word. A nine-label segment column per minute (hook, build, demo, price, CTA, urgency, Q&amp;A, filler, dead air) from a tagger that runs keyword rules first and reaches for a model only on the minutes the rules cannot call. A words-per-minute column. And a claims checker that flags the exact phrases TikTok Shop's guides name, plus a run counter that knows when urgency has gone on too long to be either honest or effective.</p>
+    </div>
+
+    <details class="card" open>
+      <summary><span class="mode live">Live</span>Why the words are the column that moves orders<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Session 3 ended with a within-stream result on click rate: product in hand plus 1.38 points, close-up ratio plus 1.01, price overlay plus 0.97. Useful, and about the click. Run the same within-stream comparison on the click-to-order rate, in points, and the picture columns go quiet: product in hand plus 0.04, close-up plus 0.46, price overlay minus 0.13, none of them distinguishable from zero. The speech columns are the ones that speak: <strong>CTA minutes plus 6.50 points, price minutes plus 3.78, short urgency (its first two minutes) plus 4.93, Q&amp;A plus 0.96</strong>. Hook minus 3.18, filler minus 2.64, dead air minus 4.72.</p>
+        <p>The picture gets the tap. The words get the order. That is the reason a segment label per minute is worth a whole session, and the reason its labels have to be defensible: session 6 will put them in a regression, and a leader will read the result as advice to a host.</p>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lumen Glow's first tagger was a single prompt to a language model with the whole transcript pasted in. It returned plausible labels, and the review with the host Jules fell apart in ten minutes: nobody could say why minute 61 was "demo" and minute 62 "build" when she had said nearly the same sentence in both. The rewrite put the keyword rules first, wrote the matching phrase into a side column, and only sent the minutes with no match to a model. The next review took a whole hour, because for the first time there was something to argue about.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The vocabulary tonight uses<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <ul>
+          <li><strong>Word timestamp</strong> - a start and an end time for each transcribed word, not just for each sentence. Needed because a minute boundary falls in the middle of sentences all night long.</li>
+          <li><strong>Forced alignment</strong> - snapping a known transcript onto the audio with a phoneme model so every word gets a precise time. whisperx does this with wav2vec2 after Whisper has produced the text.</li>
+          <li><strong>VAD</strong> - voice activity detection, the pre-pass that finds where anyone is speaking at all. It is also how you find dead air without a model.</li>
+          <li><strong>Diarisation</strong> - who spoke when. A co-host, a producer off camera and a played-in customer clip all end up in the audio; the tagger should only read the host.</li>
+          <li><strong>Segment label</strong> - the dominant thing the host is doing in a minute: hook, build, demo, price, CTA, urgency, Q&amp;A, filler, dead. One per minute, as a column.</li>
+          <li><strong>Claims checker</strong> - a phrase list, matched by regex, that flags language a platform policy names as exaggerated or misleading. It flags; a person decides.</li>
+          <li><strong>VLM</strong> - a video-language model, one that takes frames and audio together and answers a question in text. The fallback for minutes where the words alone do not settle the label.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 1 ============ -->
+  <section class="section" id="part-1">
+    <div class="section-kicker">
+      <span class="klabel">Part 1 · covers the five transcription routes, their units and their prices</span>
+      <h2>Words with a clock on them</h2>
+      <span class="tag concept">8 min live</span>
+    </div>
+    <p class="lede">A transcript without word times is a document. A transcript with them is a table you can join to the minute grid, and that is the only kind tonight cares about. Three local routes and two managed ones produce it; they differ in licence, timestamp method, the unit the time comes back in, and what two hours costs.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Five transcription routes compared: openai-whisper 20250625 and faster-whisper 1.2.1, both MIT with cross-attention DTW word timestamps in seconds; whisperx 3.8.6, BSD-2, wav2vec2 forced alignment with VAD and diarisation, seconds; Deepgram nova-3 at 0.0043 dollars a minute, about 26 cents an hour, words in seconds; AssemblyAI Universal-3.5 Pro at 21 cents an hour, words in milliseconds. The unit column is the trap.">
+        <style>
+          .b4aHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b4aT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b4aB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b4aM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b4aC { font: 700 11px Inter, sans-serif; fill: #4F6B73; }
+          .b4aQ { font: 600 11px "SFMono-Regular", Menlo, monospace; fill: #062B33; }
+          .b4aR { font: 800 12px Inter, sans-serif; fill: #C8173F; }
+          .b4aN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+        </style>
+        <text class="b4aHd" x="14" y="24">Five routes to a word-timestamped transcript</text>
+        <text class="b4aM" x="14" y="42">versions and prices read 2026-09-24; per-hour figures are course arithmetic from the per-minute price</text>
+
+        <text class="b4aC" x="14" y="68">Route</text>
+        <text class="b4aC" x="176" y="68">Version · licence</text>
+        <text class="b4aC" x="336" y="68">Word timestamps from</text>
+        <text class="b4aC" x="586" y="68">Unit</text>
+        <text class="b4aC" x="690" y="68">Price for 2 hours</text>
+        <rect x="14" y="76" width="852" height="1" fill="#DCEBEF"></rect>
+
+        <rect x="14" y="86" width="150" height="40" rx="8" fill="#075E70"></rect>
+        <text class="b4aT" x="26" y="111">openai-whisper</text>
+        <text class="b4aB" x="176" y="104">20250625 · MIT</text>
+        <text class="b4aM" x="176" y="119">code and weights</text>
+        <text class="b4aB" x="336" y="104">cross-attention DTW</text>
+        <text class="b4aQ" x="336" y="119">word_timestamps=True</text>
+        <text class="b4aB" x="586" y="111">seconds</text>
+        <text class="b4aB" x="690" y="111">GPU minutes, local</text>
+
+        <rect x="14" y="134" width="150" height="40" rx="8" fill="#075E70"></rect>
+        <text class="b4aT" x="26" y="159">faster-whisper</text>
+        <text class="b4aB" x="176" y="152">1.2.1 · MIT</text>
+        <text class="b4aM" x="176" y="167">CTranslate2, batched</text>
+        <text class="b4aB" x="336" y="152">same method, same flag</text>
+        <text class="b4aQ" x="336" y="167">BatchedInferencePipeline</text>
+        <text class="b4aB" x="586" y="159">seconds</text>
+        <text class="b4aB" x="690" y="159">GPU minutes, local</text>
+
+        <rect x="14" y="182" width="150" height="40" rx="8" fill="#075E70"></rect>
+        <text class="b4aT" x="26" y="207">whisperx</text>
+        <text class="b4aB" x="176" y="200">3.8.6 · BSD-2</text>
+        <text class="b4aM" x="176" y="215">VAD, diarisation</text>
+        <text class="b4aB" x="336" y="200">wav2vec2 forced alignment</text>
+        <text class="b4aQ" x="336" y="215">whisperx.align(...)</text>
+        <text class="b4aB" x="586" y="207">seconds</text>
+        <text class="b4aB" x="690" y="207">GPU minutes, local</text>
+
+        <rect x="14" y="240" width="150" height="40" rx="8" fill="#0B7F94"></rect>
+        <text class="b4aT" x="26" y="265">Deepgram nova-3</text>
+        <text class="b4aB" x="176" y="258">managed API</text>
+        <text class="b4aM" x="176" y="273">$0.0043 per minute mono</text>
+        <text class="b4aB" x="336" y="258">vendor model</text>
+        <text class="b4aQ" x="336" y="273">words[].start, .end</text>
+        <text class="b4aB" x="586" y="265">seconds</text>
+        <text class="b4aB" x="690" y="265">about 52 cents</text>
+
+        <rect x="14" y="288" width="150" height="40" rx="8" fill="#0B7F94"></rect>
+        <text class="b4aT" x="26" y="313">AssemblyAI U-3.5 Pro</text>
+        <text class="b4aB" x="176" y="306">managed API</text>
+        <text class="b4aM" x="176" y="321">$0.21 per hour</text>
+        <text class="b4aB" x="336" y="306">vendor model</text>
+        <text class="b4aQ" x="336" y="321">words[].start, .end</text>
+        <text class="b4aR" x="586" y="313">milliseconds</text>
+        <text class="b4aB" x="690" y="313">about 42 cents</text>
+
+        <rect x="14" y="350" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b4aN" x="38" y="362">One vendor returns 61.4, the other 61400. Divide by 1000 before floor(start / 60), or minute 2 lands at minute 1024.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - three local and two managed routes, and the one column where they disagree in a way that breaks a join.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The timestamp trap<span class="mini">2 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Every route hands back a list of words with a start and an end. Deepgram's <code>words[]</code> carry <code>start</code> and <code>end</code> in <strong>seconds</strong>. AssemblyAI's carry them in <strong>milliseconds</strong>. The three Whisper routes are in seconds. Nothing in the field name tells you which, and both are plain numbers, so a pipeline written against one vendor runs without error against the other and produces minute numbers a thousand times too big, or a whole stream that lands in minute 1.</p>
+        <p>The fix is one line at the boundary and a habit: convert to seconds the moment the response arrives, name the column <code>start_s</code>, and never let a raw vendor timestamp touch the minute join. The same discipline session 2 applied to the stream delay applies here: one clock, converted at the door.</p>
+        <div class="callout tip">
+          <p><strong>Assert the unit.</strong> After loading any transcript, check that the last word's start is below the stream length in seconds, which for a two-hour LIVE is 7,200. A millisecond transcript fails that test at the first word past minute 2.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>What a two-hour stream costs each way<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Local routes cost GPU minutes and your time. The three Whisper packages are free to use: openai-whisper and faster-whisper under MIT, whisperx under BSD-2. faster-whisper is the same model family run through CTranslate2, which is why it is the one in tonight's build-along: same <code>word_timestamps=True</code> flag, less memory, and a batched pipeline for throughput. whisperx adds the forced-alignment pass, VAD and diarisation, at the cost of a heavier install.</p>
+        <p>Managed routes cost cents. Deepgram nova-3 is priced at $0.0043 per minute of mono audio, about $0.26 an hour, so a two-hour stream is <strong>about 52 cents</strong>. AssemblyAI Universal-3.5 Pro is $0.21 an hour, so <strong>about 42 cents</strong>. Both per-hour figures are course arithmetic from the published per-minute and per-hour prices. Sixty streams is a few tens of dollars either way. The cost that matters is not the transcript; it is the review time when the labels built on it are wrong.</p>
+        <table class="clean">
+          <thead>
+            <tr><th>Route</th><th>What you pay</th><th>What you get that the others do not</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>faster-whisper 1.2.1</td><td>GPU time, MIT</td><td>Whisper quality, batched, one flag for word times</td></tr>
+            <tr><td>whisperx 3.8.6</td><td>GPU time, BSD-2</td><td>Forced-aligned word times, VAD, who spoke when</td></tr>
+            <tr><td>Deepgram nova-3</td><td>About 52 cents per 2 h</td><td>No GPU, seconds out of the box</td></tr>
+            <tr><td>AssemblyAI Universal-3.5 Pro</td><td>About 42 cents per 2 h</td><td>No GPU, speaker labels on every word, milliseconds</td></tr>
+          </tbody>
+        </table>
+        <div class="callout example">
+          <span class="ex-pill">Real world</span>
+          <p>Lumen Glow ran the first 20 streams through a managed API and the next 40 through faster-whisper on a rented GPU, because the API's terms did not allow the audio of a co-host who had not signed a release to leave the building. The labels from the two halves were compared on five overlapping streams before anyone joined them. The wpm column agreed; the minute of every CTA agreed to within one word. It is the check you want written down before a second vendor ever enters the pipeline.</p>
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>The two local snippets, verbatim from the docs<span class="mini">4 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>faster-whisper: one call, one flag, and each segment carries its words with start, end and a probability.</p>
+        <div class="prompt-box good">
+          <span class="label">★ faster-whisper 1.2.1, word timestamps</span>
+segments, _ = model.transcribe("audio.mp3", word_timestamps=True)
+for word in segment.words: print("[%.2fs -&gt; %.2fs] %s" % (word.start, word.end, word.word))
+        </div>
+        <p>whisperx: transcribe with batching, then align the segments with a language-specific wav2vec2 phoneme model. Diarisation is a third pass, with <code>DiarizationPipeline</code> and <code>whisperx.assign_word_speakers</code>.</p>
+        <div class="prompt-box good">
+          <span class="label">★ whisperx 3.8.6, transcribe then align</span>
+model = whisperx.load_model("large-v2", device="cuda")
+audio = whisperx.load_audio("audio.mp3")
+result = model.transcribe(audio, batch_size=16)
+model_a, metadata = whisperx.load_align_model(language_code=result["language"], device="cuda")
+result = whisperx.align(result["segments"], model_a, metadata, audio, device)
+# then DiarizationPipeline(...) and whisperx.assign_word_speakers(...)
+        </div>
+        <p>Whisper's own word timings come from the cross-attention pattern and dynamic time warping, and the CLI still marks the flag experimental. whisperx exists because forced alignment is more precise at word edges, which matters when a CTA phrase straddles a minute boundary. For a Mandarin stream, check the wav2vec2 alignment-model coverage before promising word-level accuracy.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ PART 2 ============ -->
+  <section class="section" id="part-2">
+    <div class="section-kicker">
+      <span class="klabel">Part 2 · covers the nine-label tagger, the VLM fallback and the claims checker</span>
+      <h2>From words to a segment label</h2>
+      <span class="tag concept">9 min live</span>
+    </div>
+    <p class="lede">The tagger is a pipeline, not a prompt. Words fall into minute buckets, keyword rules make the calls they can make and write down why, a model is asked only about the minutes left over, and every minute ends with one dominant label and a confidence beside it. The claims checker runs on the same buckets and never decides anything; it flags.</p>
+
+    <figure class="zoomable">
+      <svg viewBox="0 0 880 428" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The segment tagger as a pipeline: timestamped words bucket into minutes, keyword rules assign CTA, price, urgency, Q and A, hook, filler and dead air, minutes with no rule hit go to a language or video-language model fallback, and each minute ends with one dominant label and a confidence column. Below, the keyword lists for each rule.">
+        <style>
+          .b4bHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
+          .b4bT { font: 800 12px Inter, sans-serif; fill: #fff; }
+          .b4bB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
+          .b4bM { font: 400 11px Inter, sans-serif; fill: #4F6B73; }
+          .b4bQ { font: 600 11px "SFMono-Regular", Menlo, monospace; fill: #062B33; }
+          .b4bL { font: 700 11px Inter, sans-serif; fill: #075E70; }
+          .b4bN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
+        </style>
+        <defs>
+          <marker id="b4bAr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#BFD8DE"></path>
+          </marker>
+        </defs>
+        <text class="b4bHd" x="14" y="24">The tagger: rules first, model second, one label and a confidence per minute</text>
+
+        <rect x="14" y="44" width="150" height="66" rx="10" fill="#075E70"></rect>
+        <text class="b4bT" x="28" y="66">Words</text>
+        <text class="b4bB" x="28" y="84" style="fill:#fff">start, end, text</text>
+        <text class="b4bB" x="28" y="100" style="fill:#fff">seconds, one clock</text>
+
+        <rect x="196" y="44" width="150" height="66" rx="10" fill="#0B7F94"></rect>
+        <text class="b4bT" x="210" y="66">Minute buckets</text>
+        <text class="b4bQ" x="210" y="84" style="fill:#fff">t = floor(s/60)+1</text>
+        <text class="b4bB" x="210" y="100" style="fill:#fff">text per t, wpm</text>
+
+        <rect x="378" y="44" width="150" height="66" rx="10" fill="#0B7F94"></rect>
+        <text class="b4bT" x="392" y="66">Keyword rules</text>
+        <text class="b4bB" x="392" y="84" style="fill:#fff">seven labels, free,</text>
+        <text class="b4bB" x="392" y="100" style="fill:#fff">phrase written down</text>
+
+        <rect x="560" y="44" width="150" height="66" rx="10" fill="#22C3DD"></rect>
+        <text class="b4bHd" x="574" y="66" style="font-size:12px">Model fallback</text>
+        <text class="b4bB" x="574" y="84">only unmatched minutes</text>
+        <text class="b4bB" x="574" y="100">LLM on text, VLM on video</text>
+
+        <rect x="742" y="44" width="124" height="66" rx="10" fill="#075E70"></rect>
+        <text class="b4bT" x="756" y="66">One label</text>
+        <text class="b4bB" x="756" y="84" style="fill:#fff">dominant per t</text>
+        <text class="b4bB" x="756" y="100" style="fill:#fff">+ confidence</text>
+
+        <line x1="168" y1="77" x2="192" y2="77" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b4bAr)"></line>
+        <line x1="350" y1="77" x2="374" y2="77" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b4bAr)"></line>
+        <line x1="532" y1="77" x2="556" y2="77" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b4bAr)"></line>
+        <line x1="714" y1="77" x2="738" y2="77" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b4bAr)"></line>
+        <path d="M453,114 L453,130 L804,130 L804,114" fill="none" stroke="#BFD8DE" stroke-width="1.5" marker-end="url(#b4bAr)"></path>
+        <text class="b4bM" x="470" y="127">rule hit: skip the model, confidence high</text>
+
+        <text class="b4bHd" x="14" y="162">The rules, in the order they are tried</text>
+        <rect x="14" y="172" width="852" height="1" fill="#DCEBEF"></rect>
+
+        <text class="b4bL" x="14" y="194">dead</text>
+        <text class="b4bB" x="110" y="194">under 40 words per minute: nobody is speaking, whatever the words say</text>
+        <text class="b4bL" x="14" y="216">CTA</text>
+        <text class="b4bQ" x="110" y="216">"tap the cart"  "link in the bag"  "3 2 1"  "add to cart"</text>
+        <text class="b4bL" x="14" y="238">price</text>
+        <text class="b4bQ" x="110" y="238">"dollars"  "off"  "bundle"  "two-pack"</text>
+        <text class="b4bL" x="14" y="260">urgency</text>
+        <text class="b4bQ" x="110" y="260">"last"  "left"  "ends"  "almost gone"</text>
+        <text class="b4bL" x="14" y="282">Q&amp;A</text>
+        <text class="b4bB" x="110" y="282">a viewer name read out plus a question mark in the same minute</text>
+        <text class="b4bL" x="14" y="304">hook</text>
+        <text class="b4bB" x="110" y="304">the opening minutes, before the first product word</text>
+        <text class="b4bL" x="14" y="326">filler</text>
+        <text class="b4bB" x="110" y="326">speech with no product word at all, after the hook</text>
+        <text class="b4bL" x="14" y="348">demo · build</text>
+        <text class="b4bB" x="110" y="348">product words, no rule above: the words cannot tell them apart, the picture can</text>
+
+        <rect x="600" y="182" width="266" height="176" rx="10" fill="#EEFCFE" stroke="#A5EAF4"></rect>
+        <text class="b4bHd" x="614" y="204">Confidence column</text>
+        <text class="b4bB" x="614" y="226">rule hit, one label: high</text>
+        <text class="b4bB" x="614" y="244">rule hit, two labels: dominant</text>
+        <text class="b4bB" x="614" y="262">by phrase count, medium</text>
+        <text class="b4bB" x="614" y="280">no rule hit, model call: low,</text>
+        <text class="b4bB" x="614" y="298">and the minute goes to review</text>
+        <text class="b4bM" x="614" y="324">A label you cannot explain to</text>
+        <text class="b4bM" x="614" y="340">the host is not a label yet.</text>
+
+        <rect x="14" y="380" width="852" height="1" fill="#DCEBEF"></rect>
+        <rect x="14" y="406" width="14" height="14" rx="3" fill="#C8173F"></rect>
+        <text class="b4bN" x="38" y="418">Rules write the matching phrase into a side column. That column is what the review with the host is about.</text>
+      </svg>
+      <figcaption>🔍 Click to zoom - words to buckets to rules to a fallback to one label, with the keyword lists and the confidence rule.</figcaption>
+    </figure>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>Why keyword rules first<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Three reasons, in the order they matter. <strong>Transparent:</strong> a rule that fired on "tap the cart" can be shown to the host, and the host can say "I say that in every minute, it is not a CTA when I say it under my breath", and then you have a better rule. <strong>Free:</strong> seven of the nine labels never need a model call, and the two that do (demo versus build) are settled by a column session 3 already produced, product in hand. <strong>Stable:</strong> a model prompt drifts with the model version; a keyword list only changes when you change it, and the change is a diff.</p>
+        <p>The cost is coverage. Rules miss the CTA said in a new way, and they miss sarcasm entirely. So the pipeline keeps the misses honest: a minute with no rule hit gets a low confidence and a model's opinion, and low-confidence minutes are sampled into the weekly review. Over time the review feeds the list. The tagger gets better the way a spam filter does, by argument, not by re-prompting.</p>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The VLM route for what words miss<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Demo and build are the two labels the transcript cannot separate: "this is the texture you get after it sinks in" is a demo if the serum is on the back of the host's hand and a build if it is not. The cheap answer is session 3's <code>product_in_hand</code> column. The expensive answer, for minutes where even that is ambiguous, is a video-language model that sees the frames and hears the audio at once.</p>
+        <ul>
+          <li><strong>Gemini 3.8 Flash</strong> through <code>client.interactions.create</code>, with the video passed as <code>processing: {type: "static", fps: 0.5}</code>, one frame every two seconds. About 100 video tokens per second at the default low resolution, which at $0.75 per million input tokens through 2026-12-31 works out to <strong>about $0.006 per minute of video</strong> (course arithmetic from the published token rate and price). A whole two-hour stream is under a dollar; you will not send a whole stream, only the unmatched minutes.</li>
+          <li><strong>Qwen3-VL</strong>, Apache-2.0, for the on-prem case where the recording cannot leave the building. Same question, your GPU, video sampled at 2 fps by default.</li>
+          <li><strong>Twelve Labs Pegasus 1.5</strong> for the search-shaped question ("find every minute where she applies it to her hand") rather than the label-shaped one. Marengo 3.0 is the search and embeddings model beside it.</li>
+        </ul>
+        <p>When is it worth it? When the unmatched minutes are more than a review can absorb, and when the label being settled is one that session 6 will put a number on. A demo minute converts at 11.29 percent and a build minute at 10.35 in the segment table; the gap is real but small, so spend on it after the CTA and urgency rules are right, not before.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Gemini 3.8 Flash on one unmatched minute (verbatim shape from the video docs)</span>
+from google import genai
+client = genai.Client()
+video_file = client.files.upload(file="clips/stream_17_t061.mp4")
+interaction = client.interactions.create(
+        model="gemini-3.8-flash",
+        input=[
+            {"type": "video", "uri": video_file.uri, "mime_type": video_file.mime_type,
+             "processing": {"type": "static", "fps": 0.5}},   # Sample 1 frame every 2 seconds
+            {"type": "text", "text": "One word: demo if the product is applied or shown in use, build otherwise."},
+        ],
+    )
+print(interaction.output_text)
+        </div>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode live">Live</span>The claims checker<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>A regex list, and every phrase on it comes from a page TikTok Shop publishes. The How to Avoid Misleading Content guide names outright bans: <strong>"100% effective", "Guaranteed results", "Works for everyone", "Permanent effect", "Instant results", "No side effects"</strong>. It also flags urgency wording that has to be true to be said: <strong>"While stocks last", "This sale is for selected customers only", "Don't miss these big discounts", "We are having our largest sale!"</strong>. The Content Policy in force since 2026-09-17 bans "exaggerated promises about a product's performance, effect, or price", and the Misleading Discount guide says "sale ends today" or "only 2 hours left" must be genuine.</p>
+        <p>The checker returns one row per hit: minute, phrase, category (claim or urgency). It does not judge. A genuine last-day sale can say "ends today"; the checker's job is to make sure someone looks at the minute and the stock sheet together, before a platform reviewer does.</p>
+        <p><strong>The run counter is the second half.</strong> Scarcity works for about two minutes and then it stops working and starts looking like a policy problem. Across the 60 streams, the click-to-order rate in a run of urgency minutes reads 14.71 in the first minute and 15.45 in the second, then <strong>8.28 from the third</strong>, 8.50, 8.56, 9.20. So the tagger keeps a <code>fomo_run</code> column, consecutive urgency minutes so far, and the checker raises a soft flag at run 3 (the audience has stopped believing it) and a policy-risk flag at run 4 (the platform's "genuine" test is now hard to pass, and the UK's DMCC Act 2024 names "falsely stating that a product will only be available for a limited time" as a banned practice).</p>
+        <table class="clean">
+          <thead>
+            <tr><th>Category</th><th>Phrases</th><th>Source</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>claim (banned)</td><td>100% effective · Guaranteed results · Works for everyone · Permanent effect · Instant results · No side effects</td><td>Misleading Content guide</td></tr>
+            <tr><td>urgency (must be genuine)</td><td>While stocks last · This sale is for selected customers only · Don't miss these big discounts · We are having our largest sale!</td><td>Misleading Content guide</td></tr>
+            <tr><td>urgency (must be genuine)</td><td>sale ends today · only 2 hours left</td><td>Misleading Discount guide, eff. 2026-08-31</td></tr>
+            <tr><td>run 3 soft flag, run 4 policy risk</td><td>third and fourth consecutive urgency minute</td><td>CTOR by run, 60 streams</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="card">
+      <summary><span class="mode self">Self-study</span>Affective versus cognitive CTAs, a tagging refinement<span class="mini">3 min</span><span class="caret">▶</span></summary>
+      <div class="body">
+        <p>Guo, Zhang, Goh and Peng (2025, Production and Operations Management) ran speech-to-text over real live-selling sessions and split the host's calls to action into two kinds: <strong>affective</strong> ("you are going to love this, grab it with me") and <strong>cognitive</strong> ("check the ingredients list, compare the price"). In their data the affective kind raised orders and the cognitive kind did not, and cognitive CTAs reduced social engagement. Read from the abstract only; the full text was not fetched, so treat the direction as a hypothesis for your data, not a number for your slide.</p>
+        <p>As a tagger refinement it is one extra column: split the CTA keyword list into two lists and record which fired. Session 6's within-stream regression can then ask whether the plus 6.50 points on CTA minutes belongs to one kind more than the other. If it does in the Lumen Glow data, that is a line on a host's script card. If it does not, you have learned something about a paper's generalisability, which is also worth an hour.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section class="section" id="demo-1">
+    <div class="section-kicker">
+      <span class="klabel">Build-along</span>
+      <h2>Build the segment tagger</h2>
+      <span class="tag demo">★ 20 min · everyone builds</span>
+    </div>
+    <p class="lede">One stream's audio in, three columns out: <code>segment</code>, <code>wpm</code>, <code>claims_flag</code>. faster-whisper 1.2.1 for the words, pandas for everything after. If you have no GPU tonight, load the words table a managed API returned instead, and convert its unit at the door.</p>
+
+    <div class="steps">
+      <div class="step">
+        <p><strong>Transcribe with word timestamps into a words DataFrame.</strong> One row per word: start, end, text, probability. The batched pipeline is the throughput setting; the flag is the same one openai-whisper uses.</p>
+        <div class="prompt-box good">
+          <span class="label">★ faster-whisper 1.2.1, words with a clock</span>
+import pandas as pd
+from faster_whisper import WhisperModel, BatchedInferencePipeline
+
+model = WhisperModel("large-v2", device="cuda", compute_type="float16")
+batched = BatchedInferencePipeline(model)
+segments, info = batched.transcribe("audio/stream_17.wav", word_timestamps=True, batch_size=16)
+
+rows = [(w.start, w.end, w.word.strip(), w.probability)
+        for seg in segments for w in seg.words]
+words = pd.DataFrame(rows, columns=["start", "end", "text", "prob"])
+
+assert words.start.max() &lt; 120 * 60          # seconds, not milliseconds
+len(words), words.head(3)
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Bucket words into minutes and compute words per minute.</strong> Minute t is the interval [t-1, t) from the start of the stream, indexed from 1, the same convention as every other column. A word belongs to the minute its start falls in.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Minute buckets and wpm</span>
+import numpy as np
+
+words["t"] = np.floor(words.start / 60).astype(int) + 1
+mins = (words.groupby("t")
+             .agg(text=("text", lambda s: " ".join(s).lower()),
+                  raw=("text", lambda s: " ".join(s)), wpm=("text", "size"))
+             .reindex(range(1, 121), fill_value=0))
+mins[["text", "raw"]] = mins[["text", "raw"]].replace(0, "")
+mins.wpm.describe()
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>The rule-based tagger.</strong> One function, one minute in, a label and a matching phrase out. Dead air first (it overrides everything), then the keyword rules, then the two labels the words cannot separate, which read session 3's <code>product_in_hand</code> column. Every rule writes down why it fired.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Nine labels, seven of them without a model</span>
+import re
+
+KW = {
+    "cta":     ["tap the cart", "link in the bag", "3 2 1", "add to cart"],
+    "price":   ["dollars", " off", "bundle", "two-pack"],
+    "fomo":    ["last", "left", "ends", "almost gone"],
+}
+PRODUCT = ["serum", "dew", "skin", "bottle", "texture", "apply"]
+VIEWER_Q = re.compile(r"\b[A-Z][a-z]+\b.*\?")            # a name read out, then a question
+
+def tag_minute(t, text, wpm, product_in_hand, raw):
+    if wpm &lt; 40:
+        return "dead", "wpm &lt; 40", "high"
+    hits = {lab: [k for k in kws if k in text] for lab, kws in KW.items()}
+    hits = {lab: h for lab, h in hits.items() if h}
+    if hits:
+        lab = max(hits, key=lambda k: len(hits[k]))
+        conf = "high" if len(hits) == 1 else "medium"
+        return lab, "; ".join(hits[lab]), conf
+    if VIEWER_Q.search(raw):
+        return "qna", "name + ?", "high"
+    has_product = any(p in text for p in PRODUCT)
+    if t &lt;= 3 and not has_product:
+        return "hook", "opening, no product word", "high"
+    if not has_product:
+        return "filler", "no product word", "medium"
+    return ("demo" if product_in_hand &gt;= 0.5 else "build"), "product word + picture", "low"
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>The claims checker.</strong> The two phrase lists from TikTok Shop's guides, matched case-insensitively, one row per hit. It returns rows; it does not change the label.</p>
+        <div class="prompt-box good">
+          <span class="label">★ (t, phrase, category) rows from the platform's own lists</span>
+CLAIMS = ["100% effective", "guaranteed results", "works for everyone",
+          "permanent effect", "instant results", "no side effects"]
+URGENCY = ["while stocks last", "this sale is for selected customers only",
+           "don't miss these big discounts", "we are having our largest sale",
+           "sale ends today", "only 2 hours left"]
+
+def check_claims(mins):
+    out = []
+    for t, text in mins.text.items():
+        for p in CLAIMS:
+            if p in text: out.append((t, p, "claim"))
+        for p in URGENCY:
+            if p in text: out.append((t, p, "urgency"))
+    return pd.DataFrame(out, columns=["t", "phrase", "category"])
+
+flags = check_claims(mins)
+flags
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Write the columns into the minute table.</strong> Segment, wpm, the phrase that fired, the confidence, a claims flag, and the urgency run counter. The run counter is consecutive urgency minutes so far, reset to zero on any other label.</p>
+        <div class="prompt-box good">
+          <span class="label">★ segment, wpm, claims_flag, fomo_run</span>
+m = pd.read_csv("data/streams.csv")
+one = m[m.stream_id == 17].set_index("t").copy()
+
+tags = [tag_minute(t, mins.text[t], mins.wpm[t], one.product_in_hand[t], mins.raw[t]) for t in one.index]
+one[["segment_new", "why", "conf"]] = pd.DataFrame(tags, index=one.index)
+one["wpm_new"] = mins.wpm
+one["claims_flag"] = one.index.isin(flags.t)
+
+is_fomo = (one.segment_new == "fomo").astype(int)
+run = is_fomo.groupby((is_fomo == 0).cumsum()).cumsum()       # consecutive urgency minutes
+one["fomo_run_new"] = run
+one["policy_risk"] = one.fomo_run_new &gt;= 4
+one[["segment_new", "why", "conf", "wpm_new", "claims_flag", "fomo_run_new"]].head(8)
+        </div>
+      </div>
+      <div class="step">
+        <p><strong>Sanity-check the label distribution.</strong> Across the 60 Lumen Glow streams the minutes split demo 20.9%, build 19.0%, urgency 16.4%, hook 12.8%, CTA 9.9%, Q&amp;A 9.1%, price 6.6%, filler 4.6%, dead 0.8%. A band to compare against, not a target: a stream with 40 percent CTA minutes is not wrong, but it is a stream you should listen to before believing the tagger.</p>
+        <div class="prompt-box good">
+          <span class="label">★ Compare, do not calibrate</span>
+band = pd.Series({"demo": 20.9, "build": 19.0, "fomo": 16.4, "hook": 12.8, "cta": 9.9,
+                  "qna": 9.1, "price": 6.6, "filler": 4.6, "dead": 0.8})
+mine = 100 * one.segment_new.value_counts(normalize=True)
+pd.DataFrame({"course_60_streams": band, "this_stream": mine}).round(1)
+
+low = one[one.conf == "low"].index.tolist()               # the minutes a model or a person should look at
+len(low), low[:10]
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <p><strong>Keep the phrase column.</strong> The <code>why</code> column costs nothing and is the entire review. When a host disputes a label, you look at the phrase, not the model. When a keyword list changes, you can re-tag 7,200 minutes in a second and diff the labels. A tagger without it is a model you cannot argue with, and session 6 is about to put its labels in front of a leader as advice.</p>
+    </div>
+  </section>
+
+  <!-- ============ HOMEWORK ============ -->
+  <section class="section" id="exercise">
+    <div class="section-kicker">
+      <span class="klabel">Homework</span>
+      <h2>Before session 5</h2>
+      <span class="tag exercise">30 min</span>
+    </div>
+    <ol>
+      <li>Transcribe one real two-hour recording you are allowed to use, by any of the five routes. Write down the unit the timestamps came back in and the one line that converted it. Assert the last word's start is under 7,200 seconds.</li>
+      <li>Run the tagger and list every minute with confidence "low". Watch three of them with the video and decide the label by hand. Write down whether the words, the picture or neither settled it.</li>
+      <li>Add two phrases to the CTA list that your host actually says, re-tag, and count how many minutes changed label. Bring the diff.</li>
+      <li>Run the claims checker and the run counter over the 60-stream table's <code>fomo_run</code> column. Count the minutes at run 4 or more, and which hosts they belong to. Session 5 puts a conversion number on each run length.</li>
+    </ol>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section class="section" id="quiz">
+    <div class="section-kicker">
+      <span class="klabel">Check yourself</span>
+      <h2>Three questions</h2>
+    </div>
+
+    <div class="quiz-q" data-answer="2">
+      <p class="qtext">A pipeline written against Deepgram is pointed at an AssemblyAI transcript. It runs without error, and every word of a two-hour stream lands in minutes 1 through 3, then the rest in minutes far past 120. What happened?</p>
+      <button class="qopt" type="button">A · AssemblyAI trims silence, so the timeline is compressed</button>
+      <button class="qopt" type="button">B · The stream delay from session 2 was applied twice</button>
+      <button class="qopt" type="button">C · Deepgram returns word times in seconds and AssemblyAI in milliseconds, so floor(start / 60) is a thousand times too large</button>
+      <p class="qwhy">Both vendors return plain numbers in fields called start and end. Convert to seconds at the door, name the column so the unit is visible, and assert the last start is under the stream length.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="0">
+      <p class="qtext">Why do the keyword rules run before any model, when a model would label more minutes?</p>
+      <button class="qopt" type="button">A · A rule writes down the phrase it fired on, so the label can be argued with the host, re-run for free, and diffed when the list changes; the model is kept for the minutes the rules cannot call</button>
+      <button class="qopt" type="button">B · Models cannot read transcripts longer than an hour</button>
+      <button class="qopt" type="button">C · Rules are more accurate than models on every label</button>
+      <p class="qwhy">Rules are less accurate on coverage and more accurate on accountability. Seven of nine labels never need a model; the two that do are mostly settled by session 3's product-in-hand column.</p>
+    </div>
+
+    <div class="quiz-q" data-answer="1">
+      <p class="qtext">Minute 71's transcript reads: "Only 2 hours left on the bundle, and honestly it works for everyone, tap the cart." What does the claims checker return for it?</p>
+      <button class="qopt" type="button">A · Nothing; the tagger labels it CTA and the checker only runs on urgency minutes</button>
+      <button class="qopt" type="button">B · Two rows: (71, "only 2 hours left", urgency) and (71, "works for everyone", claim); the label is decided separately by the tagger</button>
+      <button class="qopt" type="button">C · One row for the urgency phrase; "works for everyone" is an opinion, not a claim</button>
+      <p class="qwhy">"Works for everyone" is on the Misleading Content guide's banned list, and "only 2 hours left" is on the Misleading Discount guide's must-be-genuine list. The checker flags both and changes nothing; a person checks the stock sheet.</p>
+    </div>
+
+    <p class="quiz-score"></p>
+  </section>
+
+  <!-- ============ COVERAGE ============ -->
+  <section class="section" id="official">
+    <div class="section-kicker">
+      <span class="klabel">Sources covered</span>
+      <h2>What tonight maps to</h2>
+    </div>
+    <div class="covered">
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">Three local and two managed transcription routes, with versions and prices</span>
+        <span class="note">openai-whisper 20250625, faster-whisper 1.2.1, whisperx 3.8.6; Deepgram nova-3 at $0.0043 per minute, AssemblyAI Universal-3.5 Pro at $0.21 per hour. Seconds versus milliseconds.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">The nine-label segment tagger</span>
+        <span class="note">Keyword rules with a phrase column and a confidence, dead air by wpm, demo versus build from the picture, a model only for the leftovers.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill solid">✓</span>
+        <span class="name">The claims checker on TikTok Shop's own lists</span>
+        <span class="note">Six banned claims and four flagged urgency phrases from the Misleading Content guide, two from the Misleading Discount guide, plus the urgency run counter.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">VLM labelling: Gemini 3.8 Flash, Qwen3-VL, Twelve Labs Pegasus 1.5</span>
+        <span class="note">Shown as the fallback for unmatched minutes with the per-minute cost. Prompt design and evaluation of a VLM labeller are not covered.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill light">◐</span>
+        <span class="name">Scoring the labels</span>
+        <span class="note">Named tonight as the reason the labels must be defensible. Session 5 puts orders per thousand viewer-minutes on every one of the nine.</span>
+      </div>
+      <div class="covered-row">
+        <span class="status pill inkpill">·</span>
+        <span class="name">Training a custom speech model</span>
+        <span class="note">Not covered by design. The five routes are good enough for English and Mandarin retail speech; fine-tuning is a project, not a session.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="cheat" id="cheatsheet">
+    <h3>Builder session 4 cheat sheet</h3>
+    <div class="grid-2">
+      <div class="cheat-item"><b>Words move orders</b><span>Within-stream CTOR: CTA +6.50 pts, price +3.78, short urgency +4.93, Q&amp;A +0.96. The picture columns are near zero on CTOR.</span></div>
+      <div class="cheat-item"><b>Five routes</b><span>openai-whisper 20250625, faster-whisper 1.2.1, whisperx 3.8.6 (local, free); Deepgram nova-3, AssemblyAI Universal-3.5 Pro (managed, cents).</span></div>
+      <div class="cheat-item"><b>The unit trap</b><span>Deepgram seconds, AssemblyAI milliseconds. Convert at the door, assert the last start is under 7,200.</span></div>
+      <div class="cheat-item"><b>Two hours costs</b><span>About 52 cents at Deepgram, about 42 cents at AssemblyAI, GPU minutes locally. The review is the real cost.</span></div>
+      <div class="cheat-item"><b>Rules first</b><span>Dead under 40 wpm, then CTA, price, urgency, Q&amp;A, hook, filler. Demo versus build from product in hand. Model only for the rest.</span></div>
+      <div class="cheat-item"><b>Write the why</b><span>Every rule records the phrase it fired on and a confidence. Low confidence goes to review.</span></div>
+      <div class="cheat-item"><b>Claims checker</b><span>Six banned claims, six must-be-genuine urgency phrases, all from TikTok Shop's guides. Returns rows, decides nothing.</span></div>
+      <div class="cheat-item"><b>Run counter</b><span>Urgency CTOR 14.71, 15.45, then 8.28 from minute 3. Soft flag at run 3, policy risk at run 4.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <p>Builder session 4 of 8 · learn-live-commerce-analytics-with-phoebe · by Phoebe Fu</p>
+    <nav class="pagenav">
+      <a href="b3-see-it.html">← Builder session 3 · See it</a>
+      <a href="b5-score-content.html">Builder session 5 · Score the content →</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="../assets/app.js?v=1"></script>
+</body>
+</html>

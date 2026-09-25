@@ -1,0 +1,200 @@
+{
+  "builtFrom": "assets/live-engine.js",
+  "seed": 20260924,
+  "nights": 40,
+  "ladder": [
+    {
+      "policy": "none",
+      "label": "The host's own plan",
+      "note": "No coaching. Jules runs the script the way Jules always does.",
+      "nights": 40,
+      "gmv": 18198,
+      "orders": 544,
+      "avgWatchMin": 9.63,
+      "peakRoom": 839,
+      "riskFlags": 0,
+      "views": 8519,
+      "cvr": 13.71
+    },
+    {
+      "policy": "ctaOnDip",
+      "label": "Cue a CTA when orders dip",
+      "note": "If the last 3 minutes ordered under 70% of the nowcast rate and the last CTA is 6+ minutes back, run a price line then a CTA.",
+      "nights": 40,
+      "gmv": 20847,
+      "orders": 625,
+      "avgWatchMin": 9.7,
+      "peakRoom": 845,
+      "riskFlags": 0,
+      "views": 8479,
+      "cvr": 14.38
+    },
+    {
+      "policy": "showOnCta",
+      "label": "Product in hand on every CTA",
+      "note": "Every price and CTA minute is shot close-up with the serum in hand and the price on screen. Same words, different picture.",
+      "nights": 40,
+      "gmv": 19960,
+      "orders": 598,
+      "avgWatchMin": 9.63,
+      "peakRoom": 846,
+      "riskFlags": 0,
+      "views": 8536,
+      "cvr": 14.01
+    },
+    {
+      "policy": "replyEvery10",
+      "label": "Answer the room every 10 minutes",
+      "note": "Every tenth minute becomes a live Q&A minute, reading names and answering comments.",
+      "nights": 40,
+      "gmv": 19006,
+      "orders": 567,
+      "avgWatchMin": 9.87,
+      "peakRoom": 879,
+      "riskFlags": 0,
+      "views": 8710,
+      "cvr": 13.81
+    },
+    {
+      "policy": "stretchFomo",
+      "label": "Stretch the urgency when viewers drop",
+      "note": "The tempting one. Whenever the room is shrinking, keep the 'last chance, almost gone' pitch running until it recovers.",
+      "nights": 40,
+      "gmv": 18290,
+      "orders": 547,
+      "avgWatchMin": 9.84,
+      "peakRoom": 844,
+      "riskFlags": 3.18,
+      "views": 8502,
+      "cvr": 13.36
+    },
+    {
+      "policy": "giveawayOnDrop",
+      "label": "Announce a giveaway when viewers drop",
+      "note": "The other tempting one. A free-gift raffle whenever the room shrinks by 10 percent.",
+      "nights": 40,
+      "gmv": 16165,
+      "orders": 482,
+      "avgWatchMin": 9.63,
+      "peakRoom": 858,
+      "riskFlags": 0,
+      "views": 8732,
+      "cvr": 12.17
+    },
+    {
+      "policy": "playbook",
+      "label": "The playbook: all three good cues",
+      "note": "CTA on a dip, product in hand on every CTA, answer the room every ten minutes.",
+      "nights": 40,
+      "gmv": 23166,
+      "orders": 692,
+      "avgWatchMin": 9.89,
+      "peakRoom": 883,
+      "riskFlags": 0,
+      "views": 8745,
+      "cvr": 14.55
+    }
+  ],
+  "truth": {
+    "arrivalsPerMin": 45,
+    "leaveHazard": 0.11,
+    "pinRate": 0.72,
+    "ctr": 0.045,
+    "cvr": 0.115,
+    "commentRate": 0.018,
+    "likeRate": 0.09,
+    "hourFactor": {
+      "12": 0.85,
+      "13": 0.85,
+      "14": 0.9,
+      "15": 0.9,
+      "16": 0.95,
+      "17": 1,
+      "18": 1.15,
+      "19": 1.35,
+      "20": 1.45,
+      "21": 1.4,
+      "22": 1.2,
+      "23": 1
+    },
+    "seg": {
+      "hook": {
+        "leave": 0.9,
+        "ctr": 0.8,
+        "cvr": 0.75,
+        "comment": 1
+      },
+      "build": {
+        "leave": 1,
+        "ctr": 1.1,
+        "cvr": 1,
+        "comment": 0.9
+      },
+      "demo": {
+        "leave": 0.8,
+        "ctr": 1.5,
+        "cvr": 1.1,
+        "comment": 1
+      },
+      "price": {
+        "leave": 0.9,
+        "ctr": 1.4,
+        "cvr": 1.3,
+        "comment": 1
+      },
+      "cta": {
+        "leave": 1,
+        "ctr": 1.7,
+        "cvr": 1.6,
+        "comment": 0.9
+      },
+      "fomo": {
+        "leave": 0.75,
+        "ctr": 1.3,
+        "cvr": 1.45,
+        "comment": 1.1
+      },
+      "qna": {
+        "leave": 0.65,
+        "ctr": 0.9,
+        "cvr": 1.15,
+        "comment": 2
+      },
+      "filler": {
+        "leave": 1.4,
+        "ctr": 0.6,
+        "cvr": 0.7,
+        "comment": 0.6
+      },
+      "dead": {
+        "leave": 1.8,
+        "ctr": 0.4,
+        "cvr": 0.6,
+        "comment": 0.4
+      }
+    },
+    "productInHandCtr": 0.25,
+    "closeUpCtr": 0.2,
+    "priceOverlayCtr": 0.15,
+    "fomoStretchFrom": 3,
+    "fomoStretchCvr": 0.55,
+    "fomoHangoverMin": 3,
+    "fomoHangoverCvr": 0.8,
+    "fomoFlagFrom": 4,
+    "giveawayMinutes": 6,
+    "giveawayArrivals": 1.35,
+    "giveawayEngage": 2.6,
+    "giveawayCvrDuring": 0.45,
+    "giveawayCvrAfter": 0.88,
+    "boostReadMinutes": 10,
+    "boostFloor": 0.7,
+    "boostCeil": 2.2,
+    "boostIntercept": 0.4,
+    "boostSlope": 1.9,
+    "aiCtr": 0.95,
+    "aiCvr": 0.92,
+    "aiLeave": 1.12,
+    "aiRepeatLeave": 0.03,
+    "repliesPerQnaMin": 6
+  }
+}

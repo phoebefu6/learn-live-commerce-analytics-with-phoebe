@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- social:start -->
+<meta name="description" content="Fourteen sessions on reading a TikTok Shop LIVE room as data: the funnel, what the camera and the transcript add, why the top streams' favourite trick is a traffic effect, and a replay bench where you coach the host and measure it. Free, by Phoebe Fu.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Learn with Phoebe">
+<meta property="og:title" content="Learn LIVE Commerce Analytics with Phoebe">
+<meta property="og:description" content="Nine of the ten best streams opened with a giveaway. Inside a stream, the giveaway minutes convert worst. The playbook that survives that finding is worth 27 percent a night.">
+<meta property="og:url" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/">
+<meta property="og:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Learn LIVE Commerce Analytics with Phoebe">
+<meta name="twitter:description" content="Nine of the ten best streams opened with a giveaway. Inside a stream, the giveaway minutes convert worst. The playbook that survives that finding is worth 27 percent a night.">
+<meta name="twitter:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
+<!-- social:end -->
+<title>Learn LIVE Commerce Analytics with Phoebe</title>
+<link rel="stylesheet" href="assets/style.css?v=1">
+<style>
+
+  .stats-row { display: flex; gap: 2.4rem; margin-top: 1.5rem; flex-wrap: wrap; }
+  .stat b { display: block; font-size: 2.1rem; font-weight: 800; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .stat span { font-size: .72rem; opacity: .85; text-transform: uppercase; letter-spacing: .09em; font-weight: 600; }
+
+  .course-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .course-card {
+    border: 1px solid var(--hairline);
+    border-top: 4px solid var(--diff, var(--indigo));
+    border-radius: var(--radius);
+    padding: 1.2rem 1.3rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    text-decoration: none;
+    color: var(--ink);
+    background: #fff;
+    transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease;
+    position: relative;
+  }
+  .course-card:hover { border-color: var(--indigo-soft); border-top-color: var(--diff, var(--indigo)); box-shadow: 0 8px 28px rgba(11,127,148,.16); transform: translateY(-3px); }
+  .course-card .cicon { font-size: 1.7rem; line-height: 1; }
+  .course-card .cnum { font-size: .72rem; font-weight: 700; color: var(--indigo); text-transform: uppercase; letter-spacing: .1em; }
+  .course-card h3 { font-size: 1.05rem; font-weight: 800; line-height: 1.3; }
+  .course-card p { font-size: .85rem; color: var(--muted); flex: 1; }
+  .course-card .meta { display: flex; gap: .4rem; flex-wrap: wrap; }
+
+  .diff-legend { display: flex; gap: 1rem; margin-top: 1.6rem; font-size: .74rem; color: var(--muted); font-weight: 600; flex-wrap: wrap; }
+  .diff-legend i { display: inline-block; width: .85rem; height: .35rem; border-radius: 999px; margin-right: .35rem; vertical-align: middle; }
+
+  .paths { margin-top: 2.6rem; }
+  .paths h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: .3rem; }
+  .paths .plede { color: var(--muted); font-size: .92rem; margin-bottom: .8rem; }
+  .path { display: flex; gap: .55rem; align-items: center; padding: .75rem 0; border-bottom: .5px solid var(--hairline); flex-wrap: wrap; }
+  .path:last-child { border-bottom: none; }
+  .path b { min-width: 15.5rem; font-size: .9rem; }
+  .path .pstep { background: var(--indigo-50); color: var(--indigo); border-radius: 999px; padding: .16rem .68rem; font-weight: 700; font-size: .8rem; text-decoration: none; transition: all .12s ease; }
+  .path .pstep:hover { background: var(--indigo); color: #fff; }
+  .path .parr { color: var(--faint); font-weight: 700; }
+
+  .mm-section { margin-top: 1.6rem; }
+  .mm-section h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: .2rem; }
+  .mm-section .mm-lede { color: var(--muted); font-size: .92rem; margin-bottom: .4rem; }
+  .mm-wrap { border: 1px solid var(--hairline); border-radius: var(--radius); background: linear-gradient(180deg,#fff,#EEFCFE); padding: .6rem; overflow-x: auto; }
+  .mm-svg { width: 100%; height: auto; display: block; max-width: 60rem; margin: 0 auto; min-width: 34rem; }
+  .mm-link { cursor: pointer; text-decoration: none; }
+  .mm-node rect { transition: opacity .15s ease, filter .15s ease; }
+  .mm-node text { pointer-events: none; }
+  .mm-link:hover .mm-node rect { filter: brightness(1.06); }
+  .mm-edge { transition: opacity .15s ease; }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="eyebrow">Learn with Phoebe · Data Science</div>
+    <h1>Learn <span class="accent">LIVE Commerce Analytics</span> with Phoebe</h1>
+    <p class="sub">A two-hour TikTok Shop LIVE is a video, a transcript, a comment feed and a per-minute sales ledger, all recorded on slightly different clocks. Line them up and every minute of the stream becomes a row: what the host said, what the camera showed, how many people were in the room, how many clicked the pinned product, how many bought. This course does that to sixty streams of one skincare brand, four human hosts and two AI avatars, then asks the question every MCN lead asks: what do the winning streams do that the rest do not. The first answer the data gives is wrong, and the whole course is about why. Six leader sessions on judging a room and writing a playbook a host can follow; eight builder sessions that end with a replay bench where you cue the host mid-stream and the engine tells you what it cost or earned.</p>
+    <div class="stats-row">
+      <div class="stat"><b data-count="14">14</b><span>sessions, two tracks</span></div>
+      <div class="stat"><b data-count="60">60</b><span>streams, 7,200 minutes</span></div>
+      <div class="stat"><b data-count="9">9</b><span>of the top 10 opened with a giveaway</span></div>
+      <div class="stat"><b data-count="27">27</b><span>percent a night from the playbook</span></div>
+      <div class="stat"><b data-count="45">45</b><span>min per session</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="section">
+    <div class="paths" style="margin-top:0">
+      <h2>Leader track 🎯 <span style="font-size:.85rem;font-weight:600;color:var(--muted)">· six sessions, no code</span></h2>
+      <p class="plede">For whoever runs the hosts and answers for the GMV. How to read a LIVE room's numbers, why the obvious playbook is a traffic effect, and how to write one that a host can follow and a test can confirm.</p>
+    </div>
+
+    <div class="course-grid">
+      <a class="course-card" href="courses/a1-read-the-room.html" style="--diff:#34D399">
+        <span class="cicon">📺</span>
+        <span class="cnum">Leader session 1 · start here</span>
+        <h3>Read the LIVE room</h3>
+        <p>The funnel from views to orders, the numbers TikTok Shop reports per stream, and the split that runs the whole course: peak viewers tells you about the traffic a room was given, GPM tells you how well it sold what it was given.</p>
+        <span class="meta"><span class="pill amber">▶ Start here</span></span>
+      </a>
+      <a class="course-card" href="courses/a2-what-top-streams-share.html" style="--diff:#34D399">
+        <span class="cicon">🏆</span>
+        <span class="cnum">Leader session 2</span>
+        <h3>What the top streams share</h3>
+        <p>Nine of the ten best nights opened with a giveaway, and inside every stream the giveaway minutes convert worst. The traffic effect that makes "top streams do X" the most expensive sentence in the business.</p>
+      </a>
+      <a class="course-card" href="courses/a3-design-the-say.html" style="--diff:#FBBF24">
+        <span class="cicon">🗣️</span>
+        <span class="cnum">Leader session 3</span>
+        <h3>Design the say</h3>
+        <p>Hook, product build, price anchor, CTA and urgency as a script with measured minute values. The two-minute urgency cue that converts at 15 percent and the third minute that drops it to 8.</p>
+      </a>
+      <a class="course-card" href="courses/a4-design-the-show.html" style="--diff:#FBBF24">
+        <span class="cicon">🎥</span>
+        <span class="cnum">Leader session 4</span>
+        <h3>Design the show</h3>
+        <p>What the camera adds on top of the words: product in hand, the close-up, the price on screen. Where a human host beats an AI avatar per viewer and where the avatar's cheap daytime hours still pay.</p>
+      </a>
+      <a class="course-card" href="courses/a5-coach-live.html" style="--diff:#FB923C">
+        <span class="cicon">🎧</span>
+        <span class="cnum">Leader session 5</span>
+        <h3>Coach the room live</h3>
+        <p>A five-minute nowcast in the producer's ear, the three cues worth giving and the two the room begs for when it gets nervous. Run the replay bench yourself and see which ones the engine pays for.</p>
+      </a>
+      <a class="course-card" href="courses/a6-prove-it-worked.html" style="--diff:#FB923C">
+        <span class="cicon">📋</span>
+        <span class="cnum">Leader session 6</span>
+        <h3>Prove the playbook worked</h3>
+        <p>The scorecard a host and a script can be judged on, the test design that separates a cue from the traffic it rode, and the urgency claims the platform and the regulator both read as deception.</p>
+        <span class="meta"><span class="pill amber">the MCN version</span></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="paths" style="margin-top:0">
+      <h2>Builder track 🔧 <span style="font-size:.85rem;font-weight:600;color:var(--muted)">· eight sessions, one pipeline</span></h2>
+      <p class="plede">Sixty streams of Lumen Glow, one hero SKU, turned into a minute-level table and analysed for real in Python. Session 8 runs the finished playbook on tonight's stream and measures it over forty seeded nights.</p>
+    </div>
+
+    <div class="course-grid">
+      <a class="course-card" href="courses/b1-stream-as-data.html" style="--diff:#34D399">
+        <span class="cicon">🧱</span>
+        <span class="cnum">Builder session 1 · start here</span>
+        <h3>The stream as data</h3>
+        <p>Four sources, one grain: the video, the transcript, the comment feed and the per-minute ledger become one row per minute. The event model and the metric definitions everything downstream inherits.</p>
+        <span class="meta"><span class="pill amber">▶ Start here</span></span>
+      </a>
+      <a class="course-card" href="courses/b2-ingest-and-align.html" style="--diff:#FBBF24">
+        <span class="cicon">⏱️</span>
+        <span class="cnum">Builder session 2</span>
+        <h3>Ingest and align</h3>
+        <p>FFmpeg segments, frames at 1 fps, 16 kHz audio, and the clock problem: a stream reaches viewers seconds after the host says it, so the sale lands in the wrong minute unless you shift it.</p>
+      </a>
+      <a class="course-card" href="courses/b3-see-it.html" style="--diff:#FBBF24">
+        <span class="cicon">👁️</span>
+        <span class="cnum">Builder session 3</span>
+        <h3>See it: what the camera shows</h3>
+        <p>Product in hand, close-up ratio, host on camera, scene cuts and the price card read by OCR. Open-vocabulary detection against a named SKU, and the licence question that decides which detector you can ship.</p>
+      </a>
+      <a class="course-card" href="courses/b4-hear-it.html" style="--diff:#FBBF24">
+        <span class="cicon">🎙️</span>
+        <span class="cnum">Builder session 4</span>
+        <h3>Hear it: what the host says</h3>
+        <p>Word-timestamped transcripts, a segment tagger for hook, build, demo, price, CTA, urgency and Q&amp;A, and a claims checker that flags the phrases a platform policy reads as deceptive.</p>
+      </a>
+      <a class="course-card" href="courses/b5-score-content.html" style="--diff:#FB923C">
+        <span class="cicon">📊</span>
+        <span class="cnum">Builder session 5</span>
+        <h3>Score the content</h3>
+        <p>Per-minute click rate, order rate and orders per thousand viewer-minutes by segment. The table where CTA minutes order at 11.5 per thousand and a hook orders at 1.8, and why a ratio on a small denominator lies.</p>
+      </a>
+      <a class="course-card" href="courses/b6-traits-to-playbook.html" style="--diff:#FB923C">
+        <span class="cicon">🧭</span>
+        <span class="cnum">Builder session 6</span>
+        <h3>From traits to a playbook</h3>
+        <p>The pooled regression that prices a giveaway opener at plus 5,576 dollars, the within-stream version that prices the same minutes at minus 2.3 points of conversion, and a LightGBM with SHAP that agrees with the second.</p>
+      </a>
+      <a class="course-card" href="courses/b7-live-nowcast.html" style="--diff:#F87171">
+        <span class="cicon">📡</span>
+        <span class="cnum">Builder session 7</span>
+        <h3>The live nowcast</h3>
+        <p>Forecast the next five minutes of orders from the room so far. A smoothed order rate times a viewer projection, backtested over 6,720 windows, and the alert rule that does not fire on noise.</p>
+      </a>
+      <a class="course-card" href="courses/b8-intervene.html" style="--diff:#F87171">
+        <span class="cicon">🎛️</span>
+        <span class="cnum">Builder session 8</span>
+        <h3>Intervene, then prove it</h3>
+        <p>The replay bench: cue the host at any minute of tonight's stream, run the same plan over forty nights, and read seven policies against the host's own. Then the switchback design that makes the result believable.</p>
+        <span class="meta"><span class="pill amber">🔒 the capstone</span></span>
+      </a>
+    </div>
+
+    <div class="diff-legend">
+      <span><i style="background:#34D399"></i>start here</span>
+      <span><i style="background:#FBBF24"></i>foundations</span>
+      <span><i style="background:#FB923C"></i>hands-on</span>
+      <span><i style="background:#F87171"></i>advanced and capstone</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="paths">
+      <h2>Choose your path 🗺️</h2>
+      <p class="plede">Three doors into the same room. Both tracks start at their own session 1, because the funnel vocabulary is what makes the rest arguable.</p>
+      <div class="path"><b>🎯 I run the hosts</b>
+        <a class="pstep" href="courses/a1-read-the-room.html">L1</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/a2-what-top-streams-share.html">L2</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/a3-design-the-say.html">L3</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/a5-coach-live.html">L5</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/a6-prove-it-worked.html">L6</a>
+        <span style="font-size:.82rem;color:var(--muted)">read the room, unlearn the giveaway, write the script, coach it live, prove it</span>
+      </div>
+      <div class="path"><b>🔧 I build the pipeline</b>
+        <a class="pstep" href="courses/b1-stream-as-data.html">B1</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/b2-ingest-and-align.html">B2</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/b5-score-content.html">B5</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/b6-traits-to-playbook.html">B6</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/b8-intervene.html">B8</a>
+        <span style="font-size:.82rem;color:var(--muted)">the grain, the clock, the scores, the confound, the bench</span>
+      </div>
+      <div class="path"><b>🎯 Everything, in order</b>
+        <a class="pstep" href="courses/a1-read-the-room.html">L1</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/a2-what-top-streams-share.html">L2</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/b1-stream-as-data.html">B1</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/b3-see-it.html">B3</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/b4-hear-it.html">B4</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/b6-traits-to-playbook.html">B6</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/b7-live-nowcast.html">B7</a>
+        <span class="parr">→</span>
+        <a class="pstep" href="courses/b8-intervene.html">B8</a>
+        <span style="font-size:.82rem;color:var(--muted)">from a room nobody measures to a playbook worth 27 percent a night</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="paths" style="margin-top:0">
+      <h2>Your passport 🎫</h2>
+      <p class="plede">Clear all three quiz questions in a session and it gets stamped. Fourteen stamps across both tracks, and they live in this browser only.</p>
+    </div>
+    <div class="pp-strip"></div>
+  </section>
+
+  <section class="section">
+    <div class="paths" style="margin-top:0">
+      <h2>What is real here 🧾</h2>
+      <p class="plede">A course about separating a real effect from a traffic effect should be exact about which of its own numbers are measured, and which were planted so the methods could be checked against a known truth.</p>
+    </div>
+    <table class="clean">
+      <tr><th>Claim</th><th>Status</th></tr>
+      <tr><td>The 60 streams, 7,200 minute rows</td><td>Generated once by the course engine script from a fixed seed, identical for every learner and identical in Node and in your browser. Viewers arrive and leave, the pinned card is shown, clicks and orders are drawn minute by minute</td></tr>
+      <tr><td>The causal structure</td><td><strong>Planted, on purpose, and documented in the engine.</strong> Which segments raise clicks, which raise orders, how a giveaway opener inflates early engagement and buys platform traffic while lowering conversion all night, how an urgency pitch stops converting from its third consecutive minute, how an AI host loses the room a little faster each time its script repeats. None of it is a claim about TikTok's real ranking. The point is that the builder-track methods can be checked against a truth that is known</td></tr>
+      <tr><td>Nine of the top ten opened with a giveaway; plus 5,576 dollars pooled, minus 2.3 points within-stream</td><td>Computed by the analysis script in the repository on the generated data: a pooled OLS across streams, then the same minutes demeaned by stream with errors clustered by stream. Both numbers are printed by the script</td></tr>
+      <tr><td>The segment table: CTA minutes order at 11.5 per thousand viewer-minutes, a hook at 1.8</td><td>Arithmetic on the 7,200 rows, same script</td></tr>
+      <tr><td>The playbook: plus 27 percent a night; stretched urgency plus 0.5 percent and 3.2 policy-risk flags; a mid-stream giveaway minus 11 percent</td><td>Means over 40 seeded nights of tonight's stream, computed live by the bench in your browser and frozen by the same engine. A single night is shown too, and labelled as a single night</td></tr>
+      <tr><td>The nowcast beats "next five equals last five"</td><td>Backtested over 6,720 five-minute windows on the history, MAE 9.4 orders against 12.0. Printed by the analysis script</td></tr>
+      <tr><td>Tool versions and APIs (FFmpeg, PySceneDetect, Ultralytics YOLO26, MediaPipe, supervision, WhisperX, Gemini, LightGBM, SHAP, statsforecast)</td><td>Read from each project's docs or PyPI on 2026-09-24; versions are printed on the page that teaches them. Fast-moving: re-check before delivery</td></tr>
+      <tr><td>TikTok Shop LIVE metric names and policy wording</td><td>Read from TikTok Shop's own help and policy pages on 2026-09-24. Where a page could not be read the metric is taught by its arithmetic and marked so</td></tr>
+      <tr><td>Lumen Glow, its hosts, and TikTok's ranking rule</td><td>The brand and hosts are fictional. The boost rule is a teaching stand-in for "the platform pushes rooms that look engaged early", which is how the confound arises in any feed that rewards early engagement</td></tr>
+    </table>
+  </section>
+
+  <section class="section mm-section">
+    <h2>The knowledge map 🧠</h2>
+    <p class="mm-lede">Both tracks at a glance - hover a session to spotlight its concepts, click any node to jump in.</p>
+    <div class="mm-wrap"><div id="mindmap"></div></div>
+  </section>
+
+  <footer class="pagefoot">
+    <span>learn-live-commerce-analytics-with-phoebe · by Phoebe Fu &nbsp;·&nbsp; 📚 <a href="https://phoebefu6.github.io/learn-with-phoebe/">Learn with Phoebe ↗</a></span>
+    <span>Pairs with <a href="https://phoebefu6.github.io/learn-ecommerce-metrics-with-phoebe/">E-commerce Metrics ↗</a>, <a href="https://phoebefu6.github.io/learn-ai-media-with-phoebe/">AI + Audio/Video ↗</a> and <a href="https://phoebefu6.github.io/learn-ai-digital-human-with-phoebe/">AI + Digital Human ↗</a></span>
+  </footer>
+
+</main>
+
+<script>
+window.MINDMAP_DATA = {"title": "LIVE Commerce\nAnalytics", "centerColor": "#075E70", "sessions": [{"label": "Read the room", "href": "courses/a1-read-the-room.html", "concepts": [{"label": "The LIVE funnel", "href": "courses/a1-read-the-room.html"}, {"label": "GPM", "href": "courses/a1-read-the-room.html"}, {"label": "Traffic vs selling", "href": "courses/a1-read-the-room.html"}]}, {"label": "Top streams", "href": "courses/a2-what-top-streams-share.html", "concepts": [{"label": "The giveaway trap", "href": "courses/a2-what-top-streams-share.html"}, {"label": "Traffic effect", "href": "courses/a2-what-top-streams-share.html"}, {"label": "Per-viewer, not per-stream", "href": "courses/a2-what-top-streams-share.html"}]}, {"label": "Design the say", "href": "courses/a3-design-the-say.html", "concepts": [{"label": "Hook, build, price, CTA", "href": "courses/a3-design-the-say.html"}, {"label": "Two-minute urgency", "href": "courses/a3-design-the-say.html"}, {"label": "Legal FOMO", "href": "courses/a3-design-the-say.html"}]}, {"label": "Design the show", "href": "courses/a4-design-the-show.html", "concepts": [{"label": "Product in hand", "href": "courses/a4-design-the-show.html"}, {"label": "Price on screen", "href": "courses/a4-design-the-show.html"}, {"label": "Human vs AI host", "href": "courses/a4-design-the-show.html"}]}, {"label": "Coach live", "href": "courses/a5-coach-live.html", "concepts": [{"label": "Nowcast in the ear", "href": "courses/a5-coach-live.html"}, {"label": "Three cues", "href": "courses/a5-coach-live.html"}, {"label": "Two traps", "href": "courses/a5-coach-live.html"}]}, {"label": "Prove it", "href": "courses/a6-prove-it-worked.html", "concepts": [{"label": "Host scorecard", "href": "courses/a6-prove-it-worked.html"}, {"label": "Switchback test", "href": "courses/a6-prove-it-worked.html"}, {"label": "Deceptive urgency", "href": "courses/a6-prove-it-worked.html"}]}, {"label": "Stream as data", "href": "courses/b1-stream-as-data.html", "concepts": [{"label": "Four sources, one grain", "href": "courses/b1-stream-as-data.html"}, {"label": "The minute row", "href": "courses/b1-stream-as-data.html"}, {"label": "Metric definitions", "href": "courses/b1-stream-as-data.html"}]}, {"label": "Ingest and align", "href": "courses/b2-ingest-and-align.html", "concepts": [{"label": "FFmpeg segments", "href": "courses/b2-ingest-and-align.html"}, {"label": "The clock shift", "href": "courses/b2-ingest-and-align.html"}]}, {"label": "See it", "href": "courses/b3-see-it.html", "concepts": [{"label": "Open-vocab detection", "href": "courses/b3-see-it.html"}, {"label": "Close-up ratio", "href": "courses/b3-see-it.html"}, {"label": "The AGPL question", "href": "courses/b3-see-it.html"}]}, {"label": "Hear it", "href": "courses/b4-hear-it.html", "concepts": [{"label": "Word timestamps", "href": "courses/b4-hear-it.html"}, {"label": "Segment tagger", "href": "courses/b4-hear-it.html"}, {"label": "Claims checker", "href": "courses/b4-hear-it.html"}]}, {"label": "Score content", "href": "courses/b5-score-content.html", "concepts": [{"label": "Orders per 1,000 viewer-min", "href": "courses/b5-score-content.html"}, {"label": "Small denominators", "href": "courses/b5-score-content.html"}]}, {"label": "Traits to playbook", "href": "courses/b6-traits-to-playbook.html", "concepts": [{"label": "Pooled vs within", "href": "courses/b6-traits-to-playbook.html"}, {"label": "Fixed effects", "href": "courses/b6-traits-to-playbook.html"}, {"label": "LightGBM + SHAP", "href": "courses/b6-traits-to-playbook.html"}]}, {"label": "Live nowcast", "href": "courses/b7-live-nowcast.html", "concepts": [{"label": "EWMA rate x room", "href": "courses/b7-live-nowcast.html"}, {"label": "Backtest windows", "href": "courses/b7-live-nowcast.html"}, {"label": "Alert on signal", "href": "courses/b7-live-nowcast.html"}]}, {"label": "Intervene", "href": "courses/b8-intervene.html", "concepts": [{"label": "The replay bench", "href": "courses/b8-intervene.html"}, {"label": "Forty nights, not one", "href": "courses/b8-intervene.html"}, {"label": "Switchback design", "href": "courses/b8-intervene.html"}]}]};
+</script>
+<script src="assets/app.js?v=1"></script>
+<script src="assets/mindmap.js?v=1"></script>
+</body>
+</html>
