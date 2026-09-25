@@ -1,3 +1,8 @@
+<!-- learn-with-phoebe hub banner -->
+> ### 📚 Part of [**Learn with Phoebe**](https://phoebefu6.github.io/learn-with-phoebe/)
+> The shelf of 159 free, hands-on courses on AI, data, and the craft around them. **[Browse every course ↗](https://phoebefu6.github.io/learn-with-phoebe/)**
+<!-- /learn-with-phoebe hub banner -->
+
 # Learn LIVE Commerce Analytics with Phoebe
 
 Fourteen sessions on reading a TikTok Shop LIVE room as data. A two-hour stream is a video, a transcript, a comment feed and a per-minute sales ledger, recorded on four clocks. Line them up at the minute and every minute of the stream becomes a row: what the host said, what the camera showed, how many people were in the room, how many clicked the pinned product, how many bought. Then ask the question every MCN lead asks: what do the winning streams do that the rest do not. The first answer the data gives is wrong, and the course is about why.
