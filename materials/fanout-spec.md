@@ -59,10 +59,10 @@ dead air -4.72, giveaway minute -2.31; product in hand +0.04 (p .81), close-up +
 overlay -0.13 (p .58).
 Within-stream, CTR in points: product in hand +1.38, close-up ratio +1.01, price overlay +0.97, CTA
 +3.28, demo +2.54, price +1.55, Q&A -0.97, giveaway minute -0.05 (p .71).
-Orders per 1,000 viewer-minutes by segment: CTA 11.47 · price 7.78 · demo 7.59 · urgency 5.98 ·
-build 4.49 · Q&A 3.71 · hook 1.81 · filler 1.39 · dead 0.79 · mean 5.73. Minutes share: demo 20.9%,
+Orders per 1,000 viewer-minutes by segment: CTA 11.57 · price 7.69 · demo 7.72 · urgency 5.83 ·
+build 4.51 · Q&A 3.68 · hook 1.98 · filler 1.40 · dead 0.71 · mean 5.80. Minutes share: demo 20.9%,
 build 19.0%, urgency 16.4%, hook 12.8%, CTA 9.9%, Q&A 9.1%, price 6.6%, filler 4.6%, dead 0.8%.
-Urgency CTOR by consecutive minute: 14.71, 15.45, 8.28, 8.50, 8.56, 9.20 (runs 1-6).
+Urgency CTOR by consecutive minute: 15.12, 15.44, 8.30, 8.33, 8.43, 9.09 (runs 1-6).
 LightGBM per-minute orders, 12 held-out streams: MAE 1.43 vs mean baseline 2.56. SHAP order:
 impressions, is_cta, close_up_ratio, product_in_hand, room, fomo_run, is_hook, price_overlay,
 is_price, is_ai.

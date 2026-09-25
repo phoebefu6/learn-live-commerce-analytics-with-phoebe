@@ -41,7 +41,7 @@ Widget name `live-bench.js` / `LIVE_ENGINE`: no sibling uses either (grep 2026-0
 |---|---|---|---|
 | a1 | Read the LIVE room | ✓ TikTok Shop LIVE metric names and the four-stage diagnosis funnel; ✓ counts vs states; ✓ GPM vs GMV as selling vs traffic; ◐ tap-through rate (platform-held) | T1.1, T1.2, T1.3, T1.4 |
 | a2 | What the top streams share | ✓ the giveaway confound (9 of top 10; +5,576 pooled; -2.3 pts within); ✓ per-viewer vs per-stream comparison; ◐ fixed-effects mechanics (b6) | analysis canon |
-| a3 | Design the say | ✓ segment values (CTA 11.5, price 7.8, demo 7.6, urgency 6.0, hook 1.8 orders per 1,000 viewer-min); ✓ the two-minute urgency cue (14.7/15.5 percent CVR at run 1-2, 8.3 at run 3); ✓ FABES; ✓ what a legal urgency claim is (TikTok misleading-content guide, DMCC para 7, UCPD item 7, FTC dark patterns) | T1.8, P2.3, P2.4, R3.1-3.3, canon |
+| a3 | Design the say | ✓ segment values (CTA 11.6, price 7.7, demo 7.7, urgency 5.8, hook 2.0 orders per 1,000 viewer-min); ✓ the two-minute urgency cue (15.1/15.4 percent CVR at run 1-2, 8.3 at run 3); ✓ FABES; ✓ what a legal urgency claim is (TikTok misleading-content guide, DMCC para 7, UCPD item 7, FTC dark patterns) | T1.8, P2.3, P2.4, R3.1-3.3, canon |
 | a4 | Design the show | ✓ product in hand +1.38 pts CTR, close-up +1.01, price on screen +0.97 (within-stream); ✓ human vs AI per viewer (GPM 1,981 vs 1,252; same-hour 1,910 vs 1,258; watch 9.8 vs 7.3 min); ✓ **TikTok Shop's LIVE rule: no AI-generated voices, no non-real-time narration, avatars under 50 percent of frame**; ◐ consent and likeness (digital-human course) | canon, P2.9, P2.7, P2.8 |
 | a5 | Coach the room live | ✓ the nowcast in the producer's ear; ✓ three cues that pay (+10.1, +9.7, +4.4 percent), two that do not (stretched urgency +0.5 percent and 3.2 flags; mid-stream giveaway -11.2 percent); ✓ the replay bench, leader mode | canon.json ladder |
 | a6 | Prove the playbook worked | ✓ a host and script scorecard on per-viewer numbers; ✓ switchback design in plain words; ✓ the claims the platform and the regulator read as deceptive; ✓ AI Act Art 50 from 2 Aug 2026; ◐ full experiment theory (experimentation course) | P2.x, R3.x, Bojinov 2023 |
@@ -166,9 +166,9 @@ Tools (versions read from PyPI / docs 2026-09-24):
   (p 0.65), price overlay -0.13 (p 0.58).
 - Within-stream, CTR in points: product in hand +1.38, close-up +1.01, price overlay +0.97, CTA
   +3.28, demo +2.54; giveaway minute -0.05 (p 0.71).
-- Segment table, orders per 1,000 viewer-minutes: CTA 11.47, price 7.78, demo 7.59, urgency 5.98,
-  build 4.49, Q&A 3.71, hook 1.81, filler 1.39, dead 0.79. Mean 5.73.
-- Urgency by consecutive minute, CVR percent: 14.71, 15.45, 8.28, 8.50, 8.56, 9.20.
+- Segment table, orders per 1,000 viewer-minutes: CTA 11.57, price 7.69, demo 7.72, urgency 5.83,
+  build 4.51, Q&A 3.68, hook 1.98, filler 1.40, dead 0.71. Mean 5.80.
+- Urgency by consecutive minute, CVR percent: 15.12, 15.44, 8.30, 8.33, 8.43, 9.09.
 - LightGBM per-minute orders, 12 held-out streams: MAE 1.427 vs mean-baseline 2.56. SHAP top:
   impressions, is_cta, close_up_ratio, product_in_hand, room, fomo_run, is_hook, price_overlay,
   is_price, is_ai.

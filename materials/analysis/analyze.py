@@ -52,14 +52,18 @@ m = df.copy()
 m["ctr"] = np.where(m.impressions > 0, m.clicks / m.impressions, np.nan)
 m["cvr"] = np.where(m.clicks > 0, m.orders / m.clicks, np.nan)
 m["opv"] = np.where(m.room > 0, m.orders / m.room, np.nan)  # orders per viewer-minute
-seg = m.groupby("segment").agg(minutes=("t", "size"), ctr=("ctr", "mean"), cvr=("cvr", "mean"), opv=("opv", "mean"),
-                                comments_per_100=("comments", lambda s: 100 * s.sum() / m.loc[s.index, "room"].sum()))
-seg = (seg * [1, 100, 100, 1000, 1]).round(2).sort_values("opv", ascending=False)
+# pooled sum-over-sum, never the mean of per-minute ratios (small denominators lie)
+g = m.groupby("segment")
+seg = pd.DataFrame({"minutes": g.size(),
+                    "ctr": 100 * g.clicks.sum() / g.impressions.sum(),
+                    "cvr": 100 * g.orders.sum() / g.clicks.sum(),
+                    "opv": 1000 * g.orders.sum() / g.room.sum(),
+                    "comments_per_100": 100 * g.comments.sum() / g.room.sum()}).round(2).sort_values("opv", ascending=False)
 out["segment_table"] = seg.reset_index().to_dict("records")
 
 # the stretched-urgency read: conversion by consecutive fomo minute
-fomo = m[m.segment == "fomo"].groupby("fomo_run").agg(minutes=("t", "size"), cvr=("cvr", "mean"), room_change=("room", "mean"))
-fomo["cvr"] = (100 * fomo["cvr"]).round(2)
+gf = m[m.segment == "fomo"].groupby("fomo_run")
+fomo = pd.DataFrame({"minutes": gf.size(), "cvr": (100 * gf.orders.sum() / gf.clicks.sum()).round(2), "room": gf.room.mean().round(0)})
 out["fomo_by_run"] = fomo.reset_index().to_dict("records")
 
 # ---------------------------------------------------------------------------
@@ -179,7 +183,7 @@ d = within(mm.assign(opv1000=1000 * mm.opv.fillna(0)), ["is_cta", "is_demo", "is
 fit = smf.ols("opv1000 ~ is_cta + is_demo + is_qna + fomo_stretched + giveaway_live - 1", data=d).fit(
     cov_type="cluster", cov_kwds={"groups": mm["stream_id"]})
 out["opv_effects"] = {k: round(float(v), 2) for k, v in fit.params.items()}
-out["opv_mean"] = round(float(1000 * mm.opv.mean()), 2)
+out["opv_mean"] = round(float(1000 * m.orders.sum() / m.room.sum()), 2)
 
 (ROOT / "materials" / "analysis" / "canon.json").write_text(json.dumps(out, indent=2, default=float))
 print(json.dumps(out, indent=2, default=float))

@@ -8,14 +8,14 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Learn with Phoebe">
 <meta property="og:title" content="Score the content - learn live commerce analytics with phoebe">
-<meta property="og:description" content="Builder session 5 of 8. A minute with 3 clicks and 2 orders is 67 percent and means nothing. Put the room in the denominator and CTA minutes order at 11.47 per thousand viewer-minutes, a hook at 1.81.">
+<meta property="og:description" content="Builder session 5 of 8. A minute with 3 clicks and 2 orders is 67 percent and means nothing. Put the room in the denominator and CTA minutes order at 11.57 per thousand viewer-minutes, a hook at 1.98.">
 <meta property="og:url" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/courses/b5-score-content.html">
 <meta property="og:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Score the content - learn live commerce analytics with phoebe">
-<meta name="twitter:description" content="The segment table, the weighting rule, the one-minute lag, and the urgency cliff: CTOR 14.71, 15.45, then 8.28 from the third consecutive minute.">
+<meta name="twitter:description" content="The segment table, the weighting rule, the one-minute lag, and the urgency cliff: CTOR 15.12, 15.44, then 8.30 from the third consecutive minute.">
 <meta name="twitter:image" content="https://phoebefu6.github.io/learn-live-commerce-analytics-with-phoebe/assets/og-cover.png">
 <!-- social:end -->
 <title>Builder session 5 · Score the content - learn live commerce analytics with phoebe</title>
@@ -68,14 +68,14 @@
     </div>
 
     <div class="callout win">
-      <p><strong>★ What you walk out with tonight.</strong> The segment table: orders per 1,000 viewer-minutes for all nine labels, from CTA at 11.47 down to dead air at 0.79, with the minutes share and the click and order rates beside each. A rule for every ratio you compute at the minute grain, and the two answers it separates. A run-length column and a lagged-orders column ready for session 6. And a clear reading of what the AI-host rows show at this grain, before session 6 says what they mean.</p>
+      <p><strong>★ What you walk out with tonight.</strong> The segment table: orders per 1,000 viewer-minutes for all nine labels, from CTA at 11.57 down to dead air at 0.71, with the minutes share and the click and order rates beside each. A rule for every ratio you compute at the minute grain, and the two answers it separates. A run-length column and a lagged-orders column ready for session 6. And a clear reading of what the AI-host rows show at this grain, before session 6 says what they mean.</p>
     </div>
 
     <details class="card" open>
       <summary><span class="mode live">Live</span>Why per-minute CTR and CTOR lie<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>At the stream grain the funnel ratios are fine: an average stream has 3,997 clicks and 484 orders, and 12.1 percent is a stable number. Divide the same stream into 120 minutes and each minute has a few dozen clicks and a few orders. A minute with 3 clicks and 2 orders has a click-to-order rate of 67 percent. A minute with 1 click and 0 orders has a rate of zero. Neither number means anything, and averaging 7,200 of them means nothing with more decimals.</p>
-        <p>The cure is not a bigger sample; it is a bigger denominator. Every minute has a room, and the room is never small: even a quiet stream holds hundreds of viewers a minute. So the rate that is honest at the minute grain is <strong>orders divided by the room</strong>, scaled to <strong>orders per 1,000 viewer-minutes</strong>. Across the whole table it averages <strong>5.73</strong>. Its numerator is still small, but its denominator is stable enough that averaging over a segment's minutes lands in the same place whichever way you sum it, which is the property the click-based ratios lack.</p>
+        <p>The cure is not a bigger sample; it is a bigger denominator. Every minute has a room, and the room is never small: even a quiet stream holds hundreds of viewers a minute. So the rate that is honest at the minute grain is <strong>orders divided by the room</strong>, scaled to <strong>orders per 1,000 viewer-minutes</strong>. Across the whole table it averages <strong>5.80</strong>. Its numerator is still small, but its denominator is stable enough that averaging over a segment's minutes lands in the same place whichever way you sum it, which is the property the click-based ratios lack.</p>
         <div class="callout example">
           <span class="ex-pill">Real world</span>
           <p>A Lumen Glow weekly report once ranked hosts by their "average minute conversion", the mean of orders over clicks across each host's minutes. The winner was the host with the most minutes of two clicks and one order. The leaderboard flipped when the ratio was rebuilt as orders per thousand viewer-minutes, and flipped back to the stream-level GPM ranking everyone already trusted, which was the first sign the new number was right.</p>
@@ -107,7 +107,7 @@
     <p class="lede">Nine labels, one row each, three rates and a minutes share. It is the most-quoted table in the course: the leader track's script card is read off it, and session 6's regressions start from it. Read it with the denominator in mind.</p>
 
     <figure class="zoomable">
-      <svg viewBox="0 0 880 404" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Horizontal bar ladder of orders per 1,000 viewer-minutes by segment across 60 Lumen Glow streams: CTA 11.47, price 7.78, demo 7.59, urgency 5.98, build 4.49, Q and A 3.71, hook 1.81, filler 1.39, dead air 0.79. Columns beside each bar give the minutes share, click rate and click-to-order rate: CTA 9.9 percent of minutes, CTR 9.56, CTOR 16.61; price 6.6, 7.81, 13.90; demo 20.9, 9.34, 11.29; urgency 16.4, 6.19, 13.33; build 19.0, 5.98, 10.35; Q and A 9.1, 4.34, 11.80; hook 12.8, 3.80, 6.38; filler 4.6, 2.74, 6.98; dead 0.8, 1.93, 5.48.">
+      <svg viewBox="0 0 880 404" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Horizontal bar ladder of orders per 1,000 viewer-minutes by segment across 60 Lumen Glow streams: CTA 11.57, price 7.69, demo 7.72, urgency 5.83, build 4.51, Q and A 3.68, hook 1.98, filler 1.40, dead air 0.71. Columns beside each bar give the minutes share, click rate and click-to-order rate: CTA 9.9 percent of minutes, CTR 9.61, CTOR 16.73; price 6.6, 7.85, 13.62; demo 20.9, 9.41, 11.38; urgency 16.4, 6.20, 13.06; build 19.0, 5.83, 10.39; Q and A 9.1, 4.35, 11.76; hook 12.8, 3.86, 7.11; filler 4.6, 2.76, 7.06; dead 0.8, 1.93, 5.07.">
         <style>
           .b5aHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
           .b5aB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
@@ -118,7 +118,7 @@
           .b5aN { font: 700 11px Inter, sans-serif; fill: #0B1A20; }
         </style>
         <text class="b5aHd" x="14" y="24">Orders per 1,000 viewer-minutes by segment, 60 streams, 7,200 minutes</text>
-        <text class="b5aM" x="14" y="42">bar = orders per 1,000 viewer-minutes · table mean 5.73 · the three right-hand columns are the same minutes on other denominators</text>
+        <text class="b5aM" x="14" y="42">bar = orders per 1,000 viewer-minutes · table mean 5.80 · the three right-hand columns are the same minutes on other denominators</text>
 
         <text class="b5aC" x="14" y="68">Segment</text>
         <text class="b5aC" x="110" y="68">Orders per 1,000 viewer-minutes</text>
@@ -129,66 +129,66 @@
 
         <text class="b5aL" x="14" y="99">CTA</text>
         <rect x="110" y="84" width="360" height="20" rx="4" fill="#075E70"></rect>
-        <text class="b5aV" x="478" y="99">11.47</text>
+        <text class="b5aV" x="478" y="99">11.57</text>
         <text class="b5aB" x="560" y="99">9.9%</text>
-        <text class="b5aB" x="660" y="99">9.56</text>
-        <text class="b5aB" x="760" y="99">16.61</text>
+        <text class="b5aB" x="660" y="99">9.61</text>
+        <text class="b5aB" x="760" y="99">16.73</text>
 
-        <text class="b5aL" x="14" y="129">price</text>
-        <rect x="110" y="114" width="244" height="20" rx="4" fill="#0B7F94"></rect>
-        <text class="b5aV" x="362" y="129">7.78</text>
-        <text class="b5aB" x="560" y="129">6.6%</text>
-        <text class="b5aB" x="660" y="129">7.81</text>
-        <text class="b5aB" x="760" y="129">13.90</text>
+        <text class="b5aL" x="14" y="129">demo</text>
+        <rect x="110" y="114" width="240" height="20" rx="4" fill="#0B7F94"></rect>
+        <text class="b5aV" x="358" y="129">7.72</text>
+        <text class="b5aB" x="560" y="129">20.9%</text>
+        <text class="b5aB" x="660" y="129">9.41</text>
+        <text class="b5aB" x="760" y="129">11.38</text>
 
-        <text class="b5aL" x="14" y="159">demo</text>
-        <rect x="110" y="144" width="238" height="20" rx="4" fill="#0B7F94"></rect>
-        <text class="b5aV" x="356" y="159">7.59</text>
-        <text class="b5aB" x="560" y="159">20.9%</text>
-        <text class="b5aB" x="660" y="159">9.34</text>
-        <text class="b5aB" x="760" y="159">11.29</text>
+        <text class="b5aL" x="14" y="159">price</text>
+        <rect x="110" y="144" width="239" height="20" rx="4" fill="#0B7F94"></rect>
+        <text class="b5aV" x="357" y="159">7.69</text>
+        <text class="b5aB" x="560" y="159">6.6%</text>
+        <text class="b5aB" x="660" y="159">7.85</text>
+        <text class="b5aB" x="760" y="159">13.62</text>
 
         <text class="b5aL" x="14" y="189">urgency</text>
         <rect x="110" y="174" width="188" height="20" rx="4" fill="#0B7F94"></rect>
-        <text class="b5aV" x="306" y="189">5.98</text>
+        <text class="b5aV" x="306" y="189">5.83</text>
         <text class="b5aB" x="560" y="189">16.4%</text>
-        <text class="b5aB" x="660" y="189">6.19</text>
-        <text class="b5aB" x="760" y="189">13.33</text>
+        <text class="b5aB" x="660" y="189">6.20</text>
+        <text class="b5aB" x="760" y="189">13.06</text>
 
         <text class="b5aL" x="14" y="219">build</text>
         <rect x="110" y="204" width="141" height="20" rx="4" fill="#22C3DD"></rect>
-        <text class="b5aV" x="259" y="219">4.49</text>
+        <text class="b5aV" x="259" y="219">4.51</text>
         <text class="b5aB" x="560" y="219">19.0%</text>
-        <text class="b5aB" x="660" y="219">5.98</text>
-        <text class="b5aB" x="760" y="219">10.35</text>
+        <text class="b5aB" x="660" y="219">5.83</text>
+        <text class="b5aB" x="760" y="219">10.39</text>
 
         <text class="b5aL" x="14" y="249">Q&amp;A</text>
         <rect x="110" y="234" width="116" height="20" rx="4" fill="#22C3DD"></rect>
-        <text class="b5aV" x="234" y="249">3.71</text>
+        <text class="b5aV" x="234" y="249">3.68</text>
         <text class="b5aB" x="560" y="249">9.1%</text>
-        <text class="b5aB" x="660" y="249">4.34</text>
-        <text class="b5aB" x="760" y="249">11.80</text>
+        <text class="b5aB" x="660" y="249">4.35</text>
+        <text class="b5aB" x="760" y="249">11.76</text>
 
         <text class="b5aL" x="14" y="279">hook</text>
         <rect x="110" y="264" width="57" height="20" rx="4" fill="#A5EAF4"></rect>
-        <text class="b5aV" x="175" y="279">1.81</text>
+        <text class="b5aV" x="175" y="279">1.98</text>
         <text class="b5aB" x="560" y="279">12.8%</text>
-        <text class="b5aB" x="660" y="279">3.80</text>
-        <text class="b5aB" x="760" y="279">6.38</text>
+        <text class="b5aB" x="660" y="279">3.86</text>
+        <text class="b5aB" x="760" y="279">7.11</text>
 
         <text class="b5aL" x="14" y="309">filler</text>
         <rect x="110" y="294" width="44" height="20" rx="4" fill="#A5EAF4"></rect>
-        <text class="b5aV" x="162" y="309">1.39</text>
+        <text class="b5aV" x="162" y="309">1.40</text>
         <text class="b5aB" x="560" y="309">4.6%</text>
-        <text class="b5aB" x="660" y="309">2.74</text>
-        <text class="b5aB" x="760" y="309">6.98</text>
+        <text class="b5aB" x="660" y="309">2.76</text>
+        <text class="b5aB" x="760" y="309">7.06</text>
 
         <text class="b5aL" x="14" y="339">dead</text>
         <rect x="110" y="324" width="25" height="20" rx="4" fill="#A5EAF4"></rect>
-        <text class="b5aV" x="143" y="339">0.79</text>
+        <text class="b5aV" x="143" y="339">0.71</text>
         <text class="b5aB" x="560" y="339">0.8%</text>
         <text class="b5aB" x="660" y="339">1.93</text>
-        <text class="b5aB" x="760" y="339">5.48</text>
+        <text class="b5aB" x="760" y="339">5.07</text>
 
         <line x1="110" y1="80" x2="110" y2="350" stroke="#DCEBEF" stroke-width="1"></line>
         <rect x="14" y="382" width="14" height="14" rx="3" fill="#C8173F"></rect>
@@ -200,19 +200,19 @@
     <details class="card">
       <summary><span class="mode live">Live</span>Reading it<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
-        <p>Three things the table says, in the order a leader will hear them. <strong>CTA minutes sell.</strong> 11.47 orders per thousand viewer-minutes, against a table mean of 5.73: twice the average minute, and about six times a hook minute at 1.81. <strong>Price and demo are the next tier</strong>, 7.78 and 7.59, close enough that the difference is not worth a script line. <strong>The bottom three are not failures.</strong> The hook orders at 1.81 because nobody buys in the first minutes of a show; they arrive. It is 12.8 percent of all minutes and the room curve is built there. Filler at 1.39 and dead air at 0.79 are the two rows a host can actually remove.</p>
-        <p>Now read the right-hand columns with the denominator in mind. CTOR for CTA is 16.61 and for dead air 5.48; the ranking mostly agrees with the bar, which is reassuring, but the click-based rates are computed on a few clicks a minute and they wobble. The bar does not. When a per-segment CTOR and a per-segment orders-per-viewer-minute disagree on a small segment, believe the bar.</p>
+        <p>Three things the table says, in the order a leader will hear them. <strong>CTA minutes sell.</strong> 11.57 orders per thousand viewer-minutes, against a table mean of 5.80: twice the average minute, and about six times a hook minute at 1.98. <strong>Price and demo are the next tier</strong>, 7.69 and 7.72, close enough that the difference is not worth a script line. <strong>The bottom three are not failures.</strong> The hook orders at 1.98 because nobody buys in the first minutes of a show; they arrive. It is 12.8 percent of all minutes and the room curve is built there. Filler at 1.40 and dead air at 0.71 are the two rows a host can actually remove.</p>
+        <p>Now read the right-hand columns with the denominator in mind. CTOR for CTA is 16.73 and for dead air 5.07; the ranking mostly agrees with the bar, which is reassuring, but the click-based rates are computed on a few clicks a minute and they wobble. The bar does not. When a per-segment CTOR and a per-segment orders-per-viewer-minute disagree on a small segment, believe the bar.</p>
         <table class="clean">
           <thead>
-            <tr><th>Segment</th><th>Orders per 1,000 viewer-min</th><th>Times the mean (5.73)</th><th>What it is for</th></tr>
+            <tr><th>Segment</th><th>Orders per 1,000 viewer-min</th><th>Times the mean (5.80)</th><th>What it is for</th></tr>
           </thead>
           <tbody>
-            <tr><td>CTA</td><td>11.47</td><td>2.0</td><td>Converting the room that is already there</td></tr>
-            <tr><td>price</td><td>7.78</td><td>1.4</td><td>Removing the last objection</td></tr>
-            <tr><td>demo</td><td>7.59</td><td>1.3</td><td>Showing, which also moves clicks (session 3)</td></tr>
-            <tr><td>urgency</td><td>5.98</td><td>1.0</td><td>Two good minutes, then a cliff (Part 2)</td></tr>
-            <tr><td>hook</td><td>1.81</td><td>0.3</td><td>Building the room, not selling to it</td></tr>
-            <tr><td>filler, dead</td><td>1.39, 0.79</td><td>0.2, 0.1</td><td>Nothing. The removable minutes</td></tr>
+            <tr><td>CTA</td><td>11.57</td><td>2.0</td><td>Converting the room that is already there</td></tr>
+            <tr><td>price</td><td>7.69</td><td>1.4</td><td>Removing the last objection</td></tr>
+            <tr><td>demo</td><td>7.72</td><td>1.3</td><td>Showing, which also moves clicks (session 3)</td></tr>
+            <tr><td>urgency</td><td>5.83</td><td>1.0</td><td>Two good minutes, then a cliff (Part 2)</td></tr>
+            <tr><td>hook</td><td>1.98</td><td>0.3</td><td>Building the room, not selling to it</td></tr>
+            <tr><td>filler, dead</td><td>1.40, 0.71</td><td>0.2, 0.1</td><td>Nothing. The removable minutes</td></tr>
           </tbody>
         </table>
       </div>
@@ -259,7 +259,7 @@
     <p class="lede">A segment's value is not a constant. It depends on how long the segment has already been running, and it arrives a minute late. Both facts become columns tonight, because session 6 will regress on them and session 8 will cue a host with them.</p>
 
     <figure class="zoomable">
-      <svg viewBox="0 0 880 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Step chart of click-to-order rate by consecutive urgency minute across 60 streams: minute 1 of a run 14.71 percent, minute 2 15.45, then minute 3 8.28, minute 4 8.50, minute 5 8.56, minute 6 9.20. The step from minute 2 to 3 is drawn in the flag colour: the cliff.">
+      <svg viewBox="0 0 880 372" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Step chart of click-to-order rate by consecutive urgency minute across 60 streams: minute 1 of a run 15.12 percent, minute 2 15.44, then minute 3 8.30, minute 4 8.33, minute 5 8.43, minute 6 9.09. The step from minute 2 to 3 is drawn in the flag colour: the cliff.">
         <style>
           .b5bHd { font: 800 13px Inter, sans-serif; fill: #0B1A20; }
           .b5bB { font: 400 11px Inter, sans-serif; fill: #0B1A20; }
@@ -280,27 +280,27 @@
         <text class="b5bM" x="24" y="64">20</text>
 
         <rect x="76" y="123" width="120" height="177" fill="#0B7F94"></rect>
-        <text class="b5bV" x="136" y="115" text-anchor="middle">14.71</text>
+        <text class="b5bV" x="136" y="115" text-anchor="middle">15.12</text>
         <text class="b5bM" x="136" y="318" text-anchor="middle">run 1</text>
 
         <rect x="202" y="115" width="120" height="185" fill="#0B7F94"></rect>
-        <text class="b5bV" x="262" y="107" text-anchor="middle">15.45</text>
+        <text class="b5bV" x="262" y="107" text-anchor="middle">15.44</text>
         <text class="b5bM" x="262" y="318" text-anchor="middle">run 2</text>
 
         <rect x="328" y="201" width="120" height="99" fill="#C8173F"></rect>
-        <text class="b5bR" x="388" y="193" text-anchor="middle">8.28</text>
+        <text class="b5bR" x="388" y="193" text-anchor="middle">8.30</text>
         <text class="b5bM" x="388" y="318" text-anchor="middle">run 3</text>
 
         <rect x="454" y="198" width="120" height="102" fill="#A5EAF4"></rect>
-        <text class="b5bV" x="514" y="190" text-anchor="middle">8.50</text>
+        <text class="b5bV" x="514" y="190" text-anchor="middle">8.33</text>
         <text class="b5bM" x="514" y="318" text-anchor="middle">run 4</text>
 
         <rect x="580" y="197" width="120" height="103" fill="#A5EAF4"></rect>
-        <text class="b5bV" x="640" y="189" text-anchor="middle">8.56</text>
+        <text class="b5bV" x="640" y="189" text-anchor="middle">8.43</text>
         <text class="b5bM" x="640" y="318" text-anchor="middle">run 5</text>
 
         <rect x="706" y="190" width="120" height="110" fill="#A5EAF4"></rect>
-        <text class="b5bV" x="766" y="182" text-anchor="middle">9.20</text>
+        <text class="b5bV" x="766" y="182" text-anchor="middle">9.09</text>
         <text class="b5bM" x="766" y="318" text-anchor="middle">run 6</text>
 
         <line x1="325" y1="70" x2="325" y2="300" stroke="#C8173F" stroke-width="1.5" stroke-dasharray="5 4"></line>
@@ -316,7 +316,7 @@
     <details class="card">
       <summary><span class="mode live">Live</span>Run length as a feature<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
-        <p>Urgency minutes as one row in the segment table score 5.98 per thousand viewer-minutes, a hair above the mean. That single number hides two very different minutes. In the first and second minute of a run the click-to-order rate is 14.71 and 15.45 percent, better than every segment except CTA. From the third it is 8.28, then 8.50, 8.56, 9.20: the room has heard "almost gone" three times in three minutes and stopped believing it. Session 6 will price the two halves separately, plus 4.93 points within a stream for short urgency and minus 1.84 for stretched, and the sign flips only because the run length was a column.</p>
+        <p>Urgency minutes as one row in the segment table score 5.83 per thousand viewer-minutes, a hair above the mean. That single number hides two very different minutes. In the first and second minute of a run the click-to-order rate is 15.12 and 15.44 percent, better than every segment except CTA. From the third it is 8.30, then 8.33, 8.43, 9.09: the room has heard "almost gone" three times in three minutes and stopped believing it. Session 6 will price the two halves separately, plus 4.93 points within a stream for short urgency and minus 1.84 for stretched, and the sign flips only because the run length was a column.</p>
         <p>So the <code>fomo_run</code> column session 4 built is not a diagnostic; it is a feature. A segment's value depends on how long it has already been running, and the only way a model can learn that is if the table says how long. The same logic applies more gently to CTA (a fourth consecutive CTA minute is a host who has run out of things to say) and to Q&amp;A, but urgency is where the cliff is sharp enough to draw.</p>
       </div>
     </details>
@@ -390,14 +390,14 @@ seg.round(2)
         </div>
       </div>
       <div class="step">
-        <p><strong>Reproduce the segment table and assert the CTA row.</strong> The published table's rate column is the mean of the per-minute rate, and the two versions land within a tenth of each other on every row because the room is never small. Assert the CTA value to two decimals, and assert the gap, which is the actual lesson.</p>
+        <p><strong>Reproduce the segment table and assert the CTA row.</strong> The published table is the pooled version, sum over sum. The mean-of-rates version lands within a tenth of it on every row here, because the room is never small; on a table where it is, the two diverge, and that gap is the actual lesson. Assert the CTA value to two decimals, and assert the gap.</p>
         <div class="prompt-box good">
           <span class="label">★ Two asserts: the number, and the reason the number is safe</span>
-assert round(float(seg.loc["cta", "opv_mean"]), 2) == 11.47
+assert round(float(seg.loc["cta", "opv_pool"]), 2) == 11.57
 assert (seg.opv_mean - seg.opv_pool).abs().max() &lt; 0.2       # a stable denominator: both ways agree
 
-order = ["cta", "price", "demo", "fomo", "build", "qna", "hook", "filler", "dead"]
-seg.loc[order, ["share", "opv_mean", "ctr", "ctor"]].round(2)
+order = ["cta", "demo", "price", "fomo", "build", "qna", "hook", "filler", "dead"]
+seg.loc[order, ["share", "opv_pool", "ctr", "ctor"]].round(2)
         </div>
       </div>
       <div class="step">
@@ -434,7 +434,7 @@ runs = pd.DataFrame({
     "ctor":    pooled_rate(fomo, "orders", "clicks", "fomo_run"),
     "opv":     pooled_rate(fomo, "orders", "room", "fomo_run", 1000),
 })
-runs.loc[1:6].round(2)                                    # 14.71, 15.45, then the cliff at 3
+runs.loc[1:6].round(2)                                    # 15.12, 15.44, then the cliff at 3
         </div>
       </div>
       <div class="step">
@@ -499,13 +499,13 @@ m.to_csv("data/derived/minutes_with_lags.csv", index=False)
     <div class="quiz-q" data-answer="2">
       <p class="qtext">Across 60 streams, what happens to click-to-order rate at the third consecutive urgency minute?</p>
       <button class="qopt" type="button">A · It keeps rising; scarcity compounds</button>
-      <button class="qopt" type="button">B · It is unchanged; the segment table gives urgency one number, 5.98</button>
-      <button class="qopt" type="button">C · It nearly halves, from 15.45 in minute 2 to 8.28, and stays there for the rest of the run</button>
-      <p class="qwhy">14.71, 15.45, then 8.28, 8.50, 8.56, 9.20. The single-row figure of 5.98 hides it, which is why run length is a column and why session 4's checker raises a flag at run 3.</p>
+      <button class="qopt" type="button">B · It is unchanged; the segment table gives urgency one number, 5.83</button>
+      <button class="qopt" type="button">C · It nearly halves, from 15.44 in minute 2 to 8.30, and stays there for the rest of the run</button>
+      <p class="qwhy">15.12, 15.44, then 8.30, 8.33, 8.43, 9.09. The single-row figure of 5.83 hides it, which is why run length is a column and why session 4's checker raises a flag at run 3.</p>
     </div>
 
     <div class="quiz-q" data-answer="0">
-      <p class="qtext">Demo minutes score 7.59 per thousand viewer-minutes in the pooled table. Why can that number still mislead about what a demo does?</p>
+      <p class="qtext">Demo minutes score 7.72 per thousand viewer-minutes in the pooled table. Why can that number still mislead about what a demo does?</p>
       <button class="qopt" type="button">A · The table is pooled across streams, so a segment that good hosts use more borrows their rooms and their conversion; only a within-stream comparison removes that</button>
       <button class="qopt" type="button">B · Demo minutes have too few clicks for any rate to be meaningful</button>
       <button class="qopt" type="button">C · The demo label comes from the picture, not the words, so it is less reliable</button>
@@ -525,7 +525,7 @@ m.to_csv("data/derived/minutes_with_lags.csv", index=False)
       <div class="covered-row">
         <span class="status pill solid">✓</span>
         <span class="name">Orders per 1,000 viewer-minutes by segment</span>
-        <span class="note">All nine labels from CTA 11.47 to dead air 0.79, with minutes share, CTR and CTOR beside each, reproduced in the build-along and asserted.</span>
+        <span class="note">All nine labels from CTA 11.57 to dead air 0.71, with minutes share, CTR and CTOR beside each, reproduced in the build-along and asserted.</span>
       </div>
       <div class="covered-row">
         <span class="status pill solid">✓</span>
@@ -559,11 +559,11 @@ m.to_csv("data/derived/minutes_with_lags.csv", index=False)
   <section class="cheat" id="cheatsheet">
     <h3>Builder session 5 cheat sheet</h3>
     <div class="grid-2">
-      <div class="cheat-item"><b>The unit</b><span>Orders per 1,000 viewer-minutes: 1000 x orders / room. Table mean 5.73. The denominator is never small.</span></div>
-      <div class="cheat-item"><b>The ladder</b><span>CTA 11.47 · price 7.78 · demo 7.59 · urgency 5.98 · build 4.49 · Q&amp;A 3.71 · hook 1.81 · filler 1.39 · dead 0.79.</span></div>
+      <div class="cheat-item"><b>The unit</b><span>Orders per 1,000 viewer-minutes: 1000 x orders / room. Table mean 5.80. The denominator is never small.</span></div>
+      <div class="cheat-item"><b>The ladder</b><span>CTA 11.57 · price 7.69 · demo 7.72 · urgency 5.83 · build 4.51 · Q&amp;A 3.68 · hook 1.98 · filler 1.40 · dead 0.71.</span></div>
       <div class="cheat-item"><b>The weighting rule</b><span>Sum numerators, sum denominators, divide. Never average the per-minute ratio. Keep both columns until the last line.</span></div>
       <div class="cheat-item"><b>The safety test</b><span>Mean-of-ratio and pooled agree within a tenth on the room; they can split threefold on clicks. When they split, publish the pooled one.</span></div>
-      <div class="cheat-item"><b>The urgency cliff</b><span>CTOR by run: 14.71, 15.45, 8.28, 8.50, 8.56, 9.20. Two minutes, then stop.</span></div>
+      <div class="cheat-item"><b>The urgency cliff</b><span>CTOR by run: 15.12, 15.44, 8.30, 8.33, 8.43, 9.09. Two minutes, then stop.</span></div>
       <div class="cheat-item"><b>The lag</b><span>orders_next1 = groupby(stream).orders.shift(-1). Sixty missing values, one per last minute. Outcome for session 6 is this minute plus the next.</span></div>
       <div class="cheat-item"><b>AI rows at this grain</b><span>No Q&amp;A minutes, zero replies, room by cycle 216 to 484 to 366 against 419 to 961 to 790 for humans. Compliance stop on TikTok Shop first.</span></div>
       <div class="cheat-item"><b>What it cannot say</b><span>Pooled across streams, so a segment borrows the rooms of the hosts who use it. Session 6 compares within a stream.</span></div>

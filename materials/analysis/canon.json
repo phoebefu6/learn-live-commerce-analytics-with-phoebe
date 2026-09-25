@@ -90,73 +90,73 @@
     {
       "segment": "cta",
       "minutes": 714,
-      "ctr": 9.56,
-      "cvr": 16.61,
-      "opv": 11.47,
+      "ctr": 9.61,
+      "cvr": 16.73,
+      "opv": 11.57,
       "comments_per_100": 1.63
-    },
-    {
-      "segment": "price",
-      "minutes": 478,
-      "ctr": 7.81,
-      "cvr": 13.9,
-      "opv": 7.78,
-      "comments_per_100": 1.79
     },
     {
       "segment": "demo",
       "minutes": 1506,
-      "ctr": 9.34,
-      "cvr": 11.29,
-      "opv": 7.59,
+      "ctr": 9.41,
+      "cvr": 11.38,
+      "opv": 7.72,
+      "comments_per_100": 1.79
+    },
+    {
+      "segment": "price",
+      "minutes": 478,
+      "ctr": 7.85,
+      "cvr": 13.62,
+      "opv": 7.69,
       "comments_per_100": 1.79
     },
     {
       "segment": "fomo",
       "minutes": 1182,
-      "ctr": 6.19,
-      "cvr": 13.33,
-      "opv": 5.98,
+      "ctr": 6.2,
+      "cvr": 13.06,
+      "opv": 5.83,
       "comments_per_100": 1.98
     },
     {
       "segment": "build",
       "minutes": 1366,
-      "ctr": 5.98,
-      "cvr": 10.35,
-      "opv": 4.49,
+      "ctr": 6.03,
+      "cvr": 10.39,
+      "opv": 4.51,
       "comments_per_100": 1.65
     },
     {
       "segment": "qna",
       "minutes": 653,
-      "ctr": 4.34,
-      "cvr": 11.8,
-      "opv": 3.71,
+      "ctr": 4.35,
+      "cvr": 11.76,
+      "opv": 3.68,
       "comments_per_100": 3.6
     },
     {
       "segment": "hook",
       "minutes": 919,
-      "ctr": 3.8,
-      "cvr": 6.38,
-      "opv": 1.81,
+      "ctr": 3.86,
+      "cvr": 7.11,
+      "opv": 1.98,
       "comments_per_100": 2.01
     },
     {
       "segment": "filler",
       "minutes": 328,
-      "ctr": 2.74,
-      "cvr": 6.98,
-      "opv": 1.39,
+      "ctr": 2.76,
+      "cvr": 7.06,
+      "opv": 1.4,
       "comments_per_100": 1.06
     },
     {
       "segment": "dead",
       "minutes": 54,
       "ctr": 1.93,
-      "cvr": 5.48,
-      "opv": 0.79,
+      "cvr": 5.07,
+      "opv": 0.71,
       "comments_per_100": 0.81
     }
   ],
@@ -164,44 +164,44 @@
     {
       "fomo_run": 1,
       "minutes": 472,
-      "cvr": 14.71,
-      "room_change": 688.3177966101695
+      "cvr": 15.12,
+      "room": 688.0
     },
     {
       "fomo_run": 2,
       "minutes": 393,
-      "cvr": 15.45,
-      "room_change": 677.8473282442748
+      "cvr": 15.44,
+      "room": 678.0
     },
     {
       "fomo_run": 3,
       "minutes": 99,
-      "cvr": 8.28,
-      "room_change": 858.010101010101
+      "cvr": 8.3,
+      "room": 858.0
     },
     {
       "fomo_run": 4,
       "minutes": 75,
-      "cvr": 8.5,
-      "room_change": 946.8933333333333
+      "cvr": 8.33,
+      "room": 947.0
     },
     {
       "fomo_run": 5,
       "minutes": 69,
-      "cvr": 8.56,
-      "room_change": 935.4927536231884
+      "cvr": 8.43,
+      "room": 935.0
     },
     {
       "fomo_run": 6,
       "minutes": 68,
-      "cvr": 9.2,
-      "room_change": 946.25
+      "cvr": 9.09,
+      "room": 946.0
     },
     {
       "fomo_run": 7,
       "minutes": 6,
-      "cvr": 11.64,
-      "room_change": 914.6666666666666
+      "cvr": 12.15,
+      "room": 915.0
     }
   ],
   "pooled_giveaway_coef": 5575.771269881352,
@@ -518,5 +518,5 @@
     "fomo_stretched": -1.19,
     "giveaway_live": -3.12
   },
-  "opv_mean": 5.73
+  "opv_mean": 5.8
 }

@@ -59,7 +59,7 @@
       <span class="klabel">Part 0</span>
       <h2>Where session 6 sits</h2>
     </div>
-    <p class="lede">Session 5 scored every minute of the 60 Lumen Glow streams and produced the segment table: CTA minutes sell at 11.47 orders per thousand viewer-minutes, dead air at 0.79. That table is descriptive. It says which minutes sold, not what made them sell, and a CTA minute in a room of 1,500 and a CTA minute in a room of 300 are in it side by side. Tonight separates the room from the pitch, with two regressions and a tree model, and turns what survives into the playbook the leader track hands to hosts.</p>
+    <p class="lede">Session 5 scored every minute of the 60 Lumen Glow streams and produced the segment table: CTA minutes sell at 11.57 orders per thousand viewer-minutes, dead air at 0.71. That table is descriptive. It says which minutes sold, not what made them sell, and a CTA minute in a room of 1,500 and a CTA minute in a room of 300 are in it side by side. Tonight separates the room from the pitch, with two regressions and a tree model, and turns what survives into the playbook the leader track hands to hosts.</p>
 
     <div class="legend">
       <span class="pill">Live = presented in the 45 minutes</span>
@@ -261,7 +261,7 @@
       <summary><span class="mode live">Live</span>Reading the two tables together<span class="mini">3 min</span><span class="caret">▶</span></summary>
       <div class="body">
         <p>Put the CTR table over the CTOR table and a clean split appears. <strong>What you show moves the click.</strong> Product in hand, a close-up, a price card on screen: each adds about a point of CTR and none of them touches CTOR. The viewer taps the card because they saw the thing. <strong>What you say moves the order.</strong> CTA, price, a short burst of urgency: each adds points of CTOR, and the CTA adds points of both. The viewer buys because they were asked, told the number, and given a reason to do it now.</p>
-        <p>The Q&amp;A row is the one worth pausing on. It lowers CTR by a point (the host is looking at comments, not the product) and raises CTOR by a point (the person whose question got answered converts). A per-viewer read from session 5 says Q&amp;A minutes sell 3.71 orders per thousand viewer-minutes, below the mean of 5.73, so on its own it is a weak selling minute. Session 8's bench is where "answer the room every ten minutes" gets priced properly, and it comes out at plus 4.4 percent GMV with the longest watch of any single cue.</p>
+        <p>The Q&amp;A row is the one worth pausing on. It lowers CTR by a point (the host is looking at comments, not the product) and raises CTOR by a point (the person whose question got answered converts). A per-viewer read from session 5 says Q&amp;A minutes sell 3.68 orders per thousand viewer-minutes, below the mean of 5.80, so on its own it is a weak selling minute. Session 8's bench is where "answer the room every ten minutes" gets priced properly, and it comes out at plus 4.4 percent GMV with the longest watch of any single cue.</p>
         <p>You do not have to demean by hand. linearmodels 7.0 does the same arithmetic in one line: <code>PanelOLS(y, X, entity_effects=True)</code> on a MultiIndex of (stream_id, t), then <code>fit(cov_type="clustered", cluster_entity=True)</code>. Its coefficients match the hand version to the third decimal. Tonight's build-along does it by hand once, so you know exactly what the one line is doing and can explain it to the person who asks.</p>
         <div class="callout example">
           <span class="ex-pill">Real world</span>
@@ -419,7 +419,7 @@
             <tr><td>Giveaway: a traffic decision</td><td>CTOR while live</td><td>-2.31 pts</td><td>.010</td></tr>
           </tbody>
         </table>
-        <p>Short urgency on this data is minutes one and two of a run, with CTOR at 14.71 and 15.45 for those two minutes and 8.28 from the third. The playbook says two minutes because that is where the number turns, and because the TikTok Shop Content Policy (effective 2026-09-17) and the UK DMCC Act both treat a limited-time claim that is not genuine as a violation; a countdown that runs six minutes is not a countdown. The giveaway line is not a "never". It is worth 5,576 dollars of GMV through traffic on the pooled read and costs 2.31 points of CTOR while it is live, and whoever owns the traffic budget makes that call with both numbers in front of them.</p>
+        <p>Short urgency on this data is minutes one and two of a run, with CTOR at 15.12 and 15.44 for those two minutes and 8.30 from the third. The playbook says two minutes because that is where the number turns, and because the TikTok Shop Content Policy (effective 2026-09-17) and the UK DMCC Act both treat a limited-time claim that is not genuine as a violation; a countdown that runs six minutes is not a countdown. The giveaway line is not a "never". It is worth 5,576 dollars of GMV through traffic on the pooled read and costs 2.31 points of CTOR while it is live, and whoever owns the traffic budget makes that call with both numbers in front of them.</p>
       </div>
     </details>
 

@@ -352,7 +352,7 @@ result = whisperx.align(result["segments"], model_a, metadata, audio, device)
           <li><strong>Qwen3-VL</strong>, Apache-2.0, for the on-prem case where the recording cannot leave the building. Same question, your GPU, video sampled at 2 fps by default.</li>
           <li><strong>Twelve Labs Pegasus 1.5</strong> for the search-shaped question ("find every minute where she applies it to her hand") rather than the label-shaped one. Marengo 3.0 is the search and embeddings model beside it.</li>
         </ul>
-        <p>When is it worth it? When the unmatched minutes are more than a review can absorb, and when the label being settled is one that session 6 will put a number on. A demo minute converts at 11.29 percent and a build minute at 10.35 in the segment table; the gap is real but small, so spend on it after the CTA and urgency rules are right, not before.</p>
+        <p>When is it worth it? When the unmatched minutes are more than a review can absorb, and when the label being settled is one that session 6 will put a number on. A demo minute converts at 11.38 percent and a build minute at 10.39 in the segment table; the gap is real but small, so spend on it after the CTA and urgency rules are right, not before.</p>
         <div class="prompt-box good">
           <span class="label">★ Gemini 3.8 Flash on one unmatched minute (verbatim shape from the video docs)</span>
 from google import genai
@@ -376,7 +376,7 @@ print(interaction.output_text)
       <div class="body">
         <p>A regex list, and every phrase on it comes from a page TikTok Shop publishes. The How to Avoid Misleading Content guide names outright bans: <strong>"100% effective", "Guaranteed results", "Works for everyone", "Permanent effect", "Instant results", "No side effects"</strong>. It also flags urgency wording that has to be true to be said: <strong>"While stocks last", "This sale is for selected customers only", "Don't miss these big discounts", "We are having our largest sale!"</strong>. The Content Policy in force since 2026-09-17 bans "exaggerated promises about a product's performance, effect, or price", and the Misleading Discount guide says "sale ends today" or "only 2 hours left" must be genuine.</p>
         <p>The checker returns one row per hit: minute, phrase, category (claim or urgency). It does not judge. A genuine last-day sale can say "ends today"; the checker's job is to make sure someone looks at the minute and the stock sheet together, before a platform reviewer does.</p>
-        <p><strong>The run counter is the second half.</strong> Scarcity works for about two minutes and then it stops working and starts looking like a policy problem. Across the 60 streams, the click-to-order rate in a run of urgency minutes reads 14.71 in the first minute and 15.45 in the second, then <strong>8.28 from the third</strong>, 8.50, 8.56, 9.20. So the tagger keeps a <code>fomo_run</code> column, consecutive urgency minutes so far, and the checker raises a soft flag at run 3 (the audience has stopped believing it) and a policy-risk flag at run 4 (the platform's "genuine" test is now hard to pass, and the UK's DMCC Act 2024 names "falsely stating that a product will only be available for a limited time" as a banned practice).</p>
+        <p><strong>The run counter is the second half.</strong> Scarcity works for about two minutes and then it stops working and starts looking like a policy problem. Across the 60 streams, the click-to-order rate in a run of urgency minutes reads 15.12 in the first minute and 15.44 in the second, then <strong>8.30 from the third</strong>, 8.33, 8.43, 9.09. So the tagger keeps a <code>fomo_run</code> column, consecutive urgency minutes so far, and the checker raises a soft flag at run 3 (the audience has stopped believing it) and a policy-risk flag at run 4 (the platform's "genuine" test is now hard to pass, and the UK's DMCC Act 2024 names "falsely stating that a product will only be available for a limited time" as a banned practice).</p>
         <table class="clean">
           <thead>
             <tr><th>Category</th><th>Phrases</th><th>Source</th></tr>
@@ -639,7 +639,7 @@ len(low), low[:10]
       <div class="cheat-item"><b>Rules first</b><span>Dead under 40 wpm, then CTA, price, urgency, Q&amp;A, hook, filler. Demo versus build from product in hand. Model only for the rest.</span></div>
       <div class="cheat-item"><b>Write the why</b><span>Every rule records the phrase it fired on and a confidence. Low confidence goes to review.</span></div>
       <div class="cheat-item"><b>Claims checker</b><span>Six banned claims, six must-be-genuine urgency phrases, all from TikTok Shop's guides. Returns rows, decides nothing.</span></div>
-      <div class="cheat-item"><b>Run counter</b><span>Urgency CTOR 14.71, 15.45, then 8.28 from minute 3. Soft flag at run 3, policy risk at run 4.</span></div>
+      <div class="cheat-item"><b>Run counter</b><span>Urgency CTOR 15.12, 15.44, then 8.30 from minute 3. Soft flag at run 3, policy risk at run 4.</span></div>
     </div>
   </section>
 
