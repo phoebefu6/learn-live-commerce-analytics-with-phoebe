@@ -3,6 +3,8 @@
    (CSS var names still read --indigo/--amber; they hold SQL-blue values.) */
 
 :root {
+  --indigo-text: #0B7B8F;
+  --faint-text: #457A87;
   --indigo: #0B7F94;
   --indigo-deep: #075E70;
   --indigo-mid: #22C3DD;
@@ -137,7 +139,7 @@ main { padding: 2.5rem 0 4rem; }
   text-transform: uppercase;
   letter-spacing: .08em;
 }
-.tag.concept { background: var(--indigo-50); color: var(--indigo); }
+.tag.concept { background: var(--indigo-50); color: var(--indigo-text); }
 .tag.demo { background: var(--amber-50); color: var(--amber-ink); }
 .tag.exercise { background: var(--ink); color: #fff; }
 
@@ -206,7 +208,7 @@ details.card .body h4:first-child { margin-top: 0; }
   font-weight: 600;
 }
 .pill.solid { background: var(--indigo); color: #fff; }
-.pill.light { background: var(--indigo-50); color: var(--indigo); }
+.pill.light { background: var(--indigo-50); color: var(--indigo-text); }
 .pill.inkpill { background: var(--ink); color: #fff; }
 .pill.amber, .pill.peach { background: var(--amber); color: #fff; }
 .pill.bare { color: var(--faint); }
@@ -305,7 +307,7 @@ table.clean td:first-child { font-weight: 600; }
   width: 1.7rem; height: 1.7rem;
   border-radius: 999px;
   background: var(--indigo-50);
-  color: var(--indigo);
+  color: var(--indigo-text);
   font-weight: 700;
   font-size: .85rem;
   display: inline-flex;
@@ -1189,7 +1191,7 @@ figure.zoomable.can-scroll figcaption::after {
 .dh-track { display: flex; flex-wrap: wrap; gap: 3px; }
 .dh-cell { font: 700 0.66rem ui-monospace, Menlo, monospace; padding: 3px 6px; border-radius: 5px;
   background: var(--indigo-50); color: var(--indigo-deep); transition: all .1s linear; }
-.dh-cell.rest { background: var(--paper); color: var(--faint); }
+.dh-cell.rest { background: var(--paper); color: var(--faint-text); }
 .dh-cell.now { background: var(--amber); color: #fff; transform: scale(1.18); }
 .dh-panel { border: 1px solid var(--hairline); border-radius: var(--radius); background: #fff; overflow: hidden; }
 .dh-phead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
